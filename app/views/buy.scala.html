@@ -1,0 +1,30 @@
+@(token: String, offer: Offer, thumbnail: String)
+
+@walletMain(token, "Buy Item") {
+
+    <div class="header">
+        <h3 class="text-muted">Purchase Form</h3>
+    </div>
+    <div class="clearfix">
+        <img src="@routes.ServeThumbnail.at(thumbnail+".jpg")" class="img-thumbnail pull-left" style="margin-right: 4px;">
+        <h5 class="" style="margin-top: 0;">@offer.title</h5>
+    </div>
+    <div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th class="buy-item">Item</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td> 1 </td>
+                    <td class="buy-item">@offer.title</td>
+                    <td>@Cart.displayCurrency(offer.locale,offer.price)</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+}

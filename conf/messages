@@ -1,0 +1,64 @@
+# App name
+zaporbit.appName=ZapOrbit
+
+# Login page
+zaporbit.login.title=Secured Login Required
+zaporbit.login.instructions=Use your account with Facebook to login.
+zaporbit.login.accessDenied=You denied access to your account. Please grant it to log in.
+zaporbit.login.errorLoggingIn=An error occurred while logging you in. Please try again.
+zaporbit.login.useEmailAndPassword=Or login using a username and password.
+zaporbit.login.useEmailAndPasswordOnly=Login using a username and password.
+zaporbit.login.signUp=If you don''t have an account with us yet you can sign up
+zaporbit.login.here=here
+zaporbit.login.invalidCredentials=The credentials you entered are not valid
+zaporbit.login.forgotPassword=Did you forget your password?
+
+# Sign up page
+zaporbit.signup.title=Sign Up
+zaporbit.signup.username=Username
+zaporbit.signup.firstName=First Name
+zaporbit.signup.lastName=Last Name
+zaporbit.signup.email1=Email
+zaporbit.signup.email2=Email confirmation
+zaporbit.signup.password1=Password
+zaporbit.signup.password2=Password confirmation
+zaporbit.signup.createAccount=Create Account
+zaporbit.signup.cancel=Cancel
+zaporbit.signup.userNameAlreadyTaken=Username already taken
+zaporbit.signup.passwordsDoNotMatch=Passwords do not match
+zaporbit.signup.thankYouCheckEmail=Thank you. Please check your email for further instructions
+zaporbit.signup.invalidLink=The link you followed is invalid
+zaporbit.signup.signUpDone=Thank you for signing up.  You can log in now
+zaporbit.signup.invalidPassword=Enter at least {0} characters
+
+# Password reset
+zaporbit.password.title=Reset Password
+zaporbit.password.passwordUpdated=Your password was updated successfully
+zaporbit.password.reset=Reset Password
+zaporbit.password.error=There was a problem changing your password. Please try again
+
+# Password change
+zaporbit.passwordChange.title=Change Password
+zaporbit.passwordChange.currentPassword=Current Password
+zaporbit.passwordChange.newPassword1=New Password
+zaporbit.passwordChange.newPassword2=New Password Confirmation
+zaporbit.passwordChange.changeButton=Change
+zaporbit.passwordChange.invalidPassword=Invalid password
+zaporbit.passwordChange.ok=Your password was changed successfully
+zaporbit.passwordChange.okButton=Ok
+
+# Not authorized page
+zaporbit.notAuthorized.title=Not Authorized
+zaporbit.notAuthorized.message=You are not authorized to access that page
+
+#
+zaporbit.loginRequired=The destination page is protected.
+
+# Mails
+#
+zaporbit.mails.sendAlreadyRegisteredEmail.subject=Sign up instructions
+zaporbit.mails.sendSignUpEmail.subject=Sign up instructions
+zaporbit.mails.welcomeEmail.subject=Welcome
+zaporbit.mails.passwordResetEmail.subject=Password reset instructions
+zaporbit.mails.unknownEmail.subject=Password reset request
+zaporbit.mails.passwordResetOk.subject=Password change confirmation
