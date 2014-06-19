@@ -26,7 +26,7 @@ object Application extends Controller {
 
   def index = Action {
 
-    Ok(views.html.index("Hello App"))
+    Ok(views.html.index(""))
   }
 
   def upgradeListing(tick: String) = DBAction(parse.raw) { implicit rs =>

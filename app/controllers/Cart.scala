@@ -35,20 +35,27 @@ object Cart extends Controller with SecureSocial {
 
   def upgradeListing(offerid: Long, waggle: Boolean, highlight: Boolean) = SecuredAction { implicit request =>
     DB.withSession { implicit s =>
-      val thumbnail = Pictures.firstPicturesFromOffer(offerid).get
-      Offers.findById(offerid) match {
-        case Some(offer) =>
-          if (offer.waggle != waggle || offer.highlight != highlight) {
-            val token = generateToken(offer, waggle, highlight)
-            Ok(views.html.upgrade(token, offer, thumbnail, waggle, highlight))
-          } else BadGateway(Json.obj(
-            "status" -> "KO",
-            "message" -> "requested upgrade values match current values"
-          ))
+      Pictures.firstPicturesFromOffer(offerid) match {
+        case Some(thumbnail) =>
+          Offers.findById(offerid) match {
+            case Some(offer) =>
+              if (offer.waggle != waggle || offer.highlight != highlight) {
+                val token = generateToken(offer, waggle, highlight)
+                Ok(views.html.upgrade(token, offer, thumbnail, waggle, highlight))
+              } else BadGateway(Json.obj(
+                "status" -> "KO",
+                "message" -> "requested upgrade values match current values"
+              ))
+            case None =>
+              BadGateway(Json.obj(
+                "status" -> "KO",
+                "message" -> "could not find a matching listing"
+              ))
+          }
         case None =>
           BadGateway(Json.obj(
             "status" -> "KO",
-            "message" -> "could not find a matching listing"
+            "message" -> "could not find the thumbnail for the listing"
           ))
       }
     }

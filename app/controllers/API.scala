@@ -39,7 +39,8 @@ object EmailService {
     mail.setSubject("Welcome to ZapOrbit")
     mail.setFrom("support@zaporbit.com")
     mail.setRecipient(contact.email)
-    mail.send("test message\n\nIf you would like to get in touch contact our support team <support@zaporbit.com>")
+    val body = views.html.welcomeEmail.render(contact).body;
+    mail.sendHtml(body)
   }
 }
 
@@ -690,6 +691,9 @@ object API extends Controller {
         Json.parse(decryptedBody).validate[User].map { user =>
           Users.findByFbId(user.fbuserid) match {
             case Some(oldUser) =>
+              if (oldUser.id.get == 21437) {
+                EmailService.sendWelcomeEmail(oldUser)
+              }
               val newUser: User = oldUser.copy(isMerchant = oldUser.isMerchant)
               Users.update(oldUser.id, oldUser.isMerchant, newUser)
               val rating = Ratings.ratingForUser(oldUser.id.get)
@@ -704,7 +708,7 @@ object API extends Controller {
             case None =>
               val newUser: User = user.copy(isMerchant = Option(false))
               val id = Users.insertReturningId(newUser)
-              EmailService.sendWelcomeEmail(newUser)
+              //EmailService.sendWelcomeEmail(newUser)
               Ok(Json.obj(
                 "status" -> "OK",
                 "userid" -> JsString("" + id),

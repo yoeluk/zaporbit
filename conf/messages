@@ -3,7 +3,7 @@ zaporbit.appName=ZapOrbit
 
 # Login page
 zaporbit.login.title=Secured Login Required
-zaporbit.login.instructions=Use your account with Facebook to login.
+zaporbit.login.instructions=Log in with Facebook to continue.
 zaporbit.login.accessDenied=You denied access to your account. Please grant it to log in.
 zaporbit.login.errorLoggingIn=An error occurred while logging you in. Please try again.
 zaporbit.login.useEmailAndPassword=Or login using a username and password.
