@@ -1,0 +1,87 @@
+body {
+    padding-top: 80px !important;
+    padding-bottom: 30px;
+    background-color: #ffffff;
+    color: #333333;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 13px;
+    line-height: 18px;;
+    margin: 0 0 9px;
+}
+.theme-dropdown .dropdown-menu {
+    position: static;
+    display: block;
+    margin-bottom: 20px;
+}
+.theme-showcase > p > .btn {
+    margin: 5px 0;
+}
+.theme-navbar-header {
+    background-image: linear-gradient(to bottom, #92D13D 0px, #92d13d 100%);
+    background-repeat: repeat-x;
+}
+.theme-navbar-header {
+    border-top-width: 1px;
+    margin-top: 10px;
+    border-color: #6db221;
+}
+
+.theme-navbar-header .navbar-brand, .theme-navbar-header .navbar-nav > li > a {
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.45);
+}
+.brand, .brand > ul > li > a {
+    text-shadow:
+    -1px -1px 0 #5ca402,
+    1px -1px 0 #5ca402,
+    -1px 1px 0 #5ca402,
+    1px 1px 0 #5ca402 !important;
+}
+.theme-navbar-header .navbar-nav > li > a {
+    color: #ffffff ;
+}
+.theme-navbar-header .navbar-brand {
+    color: #ffffff !important;
+}
+.theme-navbar-header .navbar-collapse, .theme-navbar-header .navbar-form {
+    border-color: #63b932;
+}
+.theme-navbar-header .navbar-nav > .active > a {
+    background-image: linear-gradient(to bottom, #77af36 0px, #7fbe3d 100%);
+    background-repeat: repeat-x;
+    box-shadow: 0 3px 18px rgba(0, 0, 0, 0.15) inset;
+}
+.theme-navbar-header .navbar-nav > .active > a, .theme-navbar-header .navbar-nav > .active > a:hover, .theme-navbar-header .navbar-nav > .active > a:focus {
+    background-color: #747474 ;
+    color: #ffffff ;
+
+}
+.navbar-brand {
+    color: #e5e6e9 !important;
+    font-weight: 600;
+    font-size: 20px;
+    font-family: proxima-nova;
+    letter-spacing: 1px;
+}
+
+.navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus, .navbar-nav > li > a{
+    font-family: proxima-nova;
+    font-style: normal;
+    font-weight: 200;
+    font-size: 16px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #feffff ;
+}
+.theme-navbar-header .navbar-toggle {
+    border-color: #6db221;
+}
+.theme-navbar-header .navbar-toggle .icon-bar {
+    background-color: #fff;
+}
+.theme-navbar-header .navbar-toggle:hover, .theme-navbar-header .navbar-toggle:focus {
+    background-color: #92cd36;
+}
+.nav > li > a:hover, .nav > li > a:focus {
+    background-image: linear-gradient(to bottom, #a0ea1c 0px, #a0ea1c 100%);
+    background-repeat: repeat-x;
+}
