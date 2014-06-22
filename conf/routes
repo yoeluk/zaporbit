@@ -19,6 +19,8 @@ GET         /api/markconvoread/:convid                              controllers.
 GET         /api/leaveconvo/:convid/:userid                         controllers.API.leaveConvo(convid: Long, userid: Long)
 GET         /api/getfeedbacksforuser/:userid                        controllers.API.returnFeedbacksForUser(userid: Long)
 
+GET         /api/youtrack/allissues                                 controllers.Youtrack.allIssues1
+
 # PUT/POST requests
 POST        /api/filterlocation/:page                               controllers.API.filterLocation(page: Int)
 POST        /api/submitfeedback                                     controllers.API.submitFeedback

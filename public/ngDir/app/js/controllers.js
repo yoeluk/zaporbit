@@ -7,10 +7,96 @@
         return $location.path(path);
       };
     }
-  ]).controller("HomeCtr", ["$scope", "apiUrl", "$http", "ngUrl", function($scope, url, $http, ngUrl) {}]).controller("AboutCtrl", [function() {}]).controller("SupportCtrl", [function() {}]).controller("HeaderController", [
+  ]).controller("HomeCtr", [
+    "$scope", "$http", "ngUrl", function($scope, $http, ngUrl) {
+      $scope.message = "ZapOrbit helps you build a reputation. Buying and selling locally create a close link between seller and buyer. Your reputation in ZapOrbit grows with your trade and the App puts a star rating based on your average feedback. The more stars the higher the confidence in your business!";
+      return $scope.motivation = "Free App, lots of possibilities!";
+    }
+  ]).controller("AboutCtrl", [function() {}]).controller("SupportCtrl", [
+    "$scope", "trackUrl", "$http", "ngUrl", function($scope, youtrack, $http, ngUrl) {
+      $scope.allIssues = [];
+      $scope.oneAtATime = false;
+      $scope.isopen = false;
+      return $scope.getIssues = (function() {
+        var ModalInstanceCtrl;
+        $http({
+          method: "GET",
+          url: youtrack + "allissues"
+        }).success(function(data) {
+          var i, ii, issue, l, ll, prop, val, _results;
+          $scope.allIssues = data["issue"];
+          i = 0;
+          l = $scope.allIssues.length;
+          _results = [];
+          while (i < l) {
+            issue = $scope.allIssues[i];
+            issue.props = {};
+            ii = 0;
+            ll = issue["field"].length;
+            while (ii < ll) {
+              prop = issue["field"][ii]["name"];
+              val = issue["field"][ii]["value"];
+              issue.props[prop] = val;
+              ++ii;
+            }
+            _results.push(++i);
+          }
+          return _results;
+        }).error(function(data, status, headers, config) {});
+        return;
+        return ModalInstanceCtrl = function($scope, $modalInstance, items) {
+          $scope.items = items;
+          $scope.selected = {
+            item: $scope.items[0]
+          };
+          $scope.ok = function() {
+            $modalInstance.close($scope.selected.item);
+          };
+          $scope.cancel = function() {
+            $modalInstance.dismiss("cancel");
+          };
+        };
+      })();
+    }
+  ]).controller("HeaderController", [
     "$scope", "$location", function($scope, $location) {
       return $scope.isActive = function(viewLocation) {
         return viewLocation === $location.path();
+      };
+    }
+  ]).controller("ModalDemoCtrl", [
+    "$scope", "$modal", "$log", function($scope, $modal, $log) {
+      $scope.items = ["item1", "item2", "item3"];
+      $scope.open = function(size) {
+        var modalInstance;
+        modalInstance = $modal.open({
+          templateUrl: "myModalContent.html",
+          controller: "ModalInstanceCtrl",
+          size: size,
+          resolve: {
+            items: function() {
+              return $scope.items;
+            }
+          }
+        });
+        modalInstance.result.then((function(selectedItem) {
+          $scope.selected = selectedItem;
+        }), function() {
+          $log.info("Modal dismissed at: " + new Date());
+        });
+      };
+    }
+  ]).controller("ModalInstanceCtrl", [
+    "$scope", "$modalInstance", "items", function($scope, $modalInstance, items) {
+      $scope.items = items;
+      $scope.selected = {
+        item: $scope.items[0]
+      };
+      $scope.ok = function() {
+        $modalInstance.close($scope.selected.item);
+      };
+      $scope.cancel = function() {
+        $modalInstance.dismiss("cancel");
       };
     }
   ]);

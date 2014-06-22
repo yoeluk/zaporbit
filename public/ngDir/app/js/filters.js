@@ -7,7 +7,11 @@
         return String(text).replace(/\%VERSION\%/g, version);
       };
     }
-  ]);
+  ]).filter("reverse", function() {
+    return function(items) {
+      return items.slice().reverse();
+    };
+  });
 
 }).call(this);
 

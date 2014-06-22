@@ -8,10 +8,11 @@ angular.module("ZapOrbit", [
   "ZapOrbit.directives",
   "ZapOrbit.controllers",
   "infinite-scroll",
+  "timer",
   "ui.bootstrap"
 ])
-.constant("apiUrl", "http://youtrack.zaporbit.com/res/")
-.constant("ngUrl", "http://localhost:9000/assets/ngDir/app/partials/")
+.constant("trackUrl", "https://zaporbit.com/api/youtrack/")
+.constant("ngUrl", "https://zaporbit.com/assets/ngDir/app/partials/")
 .config ["$routeProvider", "ngUrl", ($routeProvider, ngUrl) ->
   $routeProvider
   .when "/",
@@ -73,3 +74,5 @@ angular.module('infinite-scroll', [])
           handler()
       ), 0
   ])
+
+#.constant("trackUrl", "http://localhost:9000/api/youtrack/")

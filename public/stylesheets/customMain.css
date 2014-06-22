@@ -12,3 +12,34 @@
     line-height: 26px;
     letter-spacing: 1px;
 }
+
+a {
+    color: #548B0C;
+}
+
+a:hover, a:focus {
+    color: #41760c;
+}
+
+a.issue-title {
+    color: black
+}
+
+a.issue-title:hover,a.issue-title:focus {
+    cursor: pointer;
+    color: #41760c;
+}
+.issue-des {
+   font-size: 16px;
+}
+
+.glyphicon-chevron-down, .glyphicon-chevron-right {
+    cursor: pointer;
+}
+.prop-table {
+    margin-top: 20px;
+    margin-bottom: 0;
+}
+.prop-td {
+    border-top-width: 0 !important;
+}

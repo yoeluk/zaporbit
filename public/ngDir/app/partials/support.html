@@ -1,10 +1,62 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
+<div class="container">
+    <div class="row">
+        <div class="col-xs-6 col-md-4">
+            <h1>Known Issues</h1>
+        </div>
+        <div class="col-xs-12 col-md-8">
+            <div ng-controller="ModalDemoCtrl">
 
-</body>
-</html>
+                <script type="text/ng-template" id="myModalContent.html">
+                    <div class="modal-header">
+                        <h3 class="modal-title">New Issue Composer</h3>
+                    </div>
+                    <div class="modal-body">
+                        <h4>Creating new issue is comming soon...</h4>
+                        <h4>In the meantime, email us with your issue</h4>
+                        <h5><a>support@zaporbit.com</a></h5>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" ng-click="ok()">OK</button>
+                        <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+                    </div>
+                </script>
+
+                <h1><a role="button" class="btn btn-warning" ng-click="open()">New Issue »</a></h1>
+            </div>
+        </div>
+    </div>
+
+    <accordion close-others="oneAtATime">
+        <accordion-group ng-repeat="issue in allIssues | reverse" is-open="isopen">
+            <accordion-heading style="font-size: 12px">
+                <a class="issue-title">{{ issue.id }}:&emsp;{{ issue.props["summary"] }}</a> <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': isopen, 'glyphicon-chevron-right': !isopen}"></i>
+            </accordion-heading>
+            <div>
+                <p class="issue-des">
+                    {{ issue.props["description"] }}
+                </p>
+            </div>
+            <table class="table table-striped prop-table">
+                <tbody>
+                <tr>
+                    <td class="prop-td">
+                        By: {{issue.props.reporterFullName}}
+                    </td>
+                    <td class="prop-td">
+                        Comments: {{issue.props.commentsCount}}
+                    </td>
+                    <td class="prop-td">
+                        State: {{issue.props.State[0]}}
+                    </td>
+                    <td class="prop-td">
+                        OS: {{issue.props.Subsystem[0]}}
+                    </td>
+                    <td class="prop-td">
+                        Created: {{issue.props.created | date:'dd/MM/yyyy @ h:mma'}}
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </accordion-group>
+    </accordion>
+</div>

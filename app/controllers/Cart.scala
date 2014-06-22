@@ -3,7 +3,9 @@ package controllers
 //import _root_.java.util.concurrent
 
 import _root_.java.text.NumberFormat
+import _root_.java.util.concurrent.TimeoutException
 import _root_.java.util.{Currency, Locale}
+import controllers.Application._
 import play.api._
 import play.api.mvc._
 import play.api.libs.json._
@@ -17,7 +19,7 @@ import Wallet._
 import models._
 import views._
 
-import play.api.libs.ws.WS
+import play.api.libs.ws._
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits._
 
@@ -113,7 +115,7 @@ object Cart extends Controller with SecureSocial {
                       url = "http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.xchange%20where%20pair%20in%20%28%22" + kCurrency + rateTo + "%22%29&format=json&env=store://datatables.org/alltableswithkeys&callback="
                     } yield {
                       WS.url(url).get().map { resp =>
-                        (kCurrency,totalValue,(resp.json \ "query" \ "results" \ "rate" \ "Rate").as[String].toFloat)
+                        (kCurrency, totalValue, (resp.json \ "query" \ "results" \ "rate" \ "Rate").as[String].toFloat)
                       }
                     }).toSeq
                     Future.sequence(respSeq).map { billsWithRates =>
@@ -124,13 +126,18 @@ object Cart extends Controller with SecureSocial {
                           r <- billsWithRates
                           if b.currency_code == r._1
                         } yield {
-                          (b, BigDecimal(b.offer_price.toFloat * r._3 * 0.06).setScale(2,BigDecimal.RoundingMode.HALF_UP))
+                          (b, BigDecimal(b.offer_price.toFloat * r._3 * 0.06).setScale(2, BigDecimal.RoundingMode.HALF_UP))
                         }
                       }).flatten
                       val userData = (for((b,f)<- billsWithFees)yield b.id.get).mkString("~")
                       val fees = (for((b,f)<- billsWithFees)yield f).sum.toString()
                       val token = generateToken("data:"+userData, fees)
                       Ok(views.html.pay(token, billsWithFees))
+                    }.recover {
+                      case t: TimeoutException =>
+                        RequestTimeout(t.getMessage)
+                      case e: Throwable =>
+                        ServiceUnavailable(e.getMessage)
                     }
                 }
             }
