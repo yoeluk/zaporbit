@@ -6,7 +6,7 @@
     <head>
         <meta charset="utf-8">
         <meta content="IE=edge" http-equiv="X-UA-Compatible">
-        <meta content="width=device-width, initial-scale=1, target-densitydpi=device-dpi" name="viewport">
+        <meta content="width=device-width, initial-scale=1" name="viewport">
         <meta content="ZapOrbit App" name="description">
         <meta content="ZapOrbit" name="author">
         <title>@title</title>
@@ -14,7 +14,14 @@
         <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
         <link rel="stylesheet" href="@routes.Assets.at("stylesheets/customNavbar.css")">
         <link rel="stylesheet" href="@routes.Assets.at("stylesheets/customMain.css")">
+        <link rel="stylesheet" href="@routes.Assets.at("ngDir/app/css/app.css")">
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+        <style type="text/css">
+            html { height: 100% }
+            body { height: 100%; margin: 0; padding: 0 }
+            #map-canvas { height: 100% }
+        </style>
+        <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?v=3.exp"></script>
     </head>
     <body>
         @mainHeader()

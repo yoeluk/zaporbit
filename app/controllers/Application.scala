@@ -6,6 +6,8 @@ import play.api.db.slick._
 import play.api.libs.json._
 
 import models._
+import views.html
+import partials._
 
 import AppCryptor._
 import play.api.data._
@@ -42,6 +44,18 @@ object Application extends Controller {
         )))
       case None =>
         BadRequest("no post body found")
+    }
+  }
+
+  def partialTemplates(partial: String) = Action {
+    if (partial == "home") {
+      Ok(partials.html.home(""))
+    } else if (partial == "support") {
+      Ok(partials.html.support(""))
+    } else if (partial == "about") {
+      Ok(partials.html.about(""))
+    } else {
+      Ok("")
     }
   }
 }

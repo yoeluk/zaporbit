@@ -12,51 +12,80 @@
       $scope.message = "ZapOrbit helps you build a reputation. Buying and selling locally create a close link between seller and buyer. Your reputation in ZapOrbit grows with your trade and the App puts a star rating based on your average feedback. The more stars the higher the confidence in your business!";
       return $scope.motivation = "Free App, lots of possibilities!";
     }
-  ]).controller("AboutCtrl", [function() {}]).controller("SupportCtrl", [
+  ]).controller("AboutCtrl", [
+    function() {
+      var displayError, displayPosition, initialize, timeoutVal;
+      displayPosition = function(position) {
+        return console.log("Latitude: " + position.coords.latitude + ", Longitude: " + position.coords.longitude);
+      };
+      displayError = function(error) {
+        var errors;
+        errors = {
+          1: 'Permission denied',
+          2: 'Position unavailable',
+          3: 'Request timeout'
+        };
+        return console.log("Error: " + errors[error.code]);
+      };
+      if (navigator.geolocation) {
+        timeoutVal = 10 * 1000 * 1000;
+        console.log("getting the location");
+        navigator.geolocation.getCurrentPosition(displayPosition, displayError, {
+          enableHighAccuracy: true,
+          timeout: timeoutVal,
+          maximumAge: 1
+        });
+      } else {
+        console.log("geolocation not supported");
+      }
+      initialize = function() {
+        var map, mapOptions;
+        mapOptions = {
+          center: new google.maps.LatLng(-34.397, 150.644),
+          zoom: 8
+        };
+        map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+        console.log("map initialized");
+      };
+      initialize();
+      return console.log("location supported");
+    }
+  ]).controller("SupportCtrl", [
     "$scope", "trackUrl", "$http", "ngUrl", function($scope, youtrack, $http, ngUrl) {
+      var getIssues;
       $scope.allIssues = [];
       $scope.oneAtATime = false;
       $scope.isopen = false;
-      return $scope.getIssues = (function() {
-        var ModalInstanceCtrl;
-        $http({
+      $scope.getIssues = getIssues = function() {
+        return $http({
           method: "GET",
-          url: youtrack + "allissues"
-        }).success(function(data) {
+          url: youtrack + "allissues",
+          context: this
+        }).success(function(data, status) {
           var i, ii, issue, l, ll, prop, val, _results;
-          $scope.allIssues = data["issue"];
-          i = 0;
-          l = $scope.allIssues.length;
-          _results = [];
-          while (i < l) {
-            issue = $scope.allIssues[i];
-            issue.props = {};
-            ii = 0;
-            ll = issue["field"].length;
-            while (ii < ll) {
-              prop = issue["field"][ii]["name"];
-              val = issue["field"][ii]["value"];
-              issue.props[prop] = val;
-              ++ii;
+          if (status === 200) {
+            $scope.allIssues = data["issue"];
+            i = 0;
+            l = $scope.allIssues.length;
+            _results = [];
+            while (i < l) {
+              issue = $scope.allIssues[i];
+              issue.props = {};
+              ii = 0;
+              ll = issue["field"].length;
+              while (ii < ll) {
+                prop = issue["field"][ii]["name"];
+                val = issue["field"][ii]["value"];
+                issue.props[prop] = val;
+                ++ii;
+              }
+              _results.push(++i);
             }
-            _results.push(++i);
+            return _results;
           }
-          return _results;
         }).error(function(data, status, headers, config) {});
-        return;
-        return ModalInstanceCtrl = function($scope, $modalInstance, items) {
-          $scope.items = items;
-          $scope.selected = {
-            item: $scope.items[0]
-          };
-          $scope.ok = function() {
-            $modalInstance.close($scope.selected.item);
-          };
-          $scope.cancel = function() {
-            $modalInstance.dismiss("cancel");
-          };
-        };
-      })();
+      };
+      return getIssues();
     }
   ]).controller("HeaderController", [
     "$scope", "$location", function($scope, $location) {
@@ -64,13 +93,13 @@
         return viewLocation === $location.path();
       };
     }
-  ]).controller("ModalDemoCtrl", [
+  ]).controller("ModalIssueCtrl", [
     "$scope", "$modal", "$log", function($scope, $modal, $log) {
       $scope.items = ["item1", "item2", "item3"];
       $scope.open = function(size) {
         var modalInstance;
         modalInstance = $modal.open({
-          templateUrl: "myModalContent.html",
+          templateUrl: "myModalIssueContent.html",
           controller: "ModalInstanceCtrl",
           size: size,
           resolve: {

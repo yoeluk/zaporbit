@@ -11,18 +11,20 @@ angular.module("ZapOrbit", [
   "timer",
   "ui.bootstrap"
 ])
-.constant("trackUrl", "https://zaporbit.com/api/youtrack/")
-.constant("ngUrl", "https://zaporbit.com/assets/ngDir/app/partials/")
+#.constant("trackUrl", "https://zaporbit.com/api/youtrack/")
+#.constant("ngUrl", "https://zaporbit.com/partials/")
+.constant("trackUrl", "http://localhost:9000/api/youtrack/")
+.constant("ngUrl", "http://localhost:9000/partials/")
 .config ["$routeProvider", "ngUrl", ($routeProvider, ngUrl) ->
   $routeProvider
   .when "/",
-    templateUrl: ngUrl + "home.html"
+    templateUrl: ngUrl + "home"
     controller: "HomeCtr"
   .when "/about",
-    templateUrl: ngUrl + "about.html"
+    templateUrl: ngUrl + "about"
     controller: "AboutCtrl"
   .when "/support",
-    templateUrl: ngUrl + "support.html"
+    templateUrl: ngUrl + "support"
     controller: "SupportCtrl"
 ]
 
@@ -73,6 +75,4 @@ angular.module('infinite-scroll', [])
         else
           handler()
       ), 0
-  ])
-
-#.constant("trackUrl", "http://localhost:9000/api/youtrack/")
+])
