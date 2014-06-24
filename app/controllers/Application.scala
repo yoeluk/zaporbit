@@ -55,7 +55,8 @@ object Application extends Controller {
     } else if (partial == "about") {
       Ok(partials.html.about(""))
     } else {
-      Ok("")
+      BadRequest(partial + " could not be found")
     }
   }
+
 }

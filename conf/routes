@@ -23,6 +23,7 @@ GET         /api/getfeedbacksforuser/:userid                        controllers.
 GET         /partials/:partial                                      controllers.Application.partialTemplates(partial: String)
 
 GET         /api/youtrack/allissues                                 controllers.Youtrack.allIssues
+GET         /api/youtrack/createissue                               controllers.Youtrack.createIssue
 
 # PUT/POST requests
 POST        /api/filterlocation/:page                               controllers.API.filterLocation(page: Int)
