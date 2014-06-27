@@ -9,65 +9,83 @@
     }
   ]).controller("HomeCtr", [
     "$scope", "$http", "ngUrl", function($scope, $http, ngUrl) {
-      $scope.message = "ZapOrbit helps you build a reputation. Buying and selling locally create a close link between seller and buyer. Your reputation in ZapOrbit grows with your trade and the App puts a star rating based on your average feedback. The more stars the higher the confidence in your business!";
+      $scope.message = "Entice with higher confidence!";
       return $scope.motivation = "Free App, lots of possibilities!";
     }
-  ]).controller("AboutCtrl", [
-    function() {
-      var displayError, displayPosition, initialize, timeoutVal;
-      displayPosition = function(position) {
-        return console.log("Latitude: " + position.coords.latitude + ", Longitude: " + position.coords.longitude);
+  ]).controller("ShoppingCtrl", [
+    "$scope", "LocationService", function($scope, LocationService) {
+      var center, showLocation;
+      center = {
+        latitude: 45,
+        longitude: -73
       };
-      displayError = function(error) {
-        var errors;
-        errors = {
-          1: 'Permission denied',
-          2: 'Position unavailable',
-          3: 'Request timeout'
-        };
-        return console.log("Error: " + errors[error.code]);
+      $scope.markerOption = {
+        visible: false,
+        title: "Your Location"
       };
-      if (navigator.geolocation) {
-        timeoutVal = 10 * 1000 * 1000;
-        console.log("getting the location");
-        navigator.geolocation.getCurrentPosition(displayPosition, displayError, {
-          enableHighAccuracy: true,
-          timeout: timeoutVal,
-          maximumAge: 1
+      $scope.map = {
+        center: center,
+        zoom: 8,
+        control: {},
+        options: {
+          streetViewControl: false,
+          panControl: false,
+          maxZoom: 20,
+          minZoom: 3
+        }
+      };
+      $scope.coords = center;
+      showLocation = function(coords) {
+        $scope.coords = coords;
+        $scope.markerOption.visible = true;
+        $scope.map.control.refresh({
+          latitude: coords.latitude,
+          longitude: coords.longitude
         });
-      } else {
-        console.log("geolocation not supported");
-      }
-      initialize = function() {
-        var map, mapOptions;
-        mapOptions = {
-          center: new google.maps.LatLng(-34.397, 150.644),
-          zoom: 8
-        };
-        map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
-        console.log("map initialized");
+        return $scope.map.control.getGMap().setZoom(12);
       };
-      initialize();
-      return console.log("location supported");
+      return LocationService(showLocation);
     }
   ]).controller("SupportCtrl", [
     "$scope", "trackUrl", "$http", "ngUrl", function($scope, youtrack, $http, ngUrl) {
-      var getIssues;
+      var getIssues, getStats;
       $scope.allIssues = [];
       $scope.oneAtATime = false;
-      $scope.isopen = false;
+      $scope.isopen = true;
+      $scope.bugs = 0;
+      $scope.tasks = 0;
+      $scope.features = 0;
+      $scope.ioss = 0;
+      $scope.webs = 0;
+      getStats = function() {
+        return $http({
+          method: "GET",
+          url: youtrack + "getstats",
+          context: this
+        }).success(function(data, status) {
+          var count;
+          if (status === 200) {
+            count = data["count"];
+            $scope.bugs = count[0];
+            $scope.tasks = count[1];
+            $scope.features = count[2];
+            $scope.ioss = count[3];
+            $scope.webs = count[4];
+            return $scope.pipeline = true;
+          }
+        });
+      };
       $scope.getIssues = getIssues = function() {
         return $http({
           method: "GET",
           url: youtrack + "allissues",
           context: this
         }).success(function(data, status) {
-          var i, ii, issue, l, ll, prop, val, _results;
+          var i, ii, issue, l, ll, prop, val;
           if (status === 200) {
-            $scope.allIssues = data["issue"];
+            $scope.allIssues = data["issues"]["issue"];
             i = 0;
             l = $scope.allIssues.length;
-            _results = [];
             while (i < l) {
               issue = $scope.allIssues[i];
               issue.props = {};
@@ -79,9 +97,9 @@
                 issue.props[prop] = val;
                 ++ii;
               }
-              _results.push(++i);
+              ++i;
             }
-            return _results;
+            return getStats();
           }
         }).error(function(data, status, headers, config) {});
       };
@@ -95,37 +113,58 @@
     }
   ]).controller("ModalIssueCtrl", [
     "$scope", "$modal", "$log", function($scope, $modal, $log) {
-      $scope.items = ["item1", "item2", "item3"];
       $scope.open = function(size) {
         var modalInstance;
         modalInstance = $modal.open({
           templateUrl: "myModalIssueContent.html",
           controller: "ModalInstanceCtrl",
-          size: size,
-          resolve: {
-            items: function() {
-              return $scope.items;
-            }
-          }
+          size: size
         });
-        modalInstance.result.then((function(selectedItem) {
-          $scope.selected = selectedItem;
-        }), function() {
-          $log.info("Modal dismissed at: " + new Date());
-        });
+        modalInstance.result.then((function() {}), function() {});
       };
     }
   ]).controller("ModalInstanceCtrl", [
-    "$scope", "$modalInstance", "items", function($scope, $modalInstance, items) {
-      $scope.items = items;
-      $scope.selected = {
-        item: $scope.items[0]
-      };
-      $scope.ok = function() {
-        $modalInstance.close($scope.selected.item);
-      };
+    "$scope", "$http", "$modalInstance", "$timeout", "trackUrl", function($scope, $http, $modalInstance, $timeout, youtrack) {
       $scope.cancel = function() {
-        $modalInstance.dismiss("cancel");
+        return $modalInstance.dismiss("cancel");
+      };
+      $scope.submit = function(form) {
+        $scope.submitted = true;
+        if (form.$invalid) {
+          return;
+        }
+        $scope.inProgress = true;
+        $http({
+          method: "POST",
+          data: {
+            "summary": form.summary.$viewValue,
+            "description": form.description.$viewValue
+          },
+          url: youtrack + "createissue"
+        }).success(function(data, status) {
+          if (status === 200) {
+            $scope.successMsg = "Your issue has been successfully submitted. It will be listed here after it is reviewed by an engineer!";
+            $scope.inProgress = false;
+          } else {
+            $scope.errorMsg = "Oops, we received your request, but there was an error.";
+            $log.error(data);
+          }
+          return $timeout((function() {
+            $scope.successMsg = null;
+            $scope.errorMsg = null;
+            $scope.submitted = false;
+            return $modalInstance.close("close");
+          }), 6000);
+        }).error(function(data, status, headers, config) {
+          $scope.progress = data;
+          $scope.errorMsg = "There was a network error. Please try again later.";
+          $log.error(data);
+          return $timeout((function() {
+            $scope.errorMsg = null;
+            $scope.submitted = false;
+            return $modalInstance.close("close");
+          }), 5000);
+        });
       };
     }
   ]);

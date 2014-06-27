@@ -8,8 +8,8 @@ angular.module("ZapOrbit", [
   "ZapOrbit.directives",
   "ZapOrbit.controllers",
   "infinite-scroll",
-  "timer",
-  "ui.bootstrap"
+  "ui.bootstrap",
+  "google-maps"
 ])
 #.constant("trackUrl", "https://zaporbit.com/api/youtrack/")
 #.constant("ngUrl", "https://zaporbit.com/partials/")
@@ -20,9 +20,9 @@ angular.module("ZapOrbit", [
   .when "/",
     templateUrl: ngUrl + "home"
     controller: "HomeCtr"
-  .when "/about",
-    templateUrl: ngUrl + "about"
-    controller: "AboutCtrl"
+  .when "/shopping",
+    templateUrl: ngUrl + "shopping"
+    controller: "ShoppingCtrl"
   .when "/support",
     templateUrl: ngUrl + "support"
     controller: "SupportCtrl"

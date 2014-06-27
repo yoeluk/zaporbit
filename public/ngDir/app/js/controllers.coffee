@@ -7,46 +7,68 @@ angular.module("ZapOrbit.controllers", ["ngResource"]
       $location.path path
 
 ]).controller("HomeCtr", ["$scope", "$http", "ngUrl", ($scope, $http, ngUrl) ->
-  $scope.message = "ZapOrbit helps you build a reputation. Buying and selling locally create a close link between seller and buyer. Your reputation in ZapOrbit grows with your trade and the App puts a star rating based on your average feedback. The more stars the higher the confidence in your business!"
+  $scope.message = "Entice with higher confidence!"
   $scope.motivation = "Free App, lots of possibilities!"
 
-]).controller("AboutCtrl", [ ->
+]).controller("ShoppingCtrl", ["$scope", "LocationService", ($scope, LocationService) ->
 
-    displayPosition = (position) ->
-      console.log "Latitude: " + position.coords.latitude + ", Longitude: " + position.coords.longitude
-    displayError = (error) ->
-      errors =
-        1: 'Permission denied'
-        2: 'Position unavailable'
-        3: 'Request timeout'
-      console.log "Error: " + errors[error.code]
+  center =
+    latitude: 45
+    longitude: -73
 
-    if navigator.geolocation
-      timeoutVal = 10 * 1000 * 1000
-      console.log "getting the location"
-      navigator.geolocation.getCurrentPosition displayPosition, displayError,
-        enableHighAccuracy: true
-        timeout: timeoutVal
-        maximumAge: 1
-    else
-      console.log "geolocation not supported"
+  $scope.markerOption =
+    visible: false
+    title: "Your Location"
 
-    initialize = ->
-      mapOptions =
-        center: new google.maps.LatLng(-34.397, 150.644)
-        zoom: 8
-      map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions)
-      console.log "map initialized"
-      return
-    initialize()
+  $scope.map =
+    center: center
+    zoom: 8
+    control: {}
+    options:
+      streetViewControl: false,
+      panControl: false,
+      maxZoom: 20,
+      minZoom: 3
 
-    console.log "location supported"
+  $scope.coords = center
+
+  showLocation = (coords) ->
+    $scope.coords = coords
+    $scope.markerOption.visible = true
+    $scope.map.control.refresh
+      latitude: coords.latitude
+      longitude: coords.longitude
+    $scope.map.control.getGMap().setZoom 12
+
+  LocationService(showLocation)
 
 ]).controller("SupportCtrl", ["$scope", "trackUrl", "$http", "ngUrl", ($scope, youtrack, $http, ngUrl) ->
 
   $scope.allIssues = []
   $scope.oneAtATime = false
-  $scope.isopen = false
+  $scope.isopen = true
+
+  $scope.bugs = 0
+  $scope.tasks = 0
+  $scope.features = 0
+  $scope.ioss = 0
+  $scope.webs = 0
+
+  getStats = ->
+    $http
+      method: "GET"
+      url: youtrack + "getstats"
+      context: this
+    .success (data, status) ->
+      if status == 200
+        #console.log data
+        count = data["count"]
+        $scope.bugs = count[0]
+        $scope.tasks = count[1]
+        $scope.features = count[2]
+        $scope.ioss = count[3]
+        $scope.webs = count[4]
+        $scope.pipeline = true
 
   $scope.getIssues = getIssues = ->
     $http
@@ -55,7 +77,7 @@ angular.module("ZapOrbit.controllers", ["ngResource"]
       context: this
     .success (data, status) ->
       if status == 200
-        $scope.allIssues = data["issue"]
+        $scope.allIssues = data["issues"]["issue"]
         i = 0
         l = $scope.allIssues.length
         while i < l
@@ -69,7 +91,9 @@ angular.module("ZapOrbit.controllers", ["ngResource"]
             issue.props[prop] = val
             ++ii
           ++i
+        getStats()
     .error (data, status, headers, config) ->
+
   getIssues()
 
 ]).controller("HeaderController", ["$scope", "$location", ($scope, $location) ->
@@ -78,41 +102,64 @@ angular.module("ZapOrbit.controllers", ["ngResource"]
     return viewLocation == $location.path()
 
 ]).controller("ModalIssueCtrl", ["$scope", "$modal", "$log", ($scope, $modal, $log) ->
-  $scope.items = [
-    "item1"
-    "item2"
-    "item3"
-  ]
+
   $scope.open = (size) ->
     modalInstance = $modal.open(
       templateUrl: "myModalIssueContent.html"
       controller: "ModalInstanceCtrl"
       size: size
-      resolve:
-        items: ->
-          $scope.items
     )
-    modalInstance.result.then ((selectedItem) ->
-      $scope.selected = selectedItem
+    modalInstance.result.then ( ->
+      #$scope.selected = selectedItem
       return
     ), ->
-      $log.info "Modal dismissed at: " + new Date()
+      #$log.info "Modal dismissed at: " + new Date()
       return
 
     return
 
   return
 
-]).controller("ModalInstanceCtrl", ["$scope", "$modalInstance", "items", ($scope, $modalInstance, items) ->
-    $scope.items = items
-    $scope.selected = item: $scope.items[0]
-
-    $scope.ok = ->
-      $modalInstance.close $scope.selected.item
-      return
+]).controller("ModalInstanceCtrl", ["$scope", "$http", "$modalInstance", "$timeout", "trackUrl", ($scope, $http, $modalInstance, $timeout, youtrack) ->
 
     $scope.cancel = ->
       $modalInstance.dismiss "cancel"
+
+    $scope.submit = (form) ->
+      $scope.submitted = true
+      return if form.$invalid
+
+      $scope.inProgress = true
+
+      $http
+        method: "POST"
+        data:
+          "summary": form.summary.$viewValue
+          "description": form.description.$viewValue
+        url: youtrack + "createissue"
+      .success (data, status) ->
+        if status == 200
+          $scope.successMsg = "Your issue has been successfully submitted. It will be listed here after it is reviewed by an engineer!";
+          $scope.inProgress = false
+        else
+          $scope.errorMsg = "Oops, we received your request, but there was an error."
+          $log.error data
+        $timeout (->
+          $scope.successMsg = null
+          $scope.errorMsg = null
+          $scope.submitted = false;
+          $modalInstance.close "close"
+        ), 6000
+      .error (data, status, headers, config) ->
+        $scope.progress = data
+        $scope.errorMsg = "There was a network error. Please try again later."
+        $log.error data
+        $timeout (->
+          $scope.errorMsg = null
+          $scope.submitted = false;
+          $modalInstance.close "close"
+        ), 5000
+
       return
 
     return

@@ -659,7 +659,7 @@ object API extends Controller {
       rs.request.body.validate[Offer].map { pseudOffer =>
         val insertedOfferId = Offers.insertReturningId(pseudOffer)
         for {
-          name <- (rs.request.body \ "pictures").as[Seq[JsString]]
+          (name, i) <- (rs.request.body \ "pictures").as[Seq[JsString]].zipWithIndex if i < 6
         } yield Json.obj(
           "name" -> name.as[String],
           "offerid" -> insertedOfferId

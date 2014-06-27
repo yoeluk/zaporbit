@@ -16,19 +16,14 @@
         <link rel="stylesheet" href="@routes.Assets.at("stylesheets/customMain.css")">
         <link rel="stylesheet" href="@routes.Assets.at("ngDir/app/css/app.css")">
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
-        <style type="text/css">
-            html { height: 100% }
-            body { height: 100%; margin: 0; padding: 0 }
-            #map-canvas { height: 100% }
-        </style>
-        <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?v=3.exp"></script>
+        <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?sensor=false"></script>
     </head>
     <body>
         @mainHeader()
-        <div class="container" role="main">
 
-            <div ng-view></div>
+        <div class="view" ng-view></div>
 
+        <div class="container">
             <div class="container footer" style="margin-top: 50px;">
                 <p>&copy; ZapOrbit 2014</p>
             </div>
@@ -46,12 +41,15 @@
 
         <script src="@routes.Assets.at("ngDir/app/bower_components/angular-bootstrap/ui-bootstrap.min.js")"></script>
         <script src="@routes.Assets.at("ngDir/app/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js")"></script>
-        <script src="@routes.Assets.at("ngDir/app/bower_components/angular-timer/app/js/timer.min.js")"></script>
+        <!-- <script src="routes.Assets.at("ngDir/app/bower_components/angular-timer/app/js/timer.min.js")"></script> -->
+        <!-- <script src="routes.Assets.at("ngDir/app/bower_components/angular-promise-tracker/promise-tracker.min.js")"></script> -->
 
         <script src="@routes.Assets.at("ngDir/app/js/app.min.js")"></script>
         <script src="@routes.Assets.at("ngDir/app/js/services.min.js")"></script>
         <script src="@routes.Assets.at("ngDir/app/js/controllers.min.js")"></script>
         <script src="@routes.Assets.at("ngDir/app/js/filters.min.js")"></script>
         <script src="@routes.Assets.at("ngDir/app/js/directives.min.js")"></script>
+        <script src='//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.underscore.js'></script>
+        <script src="@routes.Assets.at("ngDir/app/bower_components/angular-google-maps/dist/angular-google-maps.min.js")"></script>
     </body>
 </html>

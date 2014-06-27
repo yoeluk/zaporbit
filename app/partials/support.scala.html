@@ -1,70 +1,109 @@
 @(message: String)
-
 <div class="container">
-    <div class="row" style="margin-bottom: 10px">
-        <div class="col-xs-6 col-md-4">
-            <h1 class="known-issue-header">Known Issues</h1>
-        </div>
-        <div class="col-xs-12 col-md-8">
-            <div ng-controller="ModalIssueCtrl">
-                <script type="text/ng-template" id="myModalIssueContent.html">
-                    <div class="modal-header">
-                        <h3 class="modal-title">New Issue Composer</h3>
+    <div class="container">
+        <div class="row" style="margin-bottom: 10px">
+            <div class="col-xs-6 col-md-4">
+                <h1 class="known-issue-header">Current Issues</h1>
+            </div>
+            <div class="col-xs-12 col-md-8">
+                <div ng-controller="ModalIssueCtrl">
+                    <script type="text/ng-template" id="myModalIssueContent.html">
+                        <div class="modal-header">
+                            <h3 class="modal-title">New Issue Composer</h3>
+                        </div>
+                        <div class="modal-body">
+                            <div id="msg" class="alert alert-warning" data-ng-show="successMsg" data-ng-bind="successMsg"></div>
+                            <div id="errorMsg" class="alert alert-danger" data-ng-show="errorMsg" data-ng-bind="errorMsg"></div>
+                            <progressbar class="progress-striped active" data-ng-show="inProgress" max="200" value="200" type="warning"><i> Submitting... </i></progressbar>
+                            <form name="newIssue" novalidate class="form-horizontal" role="form">
+                                <div class="form-group">
+                                    <label for="summary" class="col-sm-2 control-label">Summary
+                                        <span class="label label-danger" data-ng-show="submitted && newIssue.summary.$error.required">Required!</span>
+                                    </label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" name="summary" data-ng-model="summary" id="summary" placeholder="Summary" required />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="description" class="col-sm-2 control-label">Description
+                                        <span class="label label-danger" data-ng-show="submitted && newIssue.description.$error.required">Required!</span>
+                                    </label>
+                                    <div class="col-sm-10">
+                                        <textarea type="text" class="form-control" name="description" data-ng-model="description" id="description" placeholder="Description" rows="10" required></textarea>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-success" data-ng-disabled="inProgress" data-ng-click="submit(newIssue)">Submit</button>
+                                    <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </script>
+                    <div class="row">
+                        <h4 style="margin-top: 20px; margin-bottom: 0; padding-left: 15px;">
+                            <a role="button" class="btn btn-warning" ng-click="open()">New Issue »</a>
+                            <span style="font-size: 14px">
+                                    &ensp;or email us &ensp;
+                            </span>
+                            <a href="mailto:support@@zaporbit.com">support@@zaporbit.com</a>
+                        </h4>
                     </div>
-                    <div class="modal-body">
-                        <h4>Creating new issue is comming soon...</h4>
-                        <h4>In the meantime, email us with your issue</h4>
-                        <h5><a href="mailto:support@@zaporbit.com">support@@zaporbit.com</a></h5>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-primary" ng-click="ok()">OK</button>
-                        <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
-                    </div>
-                </script>
-                <div class="row">
-                    <h4 style="margin-top: 20px; margin-bottom: 0; padding-left: 15px;">
-                        <a role="button" class="btn btn-warning" ng-click="open()">New Issue »</a>
-                        <span style="font-size: 14px">
-                                &ensp;or email us &ensp;
-                        </span>
-                        <a href="mailto:support@@zaporbit.com">support@@zaporbit.com</a>
-                    </h4>
                 </div>
             </div>
         </div>
-    </div>
 
-    <accordion close-others="oneAtATime">
-        <accordion-group ng-repeat="issue in allIssues | reverse" is-open="isopen">
-            <accordion-heading style="font-size: 12px">
-                <a class="issue-title">{{ issue.id }}:&emsp;{{ issue.props["summary"] }}</a> <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': isopen, 'glyphicon-chevron-right': !isopen}"></i>
-            </accordion-heading>
-            <div>
-                <p class="issue-des">
-                        {{ issue.props["description"] }}
-                </p>
+        <div class="row" style="margin-bottom: 10px">
+            <div class="col-xs-12 col-md-9">
+                <accordion close-others="oneAtATime">
+                    <accordion-group ng-repeat="issue in allIssues | reverse" is-open="isopen">
+                        <accordion-heading style="font-size: 12px">
+                            <a class="issue-title">{{ issue.id }}:&emsp;{{ issue.props["summary"] }}</a> <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': isopen, 'glyphicon-chevron-right': !isopen}"></i>
+                        </accordion-heading>
+                        <div>
+                            <p class="issue-des">
+                                    {{ issue.props["description"] }}
+                            </p>
+                        </div>
+                        <table class="table table-striped prop-table">
+                            <tbody>
+                                <tr>
+                                    <td class="prop-td">
+                                        By: {{issue.props.reporterFullName}}
+                                    </td>
+                                    <td class="prop-td">
+                                        Comments: {{issue.props.commentsCount}}
+                                    </td>
+                                    <td class="prop-td">
+                                        State: {{issue.props.State[0]}}
+                                    </td>
+                                    <td class="prop-td">
+                                        OS: {{issue.props.Subsystem[0]}}
+                                    </td>
+                                    <td class="prop-td">
+                                        Created: {{issue.props.created | date:'dd/MM/yyyy @@ h:mma'}}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </accordion-group>
+                </accordion>
             </div>
-            <table class="table table-striped prop-table">
-                <tbody>
-                    <tr>
-                        <td class="prop-td">
-                            By: {{issue.props.reporterFullName}}
-                        </td>
-                        <td class="prop-td">
-                            Comments: {{issue.props.commentsCount}}
-                        </td>
-                        <td class="prop-td">
-                            State: {{issue.props.State[0]}}
-                        </td>
-                        <td class="prop-td">
-                            OS: {{issue.props.Subsystem[0]}}
-                        </td>
-                        <td class="prop-td">
-                            Created: {{issue.props.created | date:'dd/MM/yyyy @@ h:mma'}}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </accordion-group>
-    </accordion>
+            <div class="col-xs-6 col-md-3">
+
+                <accordion ng-show="pipeline" close-others="oneAtATime">
+                    <accordion-group is-open="closed">
+                        <accordion-heading style="font-size: 12px">
+                            <a class="issue-title">Issues in Pipeline</a> <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': closed, 'glyphicon-chevron-right': !closed}"></i>
+                        </accordion-heading>
+                        <div class="well well-sm">Bugs:  {{ bugs }}</div>
+                        <div class="well well-sm">Tasks:  {{ tasks }}</div>
+                        <div class="well well-sm">New Features:  {{ features }}</div>
+                        <div class="well well-sm">iOS Issues:  {{ ioss }}</div>
+                        <div class="well well-sm">Web Issues:  {{ webs }}</div>
+                    </accordion-group>
+                </accordion>
+
+            </div>
+        </div>
+    </div>
 </div>

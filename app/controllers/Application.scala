@@ -27,7 +27,7 @@ object Application extends Controller {
   )
 
   def index = Action {
-    val message = "ZapOrbit App will help you build a reputation locally. Buying and selling locally means you never have to go far away to get or deliver your goods. Your reputation will grow with your business and the App will reward you with stars!"
+    val message = "Entice with higher confidence!"
     Ok(views.html.index(message))
   }
 
@@ -52,8 +52,8 @@ object Application extends Controller {
       Ok(partials.html.home(""))
     } else if (partial == "support") {
       Ok(partials.html.support(""))
-    } else if (partial == "about") {
-      Ok(partials.html.about(""))
+    } else if (partial == "shopping") {
+      Ok(partials.html.shopping(""))
     } else {
       BadRequest(partial + " could not be found")
     }
