@@ -1,11 +1,8 @@
 /* app css stylesheet */
 .head {
-    left: 0;
-    right: 0;
     z-index: 0;
     background:  url(../img/grey.png) scroll;
 }
-
 .container .jumbotron-b {
     padding-left: 60px;
     padding-right: 60px;
