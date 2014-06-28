@@ -17,11 +17,13 @@ libraryDependencies ++= {
     "commons-io" % "commons-io" % "2.3",
     "org.imgscalr" % "imgscalr-lib" % "4.2",
     "ws.securesocial" %% "securesocial" % "2.1.3",
-    //"com.netaporter" %% "scala-uri" % "0.4.1",
-    //"com.sksamuel.scrimage" %% "scrimage-core" % "1.3.20",
-    //"com.sksamuel.scrimage" %% "scrimage-filters" % "1.3.20",
+    "com.googlecode.jsontoken" % "jsontoken" % "1.1",
+    "com.google.code.gson" % "gson" % "2.2.4",
+    "commons-codec" % "commons-codec" % "1.6",
+    "com.google.collections" % "google-collections" % "1.0",
+    "joda-time" % "joda-time" % "2.1",
+    "com.googlecode.json-simple" % "json-simple" % "1.1.1",
     cache,
     filters
-    //"com.paypal.sdk" % "adaptivepaymentssdk" % "2.6.110"
   )
 }
