@@ -20,6 +20,7 @@ import play.api.libs.functional.syntax._
 import java.io.File
 
 import models._
+import views._
 
 import org.cryptonode.jncryptor._
 import play.api.libs.ws._
@@ -830,12 +831,57 @@ object API extends Controller {
     ))
   }
 
+
+  def getListing = DBAction { implicit rs =>
+    val itemid = rs.queryString.get("id").get(0).toLong
+    Offers.findListingById(itemid) match {
+      case Some(listing) =>
+        Locations.findZLocByOfferId(itemid) match {
+          case Some(loc) =>
+            Users.findById(listing.userid) match {
+              case Some(user) =>
+                Ok(html.listingItem(listing.title)(listing, listing.pictures.orNull, loc, user))
+                /*
+                Ok(Json.obj(
+                  "status" -> "OK",
+                  "listing" -> Json.obj(
+                    "id" -> listing.id,
+                    "title" -> listing.title,
+                    "description" -> listing.description,
+                    "price" -> listing.price,
+                    "pictures" -> listing.pictures,
+                    "shop" -> listing.shop,
+                    "telephone" -> listing.telephone,
+                    "userid" -> listing.userid,
+                    "updated_on" -> listing.updated_on.orNull.toString),
+                  "location" -> Json.toJson(loc),
+                  "user" -> Json.toJson(user)
+                ))
+                */
+
+              case None =>
+                Ok(Json.obj(
+                  "status" -> "KO"
+                ))
+            }
+          case None =>
+            Ok(Json.obj(
+              "status" -> "KO"
+            ))
+        }
+      case None =>
+        Ok(Json.obj(
+          "status" -> "KO"
+        ))
+    }
+  }
+
   /**
    *
    * @param listingId
    * @return
    */
-  def sendListingById(listingId: Long) = DBAction { implicit  rs =>
+  def sendListingById(listingId: Long) = DBAction { implicit rs =>
     Offers.findListingById(listingId) match {
       case Some(listing) =>
         Locations.findZLocByOfferId(listingId) match {

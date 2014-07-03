@@ -26,6 +26,9 @@ angular.module("ZapOrbit", [
   .when "/support",
     templateUrl: ngUrl + "support"
     controller: "SupportCtrl"
+  .when "/listing_item/id/:itemid",
+    templateUrl: ngUrl + "support"
+    controller: "SupportCtrl"
 ]
 angular.module('infinite-scroll', [])
 .directive('infiniteScroll', ['$rootScope', '$window', '$timeout', ($rootScope, $window, $timeout) ->

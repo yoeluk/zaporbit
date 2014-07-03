@@ -1,0 +1,39 @@
+@(title: String)(listing: Listing, pictures:List[String], loc: Location, user: User, ext:String=".jpg")
+
+@main(title) {
+    <div class="container">
+        <div class="container">
+            <div data-ride="carousel" class="carousel slide" id="carousel-listing" style="width:400px">
+                <ol class="carousel-indicators">
+                    @for( (pic,i) <- pictures.zipWithIndex) {
+                        @if(i == 0) {
+                            @println(i, pic)
+                            <li class="active" data-slide-to="0" data-target="#carousel-listing"></li>
+                        } else {
+                            <li class="" data-slide-to=@i.toString data-target="#carousel-listing"></li>
+                        }
+                    }
+                </ol>
+                <div class="carousel-inner">
+                    @for( (pic,i) <- pictures.zipWithIndex) {
+                        @if(i == 0) {
+                            <div class="item active">
+                                <img alt="First slide" style="width:100%" src="https://zaporbit.com/pictures/@pic@ext">
+                            </div>
+                        } else {
+                            <div class="item">
+                                <img alt="Second slide" style="width:100%" src="https://zaporbit.com/pictures/@pic@ext">
+                            </div>
+                        }
+                    }
+                </div>
+                <a data-slide="prev" role="button" href="#carousel-listing" class="carousel-control">
+                    <span class="glyphicon glyphicon-chevron-left"></span>
+                </a>
+                <a data-slide="next" role="button" href="#carousel-listing" class="right-edge carousel-control">
+                    <span class="glyphicon glyphicon-chevron-right"></span>
+                </a>
+            </div>
+        </div>
+    </div>
+}

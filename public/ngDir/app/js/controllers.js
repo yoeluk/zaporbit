@@ -113,14 +113,14 @@
     }
   ]).controller("ModalIssueCtrl", [
     "$scope", "$modal", "$log", function($scope, $modal, $log) {
-      $scope.open = function(size) {
+      return $scope.open = function(size) {
         var modalInstance;
         modalInstance = $modal.open({
           templateUrl: "myModalIssueContent.html",
           controller: "ModalInstanceCtrl",
           size: size
         });
-        modalInstance.result.then((function() {}), function() {});
+        return modalInstance.result.then((function() {}), function() {});
       };
     }
   ]).controller("ModalInstanceCtrl", [
@@ -128,13 +128,13 @@
       $scope.cancel = function() {
         return $modalInstance.dismiss("cancel");
       };
-      $scope.submit = function(form) {
+      return $scope.submit = function(form) {
         $scope.submitted = true;
         if (form.$invalid) {
           return;
         }
         $scope.inProgress = true;
-        $http({
+        return $http({
           method: "POST",
           data: {
             "summary": form.summary.$viewValue,
@@ -167,7 +167,7 @@
         });
       };
     }
-  ]);
+  ]).controller("ListingItemController", ["$scope", function($scope) {}]);
 
 }).call(this);
 

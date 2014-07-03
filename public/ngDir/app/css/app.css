@@ -3,6 +3,7 @@
     z-index: 0;
     background:  url(../img/grey.png) scroll;
 }
+
 .container .jumbotron-b {
     padding-left: 60px;
     padding-right: 60px;
@@ -89,5 +90,10 @@ a.issue-title:hover,a.issue-title:focus {
 
 .angular-google-map-container {
     height: 200px;
+}
+
+.right-edge {
+    left:auto;
+    right: 0;
 }
 

@@ -24,7 +24,7 @@
             }
         }
         function purchase() {
-            var token = $('#token_button' ).data("token");
+            var token = $('#token_button').data("token");
             if (null !== token) {
                 google.payments.inapp.buy({
                     'jwt'     : token,

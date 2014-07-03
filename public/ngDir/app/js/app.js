@@ -12,6 +12,9 @@
       }).when("/support", {
         templateUrl: ngUrl + "support",
         controller: "SupportCtrl"
+      }).when("/listing_item/id/:itemid", {
+        templateUrl: ngUrl + "support",
+        controller: "SupportCtrl"
       });
     }
   ]);

@@ -110,15 +110,7 @@ angular.module("ZapOrbit.controllers", ["ngResource"]
       size: size
     )
     modalInstance.result.then ( ->
-      #$scope.selected = selectedItem
-      return
     ), ->
-      #$log.info "Modal dismissed at: " + new Date()
-      return
-
-    return
-
-  return
 
 ]).controller("ModalInstanceCtrl", ["$scope", "$http", "$modalInstance", "$timeout", "trackUrl", ($scope, $http, $modalInstance, $timeout, youtrack) ->
 
@@ -160,7 +152,6 @@ angular.module("ZapOrbit.controllers", ["ngResource"]
           $modalInstance.close "close"
         ), 5000
 
-      return
+]).controller("ListingItemController", ["$scope", ($scope) ->
 
-    return
 ])
