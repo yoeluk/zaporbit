@@ -80,9 +80,9 @@ object API extends Controller {
   implicit val wrsTimestamp: Writes[Timestamp] = (__ \ "time").write[String].contramap{ (a: Timestamp) => a.toString }
   implicit val fmtTimestamp: Format[Timestamp] = Format(rdsTimestamp, wrsTimestamp)
 
-  implicit val rdsIdentityId: Reads[IdentityId] = ((__ \ "userId").read[String] and (__ \ "providerId").read[String]).tupled.map { case (userId,providerId) => new IdentityId(userId,providerId)}
-  implicit val wrsIdentityId: Writes[IdentityId] = ((__ \ "userId").write[String] and (__ \ "providerId").write[String]).tupled.contramap { (a: IdentityId) => (a.userId,a.providerId) }
-  implicit val fmtIdentityId: Format[IdentityId] = Format(rdsIdentityId, wrsIdentityId)
+  //implicit val rdsIdentityId: Reads[IdentityId] = ((__ \ "userId").read[String] and (__ \ "providerId").read[String]).tupled.map { case (userId,providerId) => new IdentityId(userId,providerId)}
+  //implicit val wrsIdentityId: Writes[IdentityId] = ((__ \ "userId").write[String] and (__ \ "providerId").write[String]).tupled.contramap { (a: IdentityId) => (a.userId,a.providerId) }
+  //implicit val fmtIdentityId: Format[IdentityId] = Format(rdsIdentityId, wrsIdentityId)
 
   // IMPLICIT JSON WRITES
   implicit val implicitListingZOConverstionWrites = new Writes[Page[(ZOConversation, User, User)]] {
