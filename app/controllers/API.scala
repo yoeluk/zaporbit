@@ -617,9 +617,9 @@ object API extends Controller {
 
   /**
    *
-   * @param page
-   * @param orderBy
-   * @param userId
+   * @param page the page
+   * @param orderBy order by
+   * @param userId the user id
    * @return
    */
   def listingsByUsers(page: Int, orderBy: Int, userId: Long) = DBAction {
@@ -729,7 +729,7 @@ object API extends Controller {
 
   /**
    *
-   * @param id
+   * @param id the id of the listing to delete
    * @return
    */
   def deleteListing(id: Long) = DBAction(parse.json) { implicit rs =>
@@ -754,8 +754,8 @@ object API extends Controller {
 
   /**
    *
-   * @param offerId
-   * @param pictureName
+   * @param offerId the id of the offer
+   * @param pictureName the picture name to delete
    * @return
    */
   def deletePicture(offerId: Long, pictureName: String) = DBAction { implicit rs =>
@@ -836,8 +836,8 @@ object API extends Controller {
   }
 
 
-  def getListing = DBAction { implicit rs =>
-    val itemid = rs.queryString.get("id").get(0).toLong
+  def getListing(itemid: Long) = DBAction { implicit rs =>
+    //val itemid = rs.queryString.get("id").get(0).toLong
     Offers.findListingById(itemid) match {
       case Some(listing) =>
         Locations.findZLocByOfferId(itemid) match {

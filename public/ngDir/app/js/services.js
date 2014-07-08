@@ -29,7 +29,7 @@
               maximumAge: 1
             });
           } else {
-            return console.log("geolocation not supported");
+            return console.log("geolocation not supported by this browser");
           }
         } else {
           return callback(coords);

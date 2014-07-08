@@ -3,6 +3,7 @@
 # Services
 
 angular.module("ZapOrbit.services", [])
+
 .factory("LocationService", [ ->
 
   coords = undefined
@@ -27,7 +28,8 @@ angular.module("ZapOrbit.services", [])
           timeout: timeoutVal
           maximumAge: 1
       else
-        console.log "geolocation not supported"
+        console.log "geolocation not supported by this browser"
     else callback(coords)
 ])
+
 .value "version", "0.1"

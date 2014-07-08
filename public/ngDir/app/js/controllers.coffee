@@ -3,7 +3,9 @@
 # Controllers
 angular.module("ZapOrbit.controllers", ["ngResource"]
 ).controller("AppCtrl", ["$scope", "$location", ($scope, $location) ->
+
     $scope.go = (path) ->
+
       $location.path path
 
 ]).controller("HomeCtr", ["$scope", "$http", "ngUrl", ($scope, $http, ngUrl) ->
@@ -152,6 +154,6 @@ angular.module("ZapOrbit.controllers", ["ngResource"]
           $modalInstance.close "close"
         ), 5000
 
-]).controller("ListingItemController", ["$scope", ($scope) ->
+]).controller("ListingCtrl", ["$scope", ($scope) ->
 
 ])
