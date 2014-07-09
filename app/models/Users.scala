@@ -1,7 +1,6 @@
 package models
 
 import securesocial.core._
-import securesocial.core.providers.Token
 
 import _root_.java.sql.Timestamp
 import play.api.db.slick.Config.driver.simple._
