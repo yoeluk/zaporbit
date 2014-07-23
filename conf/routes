@@ -1,0 +1,86 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# GET requests
+GET         /                                                       controllers.Application.index
+GET         /api/downloadpictures/:picture                          controllers.API.downloadPicture(picture: String)
+GET         /api/listingsbyuser/:page/:orderBy/:userid              controllers.API.listingsByUsers(page: Int, orderBy: Int, userid: Long)
+GET         /api/deletepicture/:offerid/:picturename                controllers.API.deletePicture(offerid: Long, picturename: String)
+GET         /api/getrecords/:userid/:page                           controllers.API.returnUsersRecords(userid: Long, page: Int)
+GET         /api/getlistingbyid/:listingId                          controllers.API.sendListingById(listingId: Long)
+GET         /api/canceltransaction/:transid                         controllers.API.cancelTransaction(transid: Long)
+GET         /api/accepttransaction/:transid                         controllers.API.acceptTransaction(transid: Long)
+GET         /api/completetransaction/:transid                       controllers.API.completeTransaction(transid: Long)
+GET         /api/backdownfromdeal/:transid                          controllers.API.backdownFromDeal(transid: Long)
+GET         /api/getuserbyid/:userid                                controllers.API.sendUserById(userid: Long)
+GET         /api/getconversationsforuser/:page/:userid              controllers.API.getConversationsForUser(page: Int, userid: Long)
+GET         /api/markconvoread/:convid                              controllers.API.markConvoRead(convid: Long)
+GET         /api/leaveconvo/:convid/:userid                         controllers.API.leaveConvo(convid: Long, userid: Long)
+GET         /api/getfeedbacksforuser/:userid                        controllers.API.returnFeedbacksForUser(userid: Long)
+GET         /listing_item/:itemid                                    controllers.API.getListing(itemid: Long)
+
+# Partials
+GET         /partials/:partial                                      controllers.Application.partialTemplates(partial: String)
+
+# web Api
+
+GET         /api/youtrack/allissues                                 controllers.Youtrack.allIssues
+GET         /api/youtrack/getstats                                  controllers.Youtrack.getStats
+POST        /api/youtrack/createissue                               controllers.Youtrack.createIssue
+
+# PUT/POST requests
+POST        /api/filterlocation/:page                               controllers.API.filterLocation(page: Int)
+POST        /api/submitfeedback                                     controllers.API.submitFeedback
+POST        /api/uploadpictures/:name                               controllers.API.savePictureToDisk(name: String)
+POST        /api/newlisting                                         controllers.API.receiveListing
+POST        /api/verifyinguser/:tick                                controllers.API.verifyingUser(tick: String)
+POST        /api/deletelisting/:id                                  controllers.API.deleteListing(id: Long)
+POST        /api/updatelisting/:id/:tick                            controllers.API.updateListing(id: Long, tick: String)
+POST        /api/listingsbylocation/:page/:radius                   controllers.API.listingsByLoc(page: Int, radius: Int)
+POST        /api/createtransaction                                  controllers.API.receiveTransaction
+POST        /api/startconversation                                  controllers.API.startConversation
+POST        /api/replytoconvo                                       controllers.API.replyToConvo
+POST        /api/getratingsfortrans/:by_userid                      controllers.API.returnRatingForTransactions(by_userid: Long)
+POST        /api/getbillingforuser                                  controllers.API.returnBillingForUser
+POST        /api/addmerchant                                        controllers.API.merchantData
+POST        /api/followthesefriends/:userid                         controllers.API.followingFriends(userid: Long)
+POST        /api/fbauth/deauthorized                                controllers.API.fbDeauthorized
+
+# Google Wallet
+GET         /wallet                                                 controllers.Wallet.index
+POST        /wallet/response                                        controllers.Wallet.walletResponse
+POST        /wallet/merchant/response                               controllers.Wallet.merchantResponse(sellerid: Long = 21438)
+POST        /merchant/:sellerid                                     controllers.Wallet.merchantResponse(sellerid: Long)
+
+# Cart Api
+GET         /cart/upgradelisting/:offerid/:waggle/:highlight        controllers.Cart.upgradeListing(offerid: Long, waggle: Boolean, highlight: Boolean)
+GET         /cart/billingpayout/:userid                             controllers.Cart.billingPayOut(userid: Long)
+GET         /cart/buyitem/:offerid                                  controllers.Cart.purchaseItemFromMerchant(offerid: Long)
+
+# Map static resources from the /public folder to the /assets URL path
+GET         /assets/*file                                           controllers.Assets.at(path="/public", file)
+GET         /pictures/:file_name                                    controllers.ServeImage.at(file_name)
+GET         /thumbnails/:file_name                                  controllers.ServeThumbnail.at(file_name)
+
+
+# Login page
+GET         /login                                                  securesocial.controllers.LoginPage.login
+GET         /logout                                                 securesocial.controllers.LoginPage.logout
+
+# User Registration and password handling
+GET         /signup                                                 securesocial.controllers.Registration.startSignUp
+POST        /signup                                                 securesocial.controllers.Registration.handleStartSignUp
+GET         /signup/:token                                          securesocial.controllers.Registration.signUp(token)
+POST        /signup/:token                                          securesocial.controllers.Registration.handleSignUp(token)
+GET         /reset                                                  securesocial.controllers.Registration.startResetPassword
+POST        /reset                                                  securesocial.controllers.Registration.handleStartResetPassword
+GET         /reset/:token                                           securesocial.controllers.Registration.resetPassword(token)
+POST        /reset/:token                                           securesocial.controllers.Registration.handleResetPassword(token)
+GET         /password                                               securesocial.controllers.PasswordChange.page
+POST        /password                                               securesocial.controllers.PasswordChange.handlePasswordChange
+
+# Providers entry points
+GET         /authenticate/:provider                                 securesocial.controllers.ProviderController.authenticate(provider)
+POST        /authenticate/:provider                                 securesocial.controllers.ProviderController.authenticateByPost(provider)
+GET         /not-authorized                                         securesocial.controllers.ProviderController.notAuthorized
