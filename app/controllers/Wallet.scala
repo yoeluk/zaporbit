@@ -108,7 +108,6 @@ object Wallet extends Controller {
                                       "currency_code" -> offer.currency_code,
                                       "locale" -> offer.locale,
                                       "transactionid" -> transId).validate[Billing].map { bill =>
-<<<<<<< HEAD
                                         Billings.insert(bill)
                                       Ok(wallet_id)
                                     }.getOrElse(BadRequest("invalid billing"))
@@ -134,33 +133,6 @@ object Wallet extends Controller {
         }
       case None =>
         BadRequest("merchant not found")
-=======
-                                      Billings.insert(bill)
-                                      Ok(wallet_id)
-                                    }.getOrElse(BadRequest(""))
-                                  }.getOrElse(BadRequest(""))
-                                }.getOrElse(BadRequest(""))
-                              case None =>
-                                BadRequest("")
-                            }
-                          }.getOrElse(BadRequest(""))
-                        } else
-                          BadRequest("")
-                      case None =>
-                        BadRequest("")
-                    }
-                  case None =>
-                    BadRequest("")
-                }
-              case None =>
-                BadRequest("")
-            }
-          case None =>
-            BadRequest("")
-        }
-      case None =>
-        BadRequest("")
->>>>>>> 5717a9c6c5dd5bb2f11b9515f0e4c699533c99d1
     }
   }
 
