@@ -2,9 +2,9 @@ name := "ZapOrbit"
 
 version := "1.0-SNAPSHOT"
 
-scalaVersion := "2.10.4"
+scalaVersion := "2.11.1"
 
-lazy val root = (project in file(".")).enablePlugins(PlayScala, SbtTwirl)
+lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
 resolvers += "sonatype releases" at "https://oss.sonatype.org/content/repositories/releases/"
 
@@ -12,7 +12,8 @@ resolvers += Resolver.sonatypeRepo("snapshots")
 
 libraryDependencies ++= {
   Seq(
-    "com.typesafe.play" %% "play-slick" % "0.7.0",
+    jdbc,
+    "com.typesafe.play" %% "play-slick" % "0.8.0",
     "mysql" % "mysql-connector-java" % "5.1.29",
     "org.cryptonode.jncryptor" % "jncryptor" % "1.0.1",
     "com.typesafe.play.plugins" %% "play-plugins-mailer" % "2.3.0",
