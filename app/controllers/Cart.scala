@@ -25,7 +25,7 @@ import play.api.libs.concurrent.Execution.Implicits._
 
 import scala.math.BigDecimal
 
-object Cart extends Controller with SecureSocial {
+class Cart(override implicit val env: RuntimeEnvironment[ExportedUser]) extends Controller with SecureSocial[ExportedUser] {
 
   def displayCurrency(localeIdentifier: String, price: Double): String = {
     val localeInfo = localeIdentifier.split("_")
@@ -33,7 +33,6 @@ object Cart extends Controller with SecureSocial {
     val currencyFormatter = NumberFormat.getCurrencyInstance(aLocale)
     currencyFormatter.format(price)
   }
-
 
   def upgradeListing(offerid: Long, waggle: Boolean, highlight: Boolean) = SecuredAction { implicit request =>
     DB.withSession { implicit s =>
