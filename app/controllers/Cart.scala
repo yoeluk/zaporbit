@@ -18,6 +18,7 @@ import play.api.Play.current
 import Wallet._
 import models._
 import views._
+import service.SocialUser
 
 import play.api.libs.ws._
 import scala.concurrent.Future
@@ -25,7 +26,7 @@ import play.api.libs.concurrent.Execution.Implicits._
 
 import scala.math.BigDecimal
 
-class Cart(override implicit val env: RuntimeEnvironment[ExportedUser]) extends Controller with SecureSocial[ExportedUser] {
+class Cart(override implicit val env: RuntimeEnvironment[SocialUser]) extends Controller with SecureSocial[SocialUser] {
 
   def displayCurrency(localeIdentifier: String, price: Double): String = {
     val localeInfo = localeIdentifier.split("_")
@@ -64,7 +65,7 @@ class Cart(override implicit val env: RuntimeEnvironment[ExportedUser]) extends 
 
   def purchaseItemFromMerchant(offerid: Long) = SecuredAction { implicit request =>
     DB.withSession { implicit s =>
-      request.user match {
+      request.user.main match {
         case user: ExportedUser =>
           val thumbnail = Pictures.firstPicturesFromOffer(offerid).get
           Offers.findById(offerid) match {
@@ -90,7 +91,7 @@ class Cart(override implicit val env: RuntimeEnvironment[ExportedUser]) extends 
   }
 
   def billingPayOut(userid: Long) = SecuredAction.async { implicit request =>
-    request.user match {
+    request.user.main match {
       case user: ExportedUser =>
         if (user.id.get == userid) {
           DB.withSession { implicit s =>

@@ -18,38 +18,57 @@ package service
 
 import play.api.Logger
 import securesocial.core._
-import securesocial.core.providers.FacebookProvider
+import securesocial.core.providers.MailToken
 import scala.concurrent.Future
-import play.api.Application
-import securesocial.core.{Identity, IdentityId, UserServicePlugin}
-import securesocial.core.providers.Token
+import securesocial.core.services.{UserService, SaveMode}
 import play.api.db.slick._
 import play.api.Play.current
 
+//import play.api.Application
+
 import models._
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 // a simple User class that can have multiple identities
 //case class ExtUser(main: BasicIdentity, identities: List[BasicIdentity])
 
 object UserFromIdentity {
-    def apply(i: Identity)(implicit session: Session): User = User(None,
-      i.firstName,
-      i.lastName,
-      i.identityId.userId.toLong,
-      i.email.orNull,
-      Users.findByFbId(i.identityId.userId.toLong) match {
+  def apply(b: BasicProfile)(implicit session: Session): User =
+    User(None,
+      b.firstName.getOrElse("no name"),
+      b.lastName.getOrElse("no surname"),
+      b.userId.toLong,
+      b.email.orNull,
+      Users.findByFbId(b.userId.toLong) match {
         case Some(user) => user.isMerchant
         case None => Some(false)
       })
 }
 
-object ExportedUserFromIdentity {
-  def apply(i: Identity, id: Option[Long]): ExportedUser = ExportedUser(id, i.identityId, i.firstName, i.lastName, i.fullName, i.email,
-    i.avatarUrl,i.authMethod,i.oAuth1Info,i.oAuth2Info,i.passwordInfo)
+object ExportedUserFromUser {
+  def apply(u: User, providerId: String, userId: String): ExportedUser =
+    ExportedUser(
+      u.id,
+      providerId,
+      userId,
+      u.name,
+      u.surname,
+      u.name +" "+ u.surname,
+      Some(u.email),
+      None,
+      AuthenticationMethod.OAuth2,
+      None,
+      None,
+      None)
 }
 
-class UserService (application: Application) extends UserServicePlugin(application) {
-  val logger = Logger("application.controllers.UserService")
+case class SocialUser(main: ExportedUser, identities: List[ExportedUser])
+
+class SocialUserService extends UserService[SocialUser] {
+  val logger = Logger("application.controllers.SocialUserService")
+
+  //var users = Map[(String, String), SocialUser]()
 
   /**
    * Finds a user that maches the specified id
@@ -57,34 +76,49 @@ class UserService (application: Application) extends UserServicePlugin(applicati
    * @param id the user id
    * @return an optional user
    */
-  def find(id: IdentityId): Option[ExportedUser] = {
+
+  def find(providerId: String, userId: String): Future[Option[ExportedUser]] = {
     DB.withSession { implicit s =>
-      Users.findByFbId(id.userId.toLong) match {
+      Future(Users.findByFbId(userId.toLong) match {
         case Some(user) =>
-          Option(ExportedUser(user.id,new IdentityId(user.fbuserid.toString, "facebook"),
-          user.name,user.surname,user.name+" "+user.surname,Option(user.email),None,new AuthenticationMethod("oauth2"),None,None,None))
+          Option(ExportedUserFromUser(user, providerId, userId))
         case None => None
-      }
+      })
     }
   }
 
   /**
    * Saves the user.  This method gets called when a user logs in.
    * This is your chance to save the user information in your backing store.
-   * @param user
+   *
+   * @param basicUser basic identity
+   * @return Exported User
    */
-  def save(user: Identity): Identity = {
+  def save(basicUser: BasicProfile, mode: SaveMode): Future[SocialUser] = {
     DB.withSession { implicit s =>
-      this.find(user.identityId) match {
+      Future(Users.findByFbId(basicUser.userId.toLong) match {
         case None =>
-          val id = Option(Users.insertReturningId(UserFromIdentity(user)))
-          ExportedUserFromIdentity(user, id)
+          val preUser = UserFromIdentity(basicUser)
+          val id = Option(Users.insertReturningId(preUser))
+          val user = User(id, preUser.name, preUser.surname, basicUser.userId.toLong, preUser.email, preUser.isMerchant)
+          SocialUser(main = ExportedUserFromUser(user, basicUser.providerId, basicUser.userId), identities = Nil )
         case Some(existingUser) =>
-          val persistantUser: User = UserFromIdentity(user)
+          val persistantUser: User = UserFromIdentity(basicUser)
           Users.update(existingUser.id, persistantUser.isMerchant, persistantUser)
-          ExportedUserFromIdentity(user, existingUser.id)
-      }
+          val user = User(existingUser.id, persistantUser.name, persistantUser.surname, basicUser.userId.toLong, persistantUser.email, persistantUser.isMerchant)
+          SocialUser(main = ExportedUserFromUser(user, basicUser.providerId, basicUser.userId), identities = Nil )
+      })
     }
+  }
+
+  /**
+   *
+   * @param current current user
+   * @param to link to user
+   * @return
+   */
+  def link(current: SocialUser, to: BasicProfile): Future[SocialUser] = {
+    Future.successful(current)
   }
 
   /**
@@ -97,7 +131,7 @@ class UserService (application: Application) extends UserServicePlugin(applicati
    * @param providerId - the provider id
    * @return
    */
-  def findByEmailAndProvider(email: String, providerId: String):Option[Identity] = {
+  def findByEmailAndProvider(email: String, providerId: String):Option[BasicProfile] = {
     None
   }
 
@@ -110,7 +144,7 @@ class UserService (application: Application) extends UserServicePlugin(applicati
    *
    * @param token The token to save
    */
-  def save(token: Token) = {
+  def save(token: MailToken) = {
     // implement me
   }
 
@@ -124,7 +158,7 @@ class UserService (application: Application) extends UserServicePlugin(applicati
    * @param token the token id
    * @return
    */
-  def findToken(token: String): Option[Token] = {
+  def findToken(token: String): Option[MailToken] = {
     None
   }
 

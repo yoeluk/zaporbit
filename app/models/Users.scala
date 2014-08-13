@@ -18,7 +18,8 @@ case class User(id: Option[Long],
                 created_on: Option[Timestamp] = None)
 
 case class ExportedUser(id: Option[Long],
-                        identityId: IdentityId,
+                        providerId: String,
+                        userId: String,
                         firstName: String,
                         lastName: String,
                         fullName: String,
@@ -27,7 +28,7 @@ case class ExportedUser(id: Option[Long],
                         authMethod: AuthenticationMethod,
                         oAuth1Info: Option[OAuth1Info],
                         oAuth2Info: Option[OAuth2Info],
-                        passwordInfo: Option[PasswordInfo]) extends Identity
+                        passwordInfo: Option[PasswordInfo]) extends GenericProfile
 
 class Users(tag: Tag) extends Table[User](tag, "Users") {
   def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
@@ -54,15 +55,14 @@ object Users extends DAO {
   def insertReturningId(user: User)(implicit session: Session): Long =
     users returning users.map(_.id) insert user
 
-  def update(id: Option[Long], isMerchant: Option[Boolean], user: User)(implicit session: Session): Unit = {
+  def update(id: Option[Long], isMerchant: Option[Boolean], user: User)(implicit session: Session) = {
     val updatedUser = user.copy(id = id, isMerchant = isMerchant)
     users.filter(_.id === id).update(updatedUser)
   }
 
-  def updateMerchant(isMerchant: Boolean, userid: Long)(implicit session: Session): Unit = {
+  def updateMerchant(isMerchant: Boolean, userid: Long)(implicit session: Session) =
     users.filter(_.id === userid).map { row =>
       row.isMerchant
     }.update(isMerchant)
-  }
 
 }

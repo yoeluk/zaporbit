@@ -4,8 +4,13 @@ import play.api._
 import play.api.mvc._
 import play.api.db.slick._
 import play.api.libs.json._
+import securesocial.controllers.BaseLoginPage
+
+import securesocial.core.services.RoutesService
+import securesocial.core.{RuntimeEnvironment, IdentityProvider}
 
 import models._
+import service.SocialUser
 import views.html
 import partials._
 
@@ -59,4 +64,15 @@ object Application extends Controller {
     }
   }
 
+}
+
+class CustomLoginController(implicit override val env: RuntimeEnvironment[SocialUser]) extends BaseLoginPage[SocialUser] {
+  override def login: Action[AnyContent] = {
+    Logger.debug("using CustomLoginController")
+    super.login
+  }
+}
+
+class CustomRoutesService extends RoutesService.Default {
+  override def loginPageUrl(implicit req: RequestHeader): String = controllers.routes.CustomLoginController.login().absoluteURL(IdentityProvider.sslEnabled)
 }
