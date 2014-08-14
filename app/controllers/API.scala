@@ -844,7 +844,7 @@ object API extends Controller {
           case Some(loc) =>
             Users.findById(listing.userid) match {
               case Some(user) =>
-                Ok(html.listingItem(listing.title)(listing, listing.pictures.orNull, loc, user))
+                Ok(html.listingItem(listing.title)(listing, listing.pictures.get, loc, user))
                 /*
                 Ok(Json.obj(
                   "status" -> "OK",

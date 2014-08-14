@@ -18,7 +18,8 @@ GET         /api/getconversationsforuser/:page/:userid              controllers.
 GET         /api/markconvoread/:convid                              controllers.API.markConvoRead(convid: Long)
 GET         /api/leaveconvo/:convid/:userid                         controllers.API.leaveConvo(convid: Long, userid: Long)
 GET         /api/getfeedbacksforuser/:userid                        controllers.API.returnFeedbacksForUser(userid: Long)
-GET         /listing_item/:itemid                                    controllers.API.getListing(itemid: Long)
+
+GET         /listing_item/:itemid                                   controllers.API.getListing(itemid: Long)
 
 # Partials
 GET         /partials/:partial                                      @controllers.Application.partialTemplates(partial: String)
@@ -63,9 +64,8 @@ GET         /assets/*file                                           controllers.
 GET         /pictures/:file_name                                    controllers.ServeImage.at(file_name)
 GET         /thumbnails/:file_name                                  controllers.ServeThumbnail.at(file_name)
 
-
+# SecureSocial
 GET         /custom/login                                           @controllers.CustomLoginController.login
 GET         /custom/logout                                          @controllers.CustomLoginController.logout
-
 
 ->          /auth                                                   securesocial.Routes
