@@ -5,7 +5,7 @@ package controllers
 import _root_.java.text.NumberFormat
 import _root_.java.util.concurrent.TimeoutException
 import _root_.java.util.{Currency, Locale}
-import controllers.Application._
+//import controllers.Application._
 import play.api._
 import play.api.mvc._
 import play.api.libs.json._
@@ -17,7 +17,6 @@ import play.api.Play.current
 
 import Wallet._
 import models._
-import views._
 import service.SocialUser
 
 import play.api.libs.ws._
@@ -66,7 +65,7 @@ class Cart(override implicit val env: RuntimeEnvironment[SocialUser]) extends Co
   def purchaseItemFromMerchant(offerid: Long) = SecuredAction { implicit request =>
     DB.withSession { implicit s =>
       request.user.main match {
-        case user: ExportedUser =>
+        case user =>
           val thumbnail = Pictures.firstPicturesFromOffer(offerid).get
           Offers.findById(offerid) match {
             case Some(offer) =>
@@ -84,15 +83,13 @@ class Cart(override implicit val env: RuntimeEnvironment[SocialUser]) extends Co
                 "message" -> "could not find a matching listing"
               ))
           }
-        case _ =>
-          BadRequest("")
       }
     }
   }
 
   def billingPayOut(userid: Long) = SecuredAction.async { implicit request =>
     request.user.main match {
-      case user: ExportedUser =>
+      case user =>
         if (user.id.get == userid) {
           DB.withSession { implicit s =>
             Billings.unpaidBillsForUser(userid) match {
@@ -143,8 +140,6 @@ class Cart(override implicit val env: RuntimeEnvironment[SocialUser]) extends Co
             }
           }
         } else Future(Redirect(routes.Cart.billingPayOut(user.id.get)))
-      case _ =>
-        Future(BadRequest(""))
     }
   }
 

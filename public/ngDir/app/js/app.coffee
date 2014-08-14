@@ -11,10 +11,10 @@ angular.module("ZapOrbit", [
   "ui.bootstrap",
   "google-maps"
 ])
-#.constant("trackUrl", "https://zaporbit.com/api/youtrack/")
-#.constant("ngUrl", "https://zaporbit.com/partials/")
-.constant("trackUrl", "http://localhost:9000/api/youtrack/")
-.constant("ngUrl", "http://localhost:9000/partials/")
+.constant("trackUrl", "https://zaporbit.com/api/youtrack/")
+.constant("ngUrl", "https://zaporbit.com/partials/")
+#.constant("trackUrl", "http://localhost:9000/api/youtrack/")
+#.constant("ngUrl", "http://localhost:9000/partials/")
 .config ["$routeProvider", "ngUrl", ($routeProvider, ngUrl) ->
   $routeProvider
   .when "/",

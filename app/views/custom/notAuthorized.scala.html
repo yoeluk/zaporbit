@@ -1,0 +1,10 @@
+@()(implicit request: RequestHeader, lang: Lang, env: securesocial.core.RuntimeEnvironment[_])
+@main(play.api.i18n.Messages("zaporbit.notAuthorized.title")) {
+    <div class="page-header">
+        <h1>@play.api.i18n.Messages("zaporbit.notAuthorized.title")</h1>
+    </div>
+
+    <div class="alert alert-error">
+        @play.api.i18n.Messages("zaporbit.notAuthorized.message")
+    </div>
+}

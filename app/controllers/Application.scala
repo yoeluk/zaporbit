@@ -9,16 +9,14 @@ import securesocial.controllers.BaseLoginPage
 import securesocial.core.services.RoutesService
 import securesocial.core.{RuntimeEnvironment, IdentityProvider}
 
-import models._
+import securesocial.core._
 import service.SocialUser
-import views.html
-import partials._
 
 import AppCryptor._
 import play.api.data._
 import play.api.data.Forms._
 
-object Application extends Controller {
+class Application(override implicit val env: RuntimeEnvironment[SocialUser]) extends securesocial.core.SecureSocial[SocialUser] {
 
   // HOME PAGE
   case class UpgradeListing(offerid: Long, waggle: Boolean, highlight: Boolean)
@@ -61,6 +59,14 @@ object Application extends Controller {
       Ok(partials.html.shopping(""))
     } else {
       BadRequest(partial + " could not be found")
+    }
+  }
+
+  def currentUser = Action.async { implicit request =>
+    import play.api.libs.concurrent.Execution.Implicits._
+    SecureSocial.currentUser[SocialUser].map { maybeUser =>
+      val userId = maybeUser.map(_.main.fbuserid).getOrElse("unknown")
+      Ok(s"Your id is $userId")
     }
   }
 

@@ -205,7 +205,7 @@ object API extends Controller {
           "price" -> item.price,
           "locale" -> item.locale,
           "userid" -> item.userid,
-          "pictures" -> item.pictures.orNull,
+          "pictures" -> item.pictures.orNull.toString,
           "highlight" -> item.highlight,
           "waggle" -> item.waggle,
           "shop" -> item.shop,
@@ -468,7 +468,7 @@ object API extends Controller {
         "offer_price" -> bill.offer_price,
         "locale" -> bill.locale,
         "transactionid" -> bill.transactionid,
-        "wallet_order_id" -> bill.googlewallet_id.orNull,
+        "wallet_order_id" -> bill.googlewallet_id.orNull.toString,
         "created_on" -> bill.updated_on.orNull.toString
       )
     }

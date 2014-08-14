@@ -57,7 +57,7 @@ object Buyings extends DAO {
                           userid: Long)(implicit session: Session): Page[BuyingTrans] = {
     val offset = pageSize * page
     val query = (for {
-      b <- buyings.where(_.userid === userid)
+      b <- buyings.filter(_.userid === userid)
       t <- b.transaction
     } yield (
         b.id.?,

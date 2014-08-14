@@ -18,7 +18,7 @@ package service
 
 import play.api.Logger
 import securesocial.core._
-import securesocial.core.providers.MailToken
+import securesocial.core.providers.{UsernamePasswordProvider, MailToken}
 import scala.concurrent.Future
 import securesocial.core.services.{UserService, SaveMode}
 import play.api.db.slick._
@@ -47,14 +47,13 @@ object UserFromIdentity {
 }
 
 object ExportedUserFromUser {
-  def apply(u: User, providerId: String, userId: String): ExportedUser =
-    ExportedUser(
-      u.id,
+  def apply(u: User, providerId: String, userId: String): BasicProfile =
+    BasicProfile(
       providerId,
       userId,
-      u.name,
-      u.surname,
-      u.name +" "+ u.surname,
+      Some(u.name),
+      Some(u.surname),
+      Some(u.name +" "+ u.surname),
       Some(u.email),
       None,
       AuthenticationMethod.OAuth2,
@@ -63,7 +62,7 @@ object ExportedUserFromUser {
       None)
 }
 
-case class SocialUser(main: ExportedUser, identities: List[ExportedUser])
+case class SocialUser(main: User, identities: List[User])
 
 class SocialUserService extends UserService[SocialUser] {
   val logger = Logger("application.controllers.SocialUserService")
@@ -73,11 +72,11 @@ class SocialUserService extends UserService[SocialUser] {
   /**
    * Finds a user that maches the specified id
    *
-   * @param id the user id
+   * @param providerId the user id
    * @return an optional user
    */
 
-  def find(providerId: String, userId: String): Future[Option[ExportedUser]] = {
+  def find(providerId: String, userId: String): Future[Option[BasicProfile]] = {
     DB.withSession { implicit s =>
       Future(Users.findByFbId(userId.toLong) match {
         case Some(user) =>
@@ -101,13 +100,25 @@ class SocialUserService extends UserService[SocialUser] {
           val preUser = UserFromIdentity(basicUser)
           val id = Option(Users.insertReturningId(preUser))
           val user = User(id, preUser.name, preUser.surname, basicUser.userId.toLong, preUser.email, preUser.isMerchant)
-          SocialUser(main = ExportedUserFromUser(user, basicUser.providerId, basicUser.userId), identities = Nil )
+          SocialUser(main = user, identities = Nil )
         case Some(existingUser) =>
           val persistantUser: User = UserFromIdentity(basicUser)
           Users.update(existingUser.id, persistantUser.isMerchant, persistantUser)
           val user = User(existingUser.id, persistantUser.name, persistantUser.surname, basicUser.userId.toLong, persistantUser.email, persistantUser.isMerchant)
-          SocialUser(main = ExportedUserFromUser(user, basicUser.providerId, basicUser.userId), identities = Nil )
+          SocialUser(main = user, identities = Nil )
       })
+    }
+  }
+
+  def updatePasswordInfo(user: SocialUser, info: PasswordInfo): Future[Option[BasicProfile]] = {
+    Future.successful {
+      None
+    }
+  }
+
+  def passwordInfoFor(user: SocialUser): Future[Option[PasswordInfo]] = {
+    Future.successful {
+      Some(PasswordInfo("123", "123", None))
     }
   }
 
@@ -131,8 +142,8 @@ class SocialUserService extends UserService[SocialUser] {
    * @param providerId - the provider id
    * @return
    */
-  def findByEmailAndProvider(email: String, providerId: String):Option[BasicProfile] = {
-    None
+  def findByEmailAndProvider(email: String, providerId: String): Future[Option[BasicProfile]] = {
+    Future.successful(None)
   }
 
   /**
@@ -144,9 +155,8 @@ class SocialUserService extends UserService[SocialUser] {
    *
    * @param token The token to save
    */
-  def save(token: MailToken) = {
-    // implement me
-  }
+  def saveToken(token: MailToken): Future[MailToken] =
+    Future.successful(token)
 
 
   /**
@@ -158,8 +168,8 @@ class SocialUserService extends UserService[SocialUser] {
    * @param token the token id
    * @return
    */
-  def findToken(token: String): Option[MailToken] = {
-    None
+  def findToken(token: String): Future[Option[MailToken]] = {
+    Future.successful(None)
   }
 
 
@@ -171,8 +181,9 @@ class SocialUserService extends UserService[SocialUser] {
    *
    * @param uuid the token id
    */
-  def deleteToken(uuid: String) {
+  def deleteToken(uuid: String): Future[Option[MailToken]] = {
     // implement me
+    Future.successful(None)
   }
 
   /**

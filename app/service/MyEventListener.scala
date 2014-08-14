@@ -31,7 +31,7 @@ class MyEventListener extends EventListener[SocialUser] {
       case PasswordResetEvent(u) => "password reset"
       case PasswordChangeEvent(u) => "password change"
     }
-    Logger.info("traced %s event for user %s".format(eventName, event.user.main.userId))
+    Logger.info("traced %s event for user %s".format(eventName, event.user.main.fbuserid))
     // retrieving the current language
     Logger.info("current language is %s".format(request2lang(request)))
     // Not changing the session so just return None

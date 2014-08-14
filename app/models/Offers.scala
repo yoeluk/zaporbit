@@ -87,7 +87,7 @@ object Offers extends DAO {
           o.price,
           o.locale,
           Option((for {
-            p <- pictures.where(_.offerid === o.id.get)
+            p <- pictures.filter(_.offerid === o.id.get)
           } yield p.name).list),
           o.shop,
           o.highlight,
@@ -238,11 +238,11 @@ object Offers extends DAO {
    * @param title
    * @return
    */
-  def offerById(id: Column[Int], title: Column[String]): Query[Offers, Offer] = {
-    for {
-      o <- offers if o.id == id
-    } yield o
-  }
+//  def offerById(id: Column[Int], title: Column[String]): Query[Offers, Offer] = {
+//    for {
+//      o <- offers if o.id == id
+//    } yield o
+//  }
   /**
    *
    * @param id

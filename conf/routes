@@ -3,7 +3,7 @@
 # ~~~~
 
 # GET requests
-GET         /                                                       controllers.Application.index
+GET         /                                                       @controllers.Application.index
 GET         /api/downloadpictures/:picture                          controllers.API.downloadPicture(picture: String)
 GET         /api/listingsbyuser/:page/:orderBy/:userid              controllers.API.listingsByUsers(page: Int, orderBy: Int, userid: Long)
 GET         /api/deletepicture/:offerid/:picturename                controllers.API.deletePicture(offerid: Long, picturename: String)
@@ -21,7 +21,7 @@ GET         /api/getfeedbacksforuser/:userid                        controllers.
 GET         /listing_item                                           controllers.API.getListing
 
 # Partials
-GET         /partials/:partial                                      controllers.Application.partialTemplates(partial: String)
+GET         /partials/:partial                                      @controllers.Application.partialTemplates(partial: String)
 
 # web Api
 
@@ -54,9 +54,9 @@ POST        /wallet/merchant/response                               controllers.
 POST        /merchant/:sellerid                                     controllers.Wallet.merchantResponse(sellerid: Long)
 
 # Cart Api
-GET         /cart/upgradelisting/:offerid/:waggle/:highlight        controllers.Cart.upgradeListing(offerid: Long, waggle: Boolean, highlight: Boolean)
-GET         /cart/billingpayout/:userid                             controllers.Cart.billingPayOut(userid: Long)
-GET         /cart/buyitem/:offerid                                  controllers.Cart.purchaseItemFromMerchant(offerid: Long)
+GET         /cart/upgradelisting/:offerid/:waggle/:highlight        @controllers.Cart.upgradeListing(offerid: Long, waggle: Boolean, highlight: Boolean)
+GET         /cart/billingpayout/:userid                             @controllers.Cart.billingPayOut(userid: Long)
+GET         /cart/buyitem/:offerid                                  @controllers.Cart.purchaseItemFromMerchant(offerid: Long)
 
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file                                           controllers.Assets.at(path="/public", file)
@@ -64,4 +64,8 @@ GET         /pictures/:file_name                                    controllers.
 GET         /thumbnails/:file_name                                  controllers.ServeThumbnail.at(file_name)
 
 
-->         /auth                securesocial.Routes
+GET         /custom/login                                           @controllers.CustomLoginController.login
+GET         /custom/logout                                          @controllers.CustomLoginController.logout
+
+
+->          /auth                                                   securesocial.Routes
