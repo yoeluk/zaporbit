@@ -12,17 +12,17 @@
         <script src="https://wallet.google.com/inapp/lib/buy.js"></script>
         <script type="text/javascript" language="javascript">
         // Success handler
-        var successHandler = function(status){
+        var successHandler = function(status) {
             if (window.console != undefined) {
                 window.location.href = "ZapOrbit://";
             }
-        }
+        };
         // Failure handler
-        var failureHandler = function(status){
+        var failureHandler = function(status) {
             if (window.console != undefined) {
                 window.location.href = "ZapOrbit://";
             }
-        }
+        };
         function purchase() {
             var token = $('#token_button').data("token");
             if (null !== token) {

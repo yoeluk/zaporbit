@@ -40,7 +40,7 @@ object EmailService {
     mail.setSubject("Welcome to ZapOrbit")
     mail.setFrom("support@zaporbit.com")
     mail.setRecipient(contact.email)
-    val body = views.html.welcomeEmail.render(contact).body;
+    val body = views.html.welcomeEmail.render(contact).body
     mail.sendHtml(body)
   }
 }
@@ -205,7 +205,7 @@ object API extends Controller {
           "price" -> item.price,
           "locale" -> item.locale,
           "userid" -> item.userid,
-          "pictures" -> item.pictures.orNull.toString,
+          "pictures" -> item.pictures.get,
           "highlight" -> item.highlight,
           "waggle" -> item.waggle,
           "shop" -> item.shop,

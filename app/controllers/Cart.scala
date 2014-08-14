@@ -27,13 +27,6 @@ import scala.math.BigDecimal
 
 class Cart(override implicit val env: RuntimeEnvironment[SocialUser]) extends Controller with SecureSocial[SocialUser] {
 
-  def displayCurrency(localeIdentifier: String, price: Double): String = {
-    val localeInfo = localeIdentifier.split("_")
-    val aLocale = new Locale(localeInfo(0), localeInfo(1))
-    val currencyFormatter = NumberFormat.getCurrencyInstance(aLocale)
-    currencyFormatter.format(price)
-  }
-
   def upgradeListing(offerid: Long, waggle: Boolean, highlight: Boolean) = SecuredAction { implicit request =>
     DB.withSession { implicit s =>
       Pictures.firstPicturesFromOffer(offerid) match {

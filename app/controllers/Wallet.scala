@@ -1,5 +1,8 @@
 package controllers
 
+import java.text.NumberFormat
+import java.util.Locale
+
 import play.api._
 import play.api.mvc._
 import play.api.libs.json._
@@ -22,6 +25,13 @@ object Wallet extends Controller {
   import API.buyingFormat
   import API.sellingFormat
   import models.Transactions.billingFormat
+
+  def displayCurrency(localeIdentifier: String, price: Double): String = {
+    val localeInfo = localeIdentifier.split("_")
+    val aLocale = new Locale(localeInfo(0), localeInfo(1))
+    val currencyFormatter = NumberFormat.getCurrencyInstance(aLocale)
+    currencyFormatter.format(price)
+  }
 
   def walletResponse = DBAction(parse.urlFormEncoded) { implicit rs =>
     rs.request.body.get("jwt") match {
