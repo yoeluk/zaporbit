@@ -167,7 +167,7 @@
         });
       };
     }
-  ]).controller("ListingItemController", ["$scope", function($scope) {}]);
+  ]).controller("ListingCtrl", ["$scope", function($scope) {}]);
 
 }).call(this);
 

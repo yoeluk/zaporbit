@@ -118,31 +118,31 @@ object Wallet extends Controller {
                                       "currency_code" -> offer.currency_code,
                                       "locale" -> offer.locale,
                                       "transactionid" -> transId).validate[Billing].map { bill =>
-                                      Billings.insert(bill)
+                                        Billings.insert(bill)
                                       Ok(wallet_id)
-                                    }.getOrElse(BadRequest(""))
-                                  }.getOrElse(BadRequest(""))
-                                }.getOrElse(BadRequest(""))
+                                    }.getOrElse(BadRequest("invalid billing"))
+                                  }.getOrElse(BadRequest("invalid  selling trans"))
+                                }.getOrElse(BadRequest("invalid  buying trans"))
                               case None =>
-                                BadRequest("")
+                                BadRequest("internal error inserting transaction")
                             }
-                          }.getOrElse(BadRequest(""))
+                          }.getOrElse(BadRequest("invalid transaction"))
                         } else
-                          BadRequest("")
+                          BadRequest("invalid seller id")
                       case None =>
-                        BadRequest("")
+                        BadRequest("invalid offer id")
                     }
                   case None =>
-                    BadRequest("")
+                    BadRequest("invalid buyer id")
                 }
               case None =>
-                BadRequest("")
+                BadRequest("offer id not found")
             }
           case None =>
-            BadRequest("")
+            BadRequest("jwt not found")
         }
       case None =>
-        BadRequest("")
+        BadRequest("merchant not found")
     }
   }
 

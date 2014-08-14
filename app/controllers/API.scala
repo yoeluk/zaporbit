@@ -617,9 +617,9 @@ object API extends Controller {
 
   /**
    *
-   * @param page
-   * @param orderBy
-   * @param userId
+   * @param page the page
+   * @param orderBy order by
+   * @param userId the user id
    * @return
    */
   def listingsByUsers(page: Int, orderBy: Int, userId: Long) = DBAction {
@@ -627,6 +627,7 @@ object API extends Controller {
       val pageResult = Offers.list1(page = page, orderBy = orderBy, userId = userId)
       Ok(Json.toJson(pageResult))
   }
+
   /**
    *
    * @param picture
@@ -728,7 +729,7 @@ object API extends Controller {
 
   /**
    *
-   * @param id
+   * @param id the id of the listing to delete
    * @return
    */
   def deleteListing(id: Long) = DBAction(parse.json) { implicit rs =>
@@ -753,8 +754,8 @@ object API extends Controller {
 
   /**
    *
-   * @param offerId
-   * @param pictureName
+   * @param offerId the id of the offer
+   * @param pictureName the picture name to delete
    * @return
    */
   def deletePicture(offerId: Long, pictureName: String) = DBAction { implicit rs =>
@@ -765,9 +766,11 @@ object API extends Controller {
       "status" -> "OK"
     ))
   }
+
   /**
    *
    * @param offerid
+   * @param tick
    * @return
    */
   def updateListing(offerid: Long, tick: String) = DBAction(parse.raw) { implicit  rs =>
@@ -813,6 +816,7 @@ object API extends Controller {
         }
     }
   }
+
   /**
    *
    * @param id
@@ -832,8 +836,8 @@ object API extends Controller {
   }
 
 
-  def getListing = DBAction { implicit rs =>
-    val itemid = rs.queryString.get("id").get(0).toLong
+  def getListing(itemid: Long) = DBAction { implicit rs =>
+    //val itemid = rs.queryString.get("id").get(0).toLong
     Offers.findListingById(itemid) match {
       case Some(listing) =>
         Locations.findZLocByOfferId(itemid) match {
@@ -960,6 +964,7 @@ object API extends Controller {
         "message" -> "invalid transaction"))
     }
   }
+
   /**
    *
    * @param transid
@@ -1192,6 +1197,11 @@ object API extends Controller {
     }
   }
 
+  /**
+   *
+   * @param userid
+   * @return
+   */
   def returnFeedbacksForUser(userid: Long) = DBAction { implicit rs =>
     Feedbacks.findForUser(userid) match {
       case Some(feedbacks) =>
@@ -1207,6 +1217,11 @@ object API extends Controller {
         ))
     }
   }
+
+  /**
+   *
+   * @return
+   */
   def returnBillingForUser = Action.async(parse.raw) { implicit request =>
     request.body.asBytes(maxLength = 1024) match {
       case Some(body) =>
@@ -1287,6 +1302,10 @@ object API extends Controller {
     }
   }
 
+  /**
+   *
+   * @return
+   */
   def merchantData = DBAction(parse.raw) { implicit rs =>
     rs.request.body.asBytes(maxLength = 1024) match {
       case Some(body) =>
@@ -1325,6 +1344,11 @@ object API extends Controller {
     }
   }
 
+  /**
+   *
+   * @param userid
+   * @return
+   */
   def followingFriends(userid: Long) = DBAction(parse.json(maxLength = 1024)) { implicit rs =>
     val friends = for {
       fs <- rs.request.body.as[List[JsValue]]
@@ -1338,6 +1362,10 @@ object API extends Controller {
     ))
   }
 
+  /**
+   *
+   * @return
+   */
   def fbDeauthorized = Action {
     Ok(Json.obj(
        "status" -> "OK"

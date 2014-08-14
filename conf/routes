@@ -18,7 +18,7 @@ GET         /api/getconversationsforuser/:page/:userid              controllers.
 GET         /api/markconvoread/:convid                              controllers.API.markConvoRead(convid: Long)
 GET         /api/leaveconvo/:convid/:userid                         controllers.API.leaveConvo(convid: Long, userid: Long)
 GET         /api/getfeedbacksforuser/:userid                        controllers.API.returnFeedbacksForUser(userid: Long)
-GET         /listing_item                                           controllers.API.getListing
+GET         /listing_item/:itemid                                    controllers.API.getListing(itemid: Long)
 
 # Partials
 GET         /partials/:partial                                      @controllers.Application.partialTemplates(partial: String)

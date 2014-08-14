@@ -6,6 +6,16 @@ target
 tmp
 .history
 dist
+<<<<<<< HEAD
+.idea
+*.iml
+out
+.idea_modules
+.classpath
+.project
+RUNNING_PID
+.settings
+=======
 /.idea
 /*.iml
 /out
@@ -14,3 +24,4 @@ dist
 /.project
 /RUNNING_PID
 /.settings
+>>>>>>> 5717a9c6c5dd5bb2f11b9515f0e4c699533c99d1
