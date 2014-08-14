@@ -13,9 +13,11 @@ angular.module("ZapOrbit", [
 ])
 .constant("trackUrl", "https://zaporbit.com/api/youtrack/")
 .constant("ngUrl", "https://zaporbit.com/partials/")
+.constant("itemUrl", "https://zaporbit.com/")
 #.constant("trackUrl", "http://localhost:9000/api/youtrack/")
 #.constant("ngUrl", "http://localhost:9000/partials/")
-.config ["$routeProvider", "ngUrl", ($routeProvider, ngUrl) ->
+#.constant("itemUrl", "http://localhost:9000/")
+.config ["$routeProvider", "ngUrl", ($routeProvider, ngUrl, itemUrl) ->
   $routeProvider
   .when "/",
     templateUrl: ngUrl + "home"
@@ -26,9 +28,9 @@ angular.module("ZapOrbit", [
   .when "/support",
     templateUrl: ngUrl + "support"
     controller: "SupportCtrl"
-  .when "/listing_item/id/:itemid",
-    templateUrl: ngUrl + "support"
-    controller: "SupportCtrl"
+  .when "/listing_item/:itemid",
+    templateUrl: (param) -> itemUrl + "listing_item/" + param.itemid
+    controller: "ListingCtrl"
 ]
 angular.module('infinite-scroll', [])
 .directive('infiniteScroll', ['$rootScope', '$window', '$timeout', ($rootScope, $window, $timeout) ->
