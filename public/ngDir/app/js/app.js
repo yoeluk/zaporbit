@@ -2,7 +2,7 @@
 (function() {
   'use strict';
   angular.module("ZapOrbit", ["ngRoute", "ZapOrbit.filters", "ZapOrbit.services", "ZapOrbit.directives", "ZapOrbit.controllers", "infinite-scroll", "ui.bootstrap", "google-maps"]).constant("trackUrl", "https://zaporbit.com/api/youtrack/").constant("ngUrl", "https://zaporbit.com/partials/").constant("itemUrl", "https://zaporbit.com/").config([
-    "$routeProvider", "ngUrl", function($routeProvider, ngUrl, itemUrl) {
+    "$routeProvider", "ngUrl", "itemUrl", function($routeProvider, ngUrl, itemUrl) {
       return $routeProvider.when("/", {
         templateUrl: ngUrl + "home",
         controller: "HomeCtr"

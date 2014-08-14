@@ -17,7 +17,7 @@ angular.module("ZapOrbit", [
 #.constant("trackUrl", "http://localhost:9000/api/youtrack/")
 #.constant("ngUrl", "http://localhost:9000/partials/")
 #.constant("itemUrl", "http://localhost:9000/")
-.config ["$routeProvider", "ngUrl", ($routeProvider, ngUrl, itemUrl) ->
+.config ["$routeProvider", "ngUrl",  "itemUrl",($routeProvider, ngUrl, itemUrl) ->
   $routeProvider
   .when "/",
     templateUrl: ngUrl + "home"
