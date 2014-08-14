@@ -34,7 +34,6 @@ object Cart extends Controller with SecureSocial {
     currencyFormatter.format(price)
   }
 
-
   def upgradeListing(offerid: Long, waggle: Boolean, highlight: Boolean) = SecuredAction { implicit request =>
     DB.withSession { implicit s =>
       Pictures.firstPicturesFromOffer(offerid) match {
