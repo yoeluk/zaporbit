@@ -2,7 +2,7 @@
 
 <div class="container">
     <div class="container">
-        <div data-ride="carousel" class="carousel slide" id="carousel-listing" data-interval="false" style="width:390px">
+        <div data-ride="carousel" class="carousel slide" id="carousel-listing" data-interval="false" style="width:500px; height:375px">
             @if(pictures.length > 1) {
                 <ol class="carousel-indicators">
                 @for((pic, i) <- pictures.zipWithIndex) {
@@ -17,12 +17,12 @@
             <div class="carousel-inner">
                 @for((pic,i) <- pictures.zipWithIndex) {
                     @if(i == 0) {
-                        <div class="item active">
-                            <img alt="" style="height:100%" src="https://zaporbit.com/pictures/@pic@ext">
+                        <div class="item active" style="background-color: #000000">
+                            <img alt="" style="max-height:375px;display:block; margin:auto;" src="https://zaporbit.com/pictures/@pic@ext">
                         </div>
                     } else {
-                        <div class="item">
-                            <img alt="" style="width:100%" src="https://zaporbit.com/pictures/@pic@ext">
+                        <div class="item" style="background-color: #000000">
+                            <img alt="" style="max-height:375px;display:block; margin:auto;" src="https://zaporbit.com/pictures/@pic@ext">
                         </div>
                     }
                 }
