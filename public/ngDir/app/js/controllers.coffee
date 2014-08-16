@@ -14,6 +14,14 @@ angular.module("ZapOrbit.controllers", ["ngResource"]
 
 ]).controller("ShoppingCtrl", ["$scope", "LocationService", ($scope, LocationService) ->
 
+  $scope.submit = (form) ->
+    $scope.submitted = true
+    return if form.$invalid
+
+    $scope.inProgress = true
+    console.log "search submitted" + form
+    $scope.inProgress = false
+
   center =
     latitude: 45
     longitude: -73

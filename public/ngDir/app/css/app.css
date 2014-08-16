@@ -84,8 +84,8 @@ a.issue-title:hover,a.issue-title:focus {
     padding-bottom: 10px;
 }
 
-.form-group .col-sm-10 {
-    padding-left: 5px;
+.form-group .col-sm-6 {
+    padding-left: 35px;
 }
 
 .angular-google-map-container {

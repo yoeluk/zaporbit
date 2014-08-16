@@ -15,6 +15,15 @@
   ]).controller("ShoppingCtrl", [
     "$scope", "LocationService", function($scope, LocationService) {
       var center, showLocation;
+      $scope.submit = function(form) {
+        $scope.submitted = true;
+        if (form.$invalid) {
+          return;
+        }
+        $scope.inProgress = true;
+        console.log("search submitted" + form);
+        return $scope.inProgress = false;
+      };
       center = {
         latitude: 45,
         longitude: -73

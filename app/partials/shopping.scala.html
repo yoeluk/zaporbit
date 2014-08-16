@@ -2,43 +2,49 @@
 <div class="container">
     <div class="container">
         <div class="row">
+            <!--
             <div class="col-sm-offset-1 col-sm-11">
                 <h2>Online shopping in your locality comming soon...</h2>
                 <h4>Get the ZapOrbit App free and start shopping today!</h4>
             </div>
+            -->
 
-            <!--
             <div class="col-xs-6 col-md-4">
                 <google-map center="map.center" pan="true" control="map.control" options="map.options" draggable='true' zoom="map.zoom">
                     <marker coords="coords" options="markerOption"></marker>
                 </google-map>
 
             </div>
+
             <div class="col-xs-12 col-md-8">
-                <div class="well well-lg">
-                    <form class="form-horizontal" role="form">
+               <!-- <div class="well well-lg"> -->
+                    <form name="newSearch" class="form-horizontal form-inline" role="form">
 
                         <div class="form-group">
-                            <label for="city" class="col-sm-1 control-label">City</label>
-                            <div class="col-sm-11">
-                                <input type="text" class="form-control" name="city" id="city" placeholder="City">
+                            <label for="city" class="col-sm-1 control-label">City
+                                <!--<span class="label label-danger" data-ng-show="submitted && newSearch.city.$error.required">Required!</span>-->
+                            </label>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" name="city" data-ng-model="city" id="city" placeholder="City" required>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="region" class="col-sm-1 control-label">Region</label>
-                            <div class="col-sm-11">
-                                <input type="text" class="form-control" name="region" id="region" placeholder="Region/State">
+                            <label for="region" class="col-sm-1 control-label">Region
+                                <!--<span class="label label-danger" data-ng-show="submitted && newSearch.region.$error.required">Required!</span>-->
+                            </label>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" name="region" data-ng-model="region" id="region" placeholder="Region" required>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="col-sm-offset-1 col-sm-11">
-                                <button type="submit" class="btn btn-default">Search</button>
+                                <button data-ng-disabled="inProgress" data-ng-click="submit(newSearch)" class="btn btn-default">Search</button>
                             </div>
                         </div>
                     </form>
-                </div>
+               <!--</div>-->
             </div>
-            -->
+
         </div>
     </div>
 </div>
