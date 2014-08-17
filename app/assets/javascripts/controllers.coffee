@@ -3,17 +3,12 @@
 # Controllers
 angular.module("ZapOrbit.controllers", ["ngResource"]
 ).controller("AppCtrl", ["$scope", "$location", ($scope, $location) ->
-
     $scope.go = (path) ->
-
       $location.path path
-
-]).controller("HomeCtr", ["$scope", "$http", "ngUrl", ($scope, $http, ngUrl) ->
+]).controller("HomeCtr", ["$scope", "$http", ($scope, $http) ->
   $scope.message = "Entice with higher confidence!"
   $scope.motivation = "Free App, lots of possibilities!"
-
 ]).controller("ShoppingCtrl", ["$scope", "LocationService", ($scope, LocationService) ->
-
   $scope.submit = (form) ->
     $scope.submitted = true
     return if form.$invalid
@@ -52,7 +47,7 @@ angular.module("ZapOrbit.controllers", ["ngResource"]
 
   LocationService(showLocation)
 
-]).controller("SupportCtrl", ["$scope", "trackUrl", "$http", "ngUrl", ($scope, youtrack, $http, ngUrl) ->
+]).controller("SupportCtrl", ["$scope", "$http", ($scope, $http) ->
 
   $scope.allIssues = []
   $scope.oneAtATime = false
@@ -67,7 +62,7 @@ angular.module("ZapOrbit.controllers", ["ngResource"]
   getStats = ->
     $http
       method: "GET"
-      url: youtrack + "getstats"
+      url: "api/youtrack/getstats"
       context: this
     .success (data, status) ->
       if status == 200
@@ -83,7 +78,7 @@ angular.module("ZapOrbit.controllers", ["ngResource"]
   $scope.getIssues = getIssues = ->
     $http
       method: "GET"
-      url: youtrack + "allissues"
+      url: "api/youtrack/allissues"
       context: this
     .success (data, status) ->
       if status == 200
@@ -122,7 +117,7 @@ angular.module("ZapOrbit.controllers", ["ngResource"]
     modalInstance.result.then ( ->
     ), ->
 
-]).controller("ModalInstanceCtrl", ["$scope", "$http", "$modalInstance", "$timeout", "trackUrl", ($scope, $http, $modalInstance, $timeout, youtrack) ->
+]).controller("ModalInstanceCtrl", ["$scope", "$http", "$modalInstance", "$timeout", ($scope, $http, $modalInstance, $timeout) ->
 
     $scope.cancel = ->
       $modalInstance.dismiss "cancel"
@@ -138,7 +133,7 @@ angular.module("ZapOrbit.controllers", ["ngResource"]
         data:
           "summary": form.summary.$viewValue
           "description": form.description.$viewValue
-        url: youtrack + "createissue"
+        url: "api/youtrack/createissue"
       .success (data, status) ->
         if status == 200
           $scope.successMsg = "Your issue has been successfully submitted. It will be listed here after it is reviewed by an engineer!";

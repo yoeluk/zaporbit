@@ -48,6 +48,17 @@ pipelineStages := Seq(closure, digest, gzip)
 
 Closure.flags := Seq("--formatting=PRETTY_PRINT", "--accept_const_keyword")
 
-//JsEngineKeys.engineType := JsEngineKeys.EngineType.Node
+JsEngineKeys.engineType := JsEngineKeys.EngineType.Node
 
 doc in Compile <<= target.map(_ / "none")
+
+scalacOptions in ThisBuild ++= Seq(
+  "-target:jvm-1.7",
+  "-encoding", "UTF-8",
+  "-deprecation", // warning and location for usages of deprecated APIs
+  "-feature", // warning and location for usages of features that should be imported explicitly
+  "-unchecked", // additional warnings where generated code depends on assumptions
+  "-Ywarn-inaccessible",
+  "-Ywarn-dead-code",
+  "-language:reflectiveCalls"
+)

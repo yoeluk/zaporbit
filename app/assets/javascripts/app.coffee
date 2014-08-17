@@ -11,25 +11,19 @@ angular.module("ZapOrbit", [
   "ui.bootstrap",
   "google-maps"
 ])
-#.constant("trackUrl", "https://zaporbit.com/api/youtrack/")
-#.constant("ngUrl", "https://zaporbit.com/partials/")
-#.constant("itemUrl", "https://zaporbit.com/")
-.constant("trackUrl", "http://localhost:9000/api/youtrack/")
-.constant("ngUrl", "http://localhost:9000/partials/")
-.constant("itemUrl", "http://localhost:9000/")
-.config ["$routeProvider", "ngUrl",  "itemUrl",($routeProvider, ngUrl, itemUrl) ->
+.config ["$routeProvider",($routeProvider) ->
   $routeProvider
   .when "/",
-    templateUrl: ngUrl + "home"
+    templateUrl: "/partials/home"
     controller: "HomeCtr"
   .when "/shopping",
-    templateUrl: ngUrl + "shopping"
+    templateUrl: "partials/shopping"
     controller: "ShoppingCtrl"
   .when "/support",
-    templateUrl: ngUrl + "support"
+    templateUrl: "partials/support"
     controller: "SupportCtrl"
   .when "/listing_item/:itemid",
-    templateUrl: (param) -> itemUrl + "listing_item/" + param.itemid
+    templateUrl: (param) -> "listing_item/" + param.itemid
     controller: "ListingCtrl"
 ]
 angular.module('infinite-scroll', [])
