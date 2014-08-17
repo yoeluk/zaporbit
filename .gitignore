@@ -1,20 +1,8 @@
 logs
-lib
 project/project
 target
-.history
-dist
-<<<<<<< HEAD
 .idea
 *.iml
 .idea_modules
-.classpath
-.project
 RUNNING_PID
-.settings
 /*.iml
-/out
-/.classpath
-/.project
-/RUNNING_PID
-/.settings
