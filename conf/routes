@@ -59,8 +59,16 @@ GET         /cart/upgradelisting/:offerid/:waggle/:highlight        @controllers
 GET         /cart/billingpayout/:userid                             @controllers.Cart.billingPayOut(userid: Long)
 GET         /cart/buyitem/:offerid                                  @controllers.Cart.purchaseItemFromMerchant(offerid: Long)
 
-# Map static resources from the /public folder to the /assets URL path
+# Versioned Assets
+GET         /vassets/*file                                          controllers.Assets.versioned(path="/public", file: Asset)
+
+# Unversioned Assets
 GET         /assets/*file                                           controllers.Assets.at(path="/public", file)
+
+# WebJars
+GET         /webjars/*file                                          controllers.WebJarAssets.at(file)
+
+# listing images
 GET         /pictures/:file_name                                    controllers.ServeImage.at(file_name)
 GET         /thumbnails/:file_name                                  controllers.ServeThumbnail.at(file_name)
 

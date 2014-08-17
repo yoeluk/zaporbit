@@ -1,10 +1,15 @@
+import com.typesafe.sbt.web.Import._
+import com.typesafe.sbt.jse.JsEngineImport.JsEngineKeys
+import com.typesafe.sbt.web.SbtWeb
+import play.PlayScala
+
 name := "ZapOrbit"
 
 version := "1.0-SNAPSHOT"
 
-scalaVersion := "2.11.1"
+scalaVersion := "2.11.2"
 
-lazy val root = (project in file(".")).enablePlugins(PlayScala)
+lazy val root = (project in file(".")).enablePlugins(PlayScala, SbtWeb)
 
 resolvers += "sonatype releases" at "https://oss.sonatype.org/content/repositories/releases/"
 
@@ -26,10 +31,23 @@ libraryDependencies ++= {
     "com.google.collections" % "google-collections" % "1.0",
     "joda-time" % "joda-time" % "2.1",
     "com.googlecode.json-simple" % "json-simple" % "1.1.1",
+    "org.webjars" %% "webjars-play" % "2.3.0",
+    "org.webjars" % "jquery" % "1.11.1",
+    "org.webjars" % "bootstrap" % "3.2.0",
+    "org.webjars" % "requirejs" % "2.1.14-1",
+    "org.webjars" % "angular-ui-bootstrap" % "0.11.0-2" exclude("org.webjars", "angularjs"),
+    "org.webjars" % "lodash" % "2.4.1-4",
     cache,
     filters,
     ws
   )
 }
+
+// Asset pipeline tasks
+pipelineStages := Seq(closure, digest, gzip)
+
+Closure.flags := Seq("--formatting=PRETTY_PRINT", "--accept_const_keyword")
+
+//JsEngineKeys.engineType := JsEngineKeys.EngineType.Node
 
 doc in Compile <<= target.map(_ / "none")

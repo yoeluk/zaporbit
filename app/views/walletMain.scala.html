@@ -35,8 +35,8 @@
         }
         </script>
         <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-        <link rel="stylesheet" href="@routes.Assets.at("stylesheets/main.css")" media="all">
-        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+        <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/main.css")" media="all">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
     </head>
     <body>
         <div class="container">
@@ -50,7 +50,7 @@
             </div>
             <div style="margin-top: 20px;">
                 <p style="text-align: center"> Payment Methods: </p>
-                <img src="@routes.Assets.at("images/paymentmarks-dark.png")" class="paymentmark" style="">
+                <img src="@routes.Assets.versioned("images/paymentmarks-dark.png")" class="paymentmark" style="">
             </div>
             <div class="footer">
                 <p>&copy; ZapOrbit 2014</p>

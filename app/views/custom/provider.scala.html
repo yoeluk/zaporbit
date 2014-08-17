@@ -14,7 +14,7 @@
                     <a href="@env.routes.authenticationUrl(provider.id)"> <img src="@securesocial.controllers.routes.Assets.at(imageUrl)"/></a>
                 }
             } else {
-                <a href="@env.routes.authenticationUrl(provider.id)"> <img class="displayed" src="@routes.Assets.at("images/lwfb-medium.png")"/></a>
+                <a href="@env.routes.authenticationUrl(provider.id)"> <img class="displayed" src="@routes.Assets.versioned("images/lwfb-medium.png")"/></a>
             }
 
             @if( provider.authMethod == UserPassword ) {
