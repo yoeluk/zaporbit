@@ -48,7 +48,7 @@ pipelineStages := Seq(closure, digest, gzip)
 
 Closure.flags := Seq("--formatting=PRETTY_PRINT", "--accept_const_keyword")
 
-JsEngineKeys.engineType := JsEngineKeys.EngineType.Node
+//JsEngineKeys.engineType := JsEngineKeys.EngineType.Node
 
 doc in Compile <<= target.map(_ / "none")
 
