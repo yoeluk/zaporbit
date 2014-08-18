@@ -68,7 +68,7 @@ object AppCryptor {
 }
 
 object API extends Controller {
-  import  AppCryptor._
+  import AppCryptor._
   import FormMappings._
 
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
@@ -1092,6 +1092,12 @@ object API extends Controller {
     )))
   }
 
+  /**
+   *
+   * @param page
+   * @param userid
+   * @return
+   */
   def getConversationsForUser(page: Int, userid: Long) = DBAction { implicit rs =>
     val conversationsPage = Conversations.convsForUser(page = page, userid = userid)
     Ok(Json.obj(
@@ -1100,6 +1106,10 @@ object API extends Controller {
     ))
   }
 
+  /**
+   *
+   * @return
+   */
   def submitFeedback = DBAction(parse.json(maxLength = 1024)) { implicit  rs =>
     (rs.request.body \ "feedback").validate[Feedback].map { feedback =>
       Feedbacks.findByUserWithTransid(feedback.transid, feedback.by_userid) match {
@@ -1145,7 +1155,7 @@ object API extends Controller {
 
   /**
    *
-   * @param userid
+   * @param userid user id
    * @return
    */
   def returnRatingForUser(userid: Long) = DBAction { implicit rs =>
