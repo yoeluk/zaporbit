@@ -4,6 +4,7 @@
 
 <html xmlns="http://www.w3.org/1999/html" ng-app="ZapOrbit">
     <head>
+        <base href="/">
         <meta charset="utf-8">
         <meta content="IE=edge" http-equiv="X-UA-Compatible">
         <meta content="width=device-width, initial-scale=1" name="viewport">
@@ -18,7 +19,7 @@
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
         <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?sensor=false"></script>
     </head>
-    <body>
+    <body ng-controller="AppCtrl">
 
         @mainHeader()
 
@@ -48,6 +49,6 @@
         <script src="@routes.Assets.versioned("javascripts/filters.js")"></script>
         <script src="@routes.Assets.versioned("javascripts/directives.js")"></script>
         <script src="@routes.WebJarAssets.at(WebJarAssets.locate("lodash.underscore.js"))"></script>
-        <script src="@routes.Assets.versioned("javascripts/lib/angular-google-maps-1.2.0.js")"></script>
+        <script src="@routes.Assets.versioned("javascripts/lib/angular-google-maps.js")"></script>
     </body>
 </html>

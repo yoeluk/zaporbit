@@ -1,123 +1,158 @@
 "use strict"
 
 # Controllers
-angular.module("ZapOrbit.controllers", ["ngResource"]
-).controller("AppCtrl", ["$scope", "$location", ($scope, $location) ->
+angular.module "ZapOrbit.controllers", ["ngResource"]
+.controller "AppCtrl", ["$scope", "$location", ($scope, $location) ->
     $scope.go = (path) ->
       $location.path path
-]).controller("HomeCtr", ["$scope", "$http", ($scope, $http) ->
-  $scope.message = "Entice with higher confidence!"
-  $scope.motivation = "Free App, lots of possibilities!"
-]).controller("ShoppingCtrl", ["$scope", "LocationService", ($scope, LocationService) ->
-  $scope.submit = (form) ->
-    $scope.submitted = true
-    return if form.$invalid
+]
+.controller "HomeCtr", ["$scope", "$http", ($scope, $http) ->
+    $scope.message = "Entice with higher confidence!"
+    $scope.motivation = "Free App, lots of possibilities!"
+]
+.controller "ShoppingCtrl", ["$timeout", "$scope", "LocationService", "ReverseGeocode", ($timeout, $scope, LocationService, ReverseGeocode) ->
 
-    $scope.inProgress = true
-    console.log "search submitted" + form
-    $scope.inProgress = false
+    $scope.submit = (form) ->
+      $scope.submitted = true
+      return if form.$invalid
+      $scope.inProgress = true
+      console.log "search submitted" + form
+      $scope.inProgress = false
 
-  center =
-    latitude: 45
-    longitude: -73
+    zoom = 10
+    timeInMs = 500
 
-  $scope.markerOption =
-    visible: false
-    title: "Your Location"
+    $scope.showMap = navigator.geolocation
+    $scope.showSearch = !navigator.geolocation
 
-  $scope.map =
-    center: center
-    zoom: 8
-    control: {}
-    options:
-      streetViewControl: false,
-      panControl: false,
-      maxZoom: 20,
-      minZoom: 3
+    $scope.markerOption =
+      visible: false
+      title: "Your Location"
 
-  $scope.coords = center
+    if LocationService.coords()
+      $scope.markerOption.visible = true
+      $scope.coords = LocationService.coords()
+      if ReverseGeocode.address() then console.log ReverseGeocode.address()
+      zoom = 13
+    else
+      $scope.coords =
+        latitude: 37.77
+        longitude: -122.22
 
-  showLocation = (coords) ->
-    $scope.coords = coords
-    $scope.markerOption.visible = true
-    $scope.map.control.refresh
-      latitude: coords.latitude
-      longitude: coords.longitude
-    $scope.map.control.getGMap().setZoom 12
+    $scope.map =
+      center: $scope.coords
+      zoom: zoom
+      control: {}
+      panTo: false
+      options:
+        streetViewControl: false,
+        panControl: false,
+        maxZoom: 20,
+        minZoom: 3
 
-  LocationService(showLocation)
+    displayError = (error) ->
+      errors =
+        1: 'Permission denied'
+        2: 'Position unavailable'
+        3: 'Request timeout'
+      $scope.$apply (->
+        $scope.showMap = false
+        $scope.showSearch = true)
 
-]).controller("SupportCtrl", ["$scope", "$http", ($scope, $http) ->
+    addressCallback = (addr) ->
+      console.log addr
 
-  $scope.allIssues = []
-  $scope.oneAtATime = false
-  $scope.isopen = true
+    showLocation = (latlng) ->
+      if $scope.map.control.getGMap?
+        $scope.coords = latlng
+        $scope.markerOption.visible = true
+        $scope.map.control.getGMap().setZoom 13
+        $scope.map.control.refresh
+          latitude: latlng.latitude
+          longitude: latlng.longitude
+        ReverseGeocode.geocodeAddress(latlng.latitude, latlng.longitude, addressCallback)
+      else
+        $timeout (->
+          showLocation(latlng)
+        ), timeInMs
 
-  $scope.bugs = 0
-  $scope.tasks = 0
-  $scope.features = 0
-  $scope.ioss = 0
-  $scope.webs = 0
+    if $scope.showMap && !LocationService.coords() then LocationService.location showLocation, displayError
 
-  getStats = ->
-    $http
-      method: "GET"
-      url: "api/youtrack/getstats"
-      context: this
-    .success (data, status) ->
-      if status == 200
-        #console.log data
-        count = data["count"]
-        $scope.bugs = count[0]
-        $scope.tasks = count[1]
-        $scope.features = count[2]
-        $scope.ioss = count[3]
-        $scope.webs = count[4]
-        $scope.pipeline = true
+]
+.controller "SupportCtrl", ["$scope", "$http", ($scope, $http) ->
 
-  $scope.getIssues = getIssues = ->
-    $http
-      method: "GET"
-      url: "api/youtrack/allissues"
-      context: this
-    .success (data, status) ->
-      if status == 200
-        $scope.allIssues = data["issues"]["issue"]
-        i = 0
-        l = $scope.allIssues.length
-        while i < l
-          issue = $scope.allIssues[i]
-          issue.props = {}
-          ii = 0
-          ll = issue["field"].length
-          while ii < ll
-            prop =  issue["field"][ii]["name"]
-            val = issue["field"][ii]["value"]
-            issue.props[prop] = val
-            ++ii
-          ++i
-        getStats()
-    .error (data, status, headers, config) ->
+    $scope.allIssues = []
+    $scope.oneAtATime = false
+    $scope.isopen = true
 
-  getIssues()
+    $scope.bugs = 0
+    $scope.tasks = 0
+    $scope.features = 0
+    $scope.ioss = 0
+    $scope.webs = 0
 
-]).controller("HeaderController", ["$scope", "$location", ($scope, $location) ->
+    getStats = ->
+      $http
+        method: "GET"
+        url: "api/youtrack/getstats"
+        context: this
+      .success (data, status) ->
+        if status == 200
+          #console.log data
+          count = data["count"]
+          $scope.bugs = count[0]
+          $scope.tasks = count[1]
+          $scope.features = count[2]
+          $scope.ioss = count[3]
+          $scope.webs = count[4]
+          $scope.pipeline = true
 
-  $scope.isActive = (viewLocation) ->
-    return viewLocation == $location.path()
+    $scope.getIssues = getIssues = ->
+      $http
+        method: "GET"
+        url: "api/youtrack/allissues"
+        context: this
+      .success (data, status) ->
+        if status == 200
+          $scope.allIssues = data["issues"]["issue"]
+          i = 0
+          l = $scope.allIssues.length
+          while i < l
+            issue = $scope.allIssues[i]
+            issue.props = {}
+            ii = 0
+            ll = issue["field"].length
+            while ii < ll
+              prop =  issue["field"][ii]["name"]
+              val = issue["field"][ii]["value"]
+              issue.props[prop] = val
+              ++ii
+            ++i
+          getStats()
+      .error (data, status, headers, config) ->
 
-]).controller("ModalIssueCtrl", ["$scope", "$modal", "$log", ($scope, $modal, $log) ->
+    getIssues()
 
-  $scope.open = (size) ->
-    modalInstance = $modal.open(
-      templateUrl: "myModalIssueContent.html"
-      controller: "ModalInstanceCtrl"
-      size: size
-    )
-    modalInstance.result.then ( ->
-    ), ->
+]
+.controller "HeaderController", ["$scope", "$location", ($scope, $location) ->
 
-]).controller("ModalInstanceCtrl", ["$scope", "$http", "$modalInstance", "$timeout", ($scope, $http, $modalInstance, $timeout) ->
+    $scope.isActive = (viewLocation) ->
+      return viewLocation == $location.path()
+
+]
+.controller "ModalIssueCtrl", ["$scope", "$modal", ($scope, $modal) ->
+
+    $scope.open = (size) ->
+      modalInstance = $modal.open(
+        templateUrl: "myModalIssueContent.html"
+        controller: "ModalInstanceCtrl"
+        size: size
+      )
+      modalInstance.result.then ( ->
+      ), ->
+
+]
+.controller "ModalInstanceCtrl", ["$scope", "$http", "$modalInstance", "$timeout", "$log", ($scope, $http, $modalInstance, $timeout, $log) ->
 
     $scope.cancel = ->
       $modalInstance.dismiss "cancel"
@@ -157,6 +192,7 @@ angular.module("ZapOrbit.controllers", ["ngResource"]
           $modalInstance.close "close"
         ), 5000
 
-]).controller("ListingCtrl", ["$scope", ($scope) ->
+]
+.controller "ListingCtrl", ["$scope", ($scope) ->
 
-])
+]

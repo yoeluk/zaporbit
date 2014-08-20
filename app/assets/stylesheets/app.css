@@ -96,4 +96,10 @@ a.issue-title:hover,a.issue-title:focus {
     left: auto;
     right: 0;
 }
+.angular-google-map-container {
+    border: 10px solid #fff;
+    box-shadow: 0 0 5px #ccc;
+    height: 265px;
+    margin-bottom: 30px;
+}
 

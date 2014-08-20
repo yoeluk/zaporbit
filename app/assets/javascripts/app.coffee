@@ -11,16 +11,19 @@ angular.module("ZapOrbit", [
   "ui.bootstrap",
   "google-maps"
 ])
-.config ["$routeProvider",($routeProvider) ->
+.config ["$locationProvider", "$routeProvider",($locationProvider, $routeProvider) ->
+  $locationProvider
+    .html5Mode false
+    .hashPrefix("!")
   $routeProvider
   .when "/",
     templateUrl: "/partials/home"
     controller: "HomeCtr"
   .when "/shopping",
-    templateUrl: "partials/shopping"
+    templateUrl: "/partials/shopping"
     controller: "ShoppingCtrl"
   .when "/support",
-    templateUrl: "partials/support"
+    templateUrl: "/partials/support"
     controller: "SupportCtrl"
   .when "/listing_item/:itemid",
     templateUrl: (param) -> "listing_item/" + param.itemid
