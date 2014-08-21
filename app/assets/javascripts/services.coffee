@@ -72,7 +72,7 @@ angular.module "ZapOrbit.services", []
         $http
           method: "POST"
           data: zoLoc
-          url: "api/listingsbylocation/0/5"
+          url: "/api/listingsbylocation/0/5"
           context: this
         .success (data, status) ->
           setAllListings(data)

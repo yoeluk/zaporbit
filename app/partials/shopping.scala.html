@@ -56,12 +56,20 @@
                         </div>
                     </div>
                 </div>-->
-                <div class="listing container-with-shadow" ng-repeat="lst in allListings">
+                <div class="listing container-with-shadow" data-ng-repeat="lst in allListings" data-ng-show="lst.listing.pictures[0]">
                     <div class="profile row">
                         <img class="profile-img pull-left" data-ng-src="http://graph.facebook.com/{{lst.user.fbuserid}}/picture?type=large" alt=""/>
                         <div class="profile-crd" style=""><a href="#"><b>{{lst.user.name}} {{lst.user.surname}}</b></a></div>
                     </div>
-                    <img class="picture-main" data-ng-src="//zaporbit.com/pictures/{{lst.listing.pictures[0]}}.jpg"/>
+                    <div class="" style="margin-bottom: 10px;"><b>» {{lst.listing.title}}</b>&emsp;<a data-ng-href="#!/listing_item/{{lst.listing.id}}">see more...</a></div>
+                    <div class="row" style="overflow: hidden; padding-left: 20px; max-height: 300px;">
+                        <div class="center-cropped pull-left" style="margin-right: 10px; margin-bottom: 10px; background-size: cover; background-image: url('//zaporbit.com/pictures/{{lst.listing.pictures[0]}}.jpg');">
+                            <img class="picture-main" data-ng-src="//zaporbit.com/pictures/{{lst.listing.pictures[0]}}.jpg"/>
+                        </div>
+                        <div data-ng-show="lst.listing.pictures[1]" class="center-cropped" style="background-size: cover; background-image: url('//zaporbit.com/pictures/{{lst.listing.pictures[1]}}.jpg');">
+                            <img class="picture-main" data-ng-src="//zaporbit.com/pictures/{{lst.listing.pictures[1]}}.jpg"/>
+                        </div>
+                    </div>
                 </div>
 
             </div>
