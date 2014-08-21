@@ -53,20 +53,17 @@ body {
         border-bottom: 0 none;
     }
 }
-
 .listing {
     display: inline;
 }
 .page-header {
     margin-top: 10px;
 }
-
 IMG.displayed {
     display: block;
     margin-left: auto;
     margin-right: auto
 }
-
 .paymentmark {
     display: block;
     margin-left: auto;

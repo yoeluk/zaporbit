@@ -44,16 +44,24 @@
                     </div>
                 </form>
 
-                <div class="" ng-repeat="lst in allListings">
+                <!--<div class="" ng-repeat="lst in allListings">
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title"></h3>
                         </div>
                         <div class="panel-body">
-                            Panel content
+                            <img class="profile-img" src="http://graph.facebook.com/{{lst.user.fbuserid}}/picture?type=large" alt=""/>
+
                             {{lst.listing.title}}
                         </div>
                     </div>
+                </div>-->
+                <div class="listing container-with-shadow" ng-repeat="lst in allListings">
+                    <div class="profile row">
+                        <img class="profile-img pull-left" data-ng-src="http://graph.facebook.com/{{lst.user.fbuserid}}/picture?type=large" alt=""/>
+                        <div class="profile-crd" style=""><a href="#"><b>{{lst.user.name}} {{lst.user.surname}}</b></a></div>
+                    </div>
+                    <img class="picture-main" data-ng-src="//zaporbit.com/pictures/{{lst.listing.pictures[0]}}.jpg"/>
                 </div>
 
             </div>
