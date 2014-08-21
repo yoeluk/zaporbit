@@ -5,7 +5,9 @@ angular.module "ZapOrbit.services", []
 .factory "LocationService", [ ->
     coords = undefined
     setCoords = (co) ->
-      coords = co
+      coords =
+        latitude: co.latitude
+        longitude: co.longitude
     getCoords = ->
       coords
     getLocation = (callback, displayError) ->
@@ -47,7 +49,9 @@ angular.module "ZapOrbit.services", []
             while i < l
               comp = results[0].address_components[i]
               if comp.types[0] == "locality" then addr.locality = comp.long_name
-              if comp.types[0] == "administrative_area_level_1" then addr.region = comp.long_name
+              if comp.types[0] == "administrative_area_level_1" then addr.administrativeArea = comp.long_name
+              if comp.types[0] == "route" then addr.street = comp.long_name
+              if comp.types[0] == "street_number" then addr.number = comp.long_name
               i++
             setAddress(addr)
             callback(addr)
@@ -58,4 +62,22 @@ angular.module "ZapOrbit.services", []
 
     geocodeAddress: geocodeAddress
     address: getAddress
+]
+.factory "ListingService", ["$http", ($http) ->
+    allListings = undefined
+    setAllListings = (listings) ->
+      allListings = listings
+    getListings = (zoLoc, callback)->
+      if !allListings
+        $http
+          method: "POST"
+          data: zoLoc
+          url: "api/listingsbylocation/0/5"
+          context: this
+        .success (data, status) ->
+          setAllListings(data)
+          callback(data)
+      else
+        callback(allListings)
+    listings: getListings
 ]

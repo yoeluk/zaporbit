@@ -1,7 +1,7 @@
 @(message: String)
 <div class="container">
     <div class="container">
-        <div class="row">
+        <div class="row template-header">
 
             <div class="col-xs-12 col-md-8">
                 <google-map
@@ -14,8 +14,10 @@
                 events="map.events"
                 options="map.options"
                 zoom="map.zoom" ng-show="showMap">
-                    <marker idkey="loc-main" coords="coords" options="markerOption"></marker>
+                    <marker idkey="loc.id" coords="loc.coords" options="loc.options" control="loc.control"></marker>
                 </google-map>
+
+                <progressbar ng-show="locProg" class="progress-striped active progress" animate="true" value="100" type="info">{{locProgMessage}}</progressbar>
 
                 <form name="newSearch" class="form-horizontal form-inline" role="form" ng-show="showSearch">
 
@@ -37,10 +39,22 @@
                     </div>
                     <div class="form-group">
                         <div class="col-sm-offset-1 col-sm-11">
-                            <button data-ng-disabled="inProgress" data-ng-click="submit(newSearch)" class="btn btn-default">Search</button>
+                            <button data-ng-disabled="inProgress" data-ng-click="search(newSearch)" class="btn btn-default">Search</button>
                         </div>
                     </div>
                 </form>
+
+                <div class="" ng-repeat="lst in allListings">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"></h3>
+                        </div>
+                        <div class="panel-body">
+                            Panel content
+                            {{lst.listing.title}}
+                        </div>
+                    </div>
+                </div>
 
             </div>
 

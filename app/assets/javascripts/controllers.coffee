@@ -10,9 +10,13 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     $scope.message = "Entice with higher confidence!"
     $scope.motivation = "Free App, lots of possibilities!"
 ]
-.controller "ShoppingCtrl", ["$timeout", "$scope", "LocationService", "ReverseGeocode", ($timeout, $scope, LocationService, ReverseGeocode) ->
+.controller "ShoppingCtrl", ["$timeout", "$scope", "LocationService", "ReverseGeocode", "ListingService", ($timeout, $scope, LocationService, ReverseGeocode, ListingService) ->
 
-    $scope.submit = (form) ->
+    $scope.locProg = false
+    $scope.locProgMessage = "Discovering your location."
+    $scope.allListings = undefined
+
+    $scope.search = (form) ->
       $scope.submitted = true
       return if form.$invalid
       $scope.inProgress = true
@@ -25,19 +29,45 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     $scope.showMap = navigator.geolocation
     $scope.showSearch = !navigator.geolocation
 
-    $scope.markerOption =
-      visible: false
-      title: "Your Location"
+    listingCallback = (listings) ->
+      $scope.allListings = listings
 
-    if LocationService.coords()
-      $scope.markerOption.visible = true
+    zoLocation = (addr) ->
+      location:
+        street: addr.street
+        locality: addr.locality
+        administrativeArea: addr.administrativeArea
+        latitude: $scope.coords.latitude
+        longitude: $scope.coords.longitude
+
+    addressCallback = (addr) ->
+      $scope.$apply(->
+        $scope.locProg = false)
+      if addr? && addr.locality?
+        ListingService.listings zoLocation(addr), listingCallback
+
+    $scope.coords =
+      latitude: 37.77
+      longitude: -122.22
+
+    $scope.loc =
+      id: 0
+      control: {}
+      options:
+        visible: false
+        title: "Your Location"
+        draggable: false
+      coords:
+        latitude: $scope.coords.latitude
+        longitude: $scope.coords.longitude
+
+    if LocationService.coords()?
       $scope.coords = LocationService.coords()
-      if ReverseGeocode.address() then console.log ReverseGeocode.address()
+      $scope.loc.options.visible = true
+      $scope.loc.coords =
+        latitude: $scope.coords.latitude
+        longitude: $scope.coords.longitude
       zoom = 13
-    else
-      $scope.coords =
-        latitude: 37.77
-        longitude: -122.22
 
     $scope.map =
       center: $scope.coords
@@ -50,33 +80,47 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
         maxZoom: 20,
         minZoom: 3
 
+    doAfterMapIsLoaded = (task, args) ->
+      if $scope.map.control.getGMap?
+        if args? then task(args) else task()
+      else
+        $timeout (->
+          doAfterMapIsLoaded task, args
+        ), timeInMs
+
+    if ReverseGeocode.address()?
+      ListingService.listings zoLocation(ReverseGeocode.address()), listingCallback
+
+
     displayError = (error) ->
       errors =
         1: 'Permission denied'
         2: 'Position unavailable'
         3: 'Request timeout'
-      $scope.$apply (->
+      $scope.$apply(->
         $scope.showMap = false
-        $scope.showSearch = true)
-
-    addressCallback = (addr) ->
-      console.log addr
+        $scope.showSearch = true
+        $scope.locProg = false)
 
     showLocation = (latlng) ->
       if $scope.map.control.getGMap?
-        $scope.coords = latlng
-        $scope.markerOption.visible = true
+        $scope.loc.coords = $scope.coords = latlng
+        $scope.loc.options.visible = true
         $scope.map.control.getGMap().setZoom 13
         $scope.map.control.refresh
           latitude: latlng.latitude
           longitude: latlng.longitude
-        ReverseGeocode.geocodeAddress(latlng.latitude, latlng.longitude, addressCallback)
+        $scope.$apply(->
+          $scope.locProgMessage = "Validating address.")
+        ReverseGeocode.geocodeAddress latlng.latitude, latlng.longitude, addressCallback
       else
         $timeout (->
           showLocation(latlng)
         ), timeInMs
 
-    if $scope.showMap && !LocationService.coords() then LocationService.location showLocation, displayError
+    if $scope.showMap && !LocationService.coords()
+      $scope.locProg = true
+      LocationService.location showLocation, displayError
 
 ]
 .controller "SupportCtrl", ["$scope", "$http", ($scope, $http) ->

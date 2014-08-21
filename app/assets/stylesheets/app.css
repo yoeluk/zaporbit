@@ -70,8 +70,8 @@ a.issue-title:hover,a.issue-title:focus {
     border-top-width: 0 !important;
 }
 
-.known-issue-header {
-    margin-top: 17px;
+.template-header {
+    margin-top: 20px;
     padding-left: 2px;
 }
 
@@ -101,5 +101,9 @@ a.issue-title:hover,a.issue-title:focus {
     box-shadow: 0 0 5px #ccc;
     height: 265px;
     margin-bottom: 30px;
+}
+.highlight {
+    background-color: #f7f7f9;
+    min-height: 150px;
 }
 
