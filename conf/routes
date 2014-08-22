@@ -20,7 +20,9 @@ GET         /api/leaveconvo/:convid/:userid                         controllers.
 GET         /api/getfeedbacksforuser/:userid                        controllers.API.returnFeedbacksForUser(userid: Long)
 #GET         /web/listingsbylocation/:page/:radius                   controllers.API.listingsByLoc(page: Int, radius: Int)
 
+# item
 GET         /listing_item/:itemid                                   controllers.API.getListing(itemid: Long)
+GET         /modal_item/:itemid                                     controllers.API.getListing(itemid: Long)
 
 # Partials
 GET         /partials/:partial                                      @controllers.Application.partialTemplates(partial: String)

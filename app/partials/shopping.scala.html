@@ -1,8 +1,7 @@
 @(message: String)
-<div class="container">
-    <div class="container">
+<div class="container outer-container">
+    <div class="">
         <div class="row template-header">
-
             <div class="col-xs-12 col-md-8">
                 <google-map
                 center="map.center"
@@ -13,27 +12,20 @@
                 bounds="map.bounds"
                 events="map.events"
                 options="map.options"
-                zoom="map.zoom" ng-show="showMap">
+                zoom="map.zoom">
                     <marker idkey="loc.id" coords="loc.coords" options="loc.options" control="loc.control"></marker>
                 </google-map>
-
                 <progressbar ng-show="locProg" class="progress-striped active progress" animate="true" value="100" type="info">{{locProgMessage}}</progressbar>
-
                 <form name="newSearch" class="form-horizontal form-inline" role="form" ng-show="showSearch">
-
                     <div class="form-group">
-                        <label for="city" class="col-sm-1 control-label">City
-                            <!--<span class="label label-danger" data-ng-show="submitted && newSearch.city.$error.required">Required!</span>-->
-                        </label>
-                        <div class="col-sm-6">
+                        <label for="city" class="col-sm-1 control-label">City</label>
+                        <div class="col-sm-4">
                             <input type="text" class="form-control" name="city" data-ng-model="city" id="city" placeholder="City" required>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="region" class="col-sm-1 control-label">Region
-                            <!--<span class="label label-danger" data-ng-show="submitted && newSearch.region.$error.required">Required!</span>-->
-                        </label>
-                        <div class="col-sm-6">
+                        <label for="region" class="col-sm-2 control-label">Region</label>
+                        <div class="col-sm-4">
                             <input type="text" class="form-control" name="region" data-ng-model="region" id="region" placeholder="Region" required>
                         </div>
                     </div>
@@ -43,43 +35,33 @@
                         </div>
                     </div>
                 </form>
-
-                <!--<div class="" ng-repeat="lst in allListings">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title"></h3>
-                        </div>
-                        <div class="panel-body">
-                            <img class="profile-img" src="http://graph.facebook.com/{{lst.user.fbuserid}}/picture?type=large" alt=""/>
-
-                            {{lst.listing.title}}
-                        </div>
-                    </div>
-                </div>-->
                 <div class="listing container-with-shadow" data-ng-repeat="lst in allListings" data-ng-show="lst.listing.pictures[0]">
                     <div class="profile row">
-                        <img class="profile-img pull-left" data-ng-src="http://graph.facebook.com/{{lst.user.fbuserid}}/picture?type=large" alt=""/>
-                        <div class="profile-crd" style=""><a href="#"><b>{{lst.user.name}} {{lst.user.surname}}</b></a></div>
+                        <div class="pull-right" style="padding-right: 20px; color: grey; font-size: 12px;">
+                            <span am-time-ago="{{lst.listing.date}}" am-preprocess="unix"></span>
+                        </div>
+                        <img class="profile-img pull-left" data-ng-src="//graph.facebook.com/{{lst.user.fbuserid}}/picture?type=large" alt=""/>
+                        <div class="profile-crd" style=""><a href="#"><b>{{ lst.user.name }} {{ lst.user.surname }}</b></a></div>
+                        <span class="pull-right" style="margin-top: 5px; font-size: 15px; font-weight: 100; letter-spacing: 1px;"><label class="label label-info" style="margin-right: 20px; padding-top: 3px">{{ lst.listing.formatted_price }}</label></span>
                     </div>
-                    <div class="" style="margin-bottom: 10px;"><b>» {{lst.listing.title}}</b>&emsp;<a data-ng-href="#!/listing_item/{{lst.listing.id}}">see more...</a></div>
+
+                    <div ng-controller="ModalListingCtrl" class="" style="padding-left: 5px; padding-right: 5px; margin-bottom: 10px;"><b>» {{lst.listing.title}}</b>&emsp;<a href="#" data-ng-click="open('lg')">see more...</a></div>
+
                     <div class="row" style="overflow: hidden; padding-left: 20px; max-height: 300px;">
-                        <div class="center-cropped pull-left" style="margin-right: 10px; margin-bottom: 10px; background-size: cover; background-image: url('//zaporbit.com/pictures/{{lst.listing.pictures[0]}}.jpg');">
-                            <img class="picture-main" data-ng-src="//zaporbit.com/pictures/{{lst.listing.pictures[0]}}.jpg"/>
+                        <div class="center-cropped pull-left" style="margin-right: 8px; margin-bottom: 10px; background-size: cover; background-image: url('//zaporbit.com/pictures/{{lst.listing.pictures[0]}}.jpg');">
+                            <img data-ng-src="//zaporbit.com/pictures/{{lst.listing.pictures[0]}}.jpg"/>
                         </div>
                         <div data-ng-show="lst.listing.pictures[1]" class="center-cropped" style="background-size: cover; background-image: url('//zaporbit.com/pictures/{{lst.listing.pictures[1]}}.jpg');">
-                            <img class="picture-main" data-ng-src="//zaporbit.com/pictures/{{lst.listing.pictures[1]}}.jpg"/>
+                            <img data-ng-src="//zaporbit.com/pictures/{{lst.listing.pictures[1]}}.jpg"/>
                         </div>
                     </div>
                 </div>
-
             </div>
-
             <div class="col-xs-6 col-md-4">
                <!-- <div class="well well-lg"> -->
 
                <!--</div>-->
             </div>
-
         </div>
     </div>
 </div>

@@ -1,5 +1,6 @@
 package controllers
 
+import controllers.Wallet._
 import play.api._
 import play.api.mvc._
 import play.api.Play._
@@ -21,6 +22,8 @@ import java.io.File
 
 import models._
 import views._
+import partials._
+import Wallet.{displayCurrency => formatCurrency}
 
 import org.cryptonode.jncryptor._
 import play.api.libs.ws._
@@ -136,6 +139,7 @@ object API extends Controller {
             "description" -> item._1.description,
             "price" -> item._1.price,
             "locale" -> item._1.locale,
+            "formatted_price" -> formatCurrency(item._1.locale, item._1.price),
             "pictures" -> item._1.pictures,
             "shop" -> item._1.shop,
             "highlight" -> item._1.highlight,
@@ -844,7 +848,7 @@ object API extends Controller {
           case Some(loc) =>
             Users.findById(listing.userid) match {
               case Some(user) =>
-                Ok(html.listingItem(listing.title)(listing, listing.pictures.get, loc, user))
+                Ok(partials.html.modalItem(listing.title)(listing, listing.pictures.get, loc, user))
                 /*
                 Ok(Json.obj(
                   "status" -> "OK",

@@ -11,3 +11,11 @@ angular.module "ZapOrbit.filters", []
   (items) ->
     items.slice().reverse()
 ]
+.filter "currencys", [
+  "$filter"
+  "$locale"
+  ($filter, $locale) ->
+    return (num) ->
+      sym = $locale.NUMBER_FORMATS.CURRENCY_SYM
+      $filter("currency") num, "<span>" + sym + "</span>"
+]

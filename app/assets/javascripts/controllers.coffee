@@ -16,12 +16,24 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     $scope.locProgMessage = "Discovering your location."
     $scope.allListings = undefined
 
+    geocodeCallback = (addr, latlng) ->
+      console.log addr
+      console.log latlng
+      $scope.coords = latlng
+      $scope.map.control.refresh
+        latitude: latlng.latitude
+        longitude: latlng.longitude
+      addressCallback addr
+
     $scope.search = (form) ->
       $scope.submitted = true
       return if form.$invalid
       $scope.inProgress = true
-      console.log "search submitted" + form
+      console.log form
       $scope.inProgress = false
+      $scope.query =
+        address: form.city.$viewValue + ", " + form.region.$viewValue
+      ReverseGeocode.geocodeAddress 1, 1, geocodeCallback, $scope.query
 
     zoom = 10
     timeInMs = 500
@@ -40,11 +52,11 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
         latitude: $scope.coords.latitude
         longitude: $scope.coords.longitude
 
-    addressCallback = (addr) ->
+    addressCallback = (loc) ->
       $scope.$apply(->
         $scope.locProg = false)
-      if addr? && addr.locality?
-        ListingService.listings zoLocation(addr), listingCallback
+      if loc? && loc.locality?
+        ListingService.listings zoLocation(loc), listingCallback
 
     $scope.coords =
       latitude: 37.77
@@ -62,7 +74,9 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
         longitude: $scope.coords.longitude
 
     if LocationService.coords()?
-      $scope.coords = LocationService.coords()
+      $scope.coords =
+        latitude: LocationService.coords().latitude
+        longitude: LocationService.coords().longitude
       $scope.loc.options.visible = true
       $scope.loc.coords =
         latitude: $scope.coords.latitude
@@ -90,7 +104,6 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
     if ReverseGeocode.address()?
       ListingService.listings zoLocation(ReverseGeocode.address()), listingCallback
-
 
     displayError = (error) ->
       errors =
@@ -121,7 +134,6 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     if $scope.showMap && !LocationService.coords()
       $scope.locProg = true
       LocationService.location showLocation, displayError
-
 ]
 .controller "SupportCtrl", ["$scope", "$http", ($scope, $http) ->
 
@@ -176,27 +188,24 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       .error (data, status, headers, config) ->
 
     getIssues()
-
 ]
 .controller "HeaderController", ["$scope", "$location", ($scope, $location) ->
 
     $scope.isActive = (viewLocation) ->
       return viewLocation == $location.path()
-
 ]
 .controller "ModalIssueCtrl", ["$scope", "$modal", ($scope, $modal) ->
 
     $scope.open = (size) ->
       modalInstance = $modal.open(
         templateUrl: "myModalIssueContent.html"
-        controller: "ModalInstanceCtrl"
+        controller: "IssueModalInstCtrl"
         size: size
       )
       modalInstance.result.then ( ->
       ), ->
-
 ]
-.controller "ModalInstanceCtrl", ["$scope", "$http", "$modalInstance", "$timeout", "$log", ($scope, $http, $modalInstance, $timeout, $log) ->
+.controller "IssueModalInstCtrl", ["$scope", "$http", "$modalInstance", "$timeout", "$log", ($scope, $http, $modalInstance, $timeout, $log) ->
 
     $scope.cancel = ->
       $modalInstance.dismiss "cancel"
@@ -235,7 +244,61 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
           $scope.submitted = false;
           $modalInstance.close "close"
         ), 5000
+]
+.controller "ModalListingCtrl", ["$rootScope", "$scope", "$modal", ($rootScope, $scope, $modal) ->
+  $scope.lst = $scope.$parent.allListings[$scope.$index]
+  scope = $rootScope.$new()
+  scope.lst = $scope.lst
+  $scope.open = (size) ->
+    modalInstance = $modal.open(
+      scope: scope
+      #templateUrl: "modalListingContent.html"
+      templateUrl: "/modal_item/"+$scope.lst.listing.id
+      controller: "ListingModalInstCtrl"
+      size: size
+    )
+    modalInstance.result.then ( ->
+    ), ->
+]
+.controller "ListingModalInstCtrl", ["$scope", "$http", "$modalInstance", "$timeout", "$log", ($scope, $http, $modalInstance, $timeout, $log) ->
 
+  $scope.cancel = ->
+    $modalInstance.dismiss "cancel"
+
+  $scope.submit = (form) ->
+    $scope.submitted = true
+    return if form.$invalid
+
+    $scope.inProgress = true
+
+    $http
+      method: "POST"
+      data:
+        "summary": form.summary.$viewValue
+        "description": form.description.$viewValue
+      url: "api/youtrack/createissue"
+    .success (data, status) ->
+      if status == 200
+        $scope.successMsg = "Your issue has been successfully submitted. It will be listed here after it is reviewed by an engineer!";
+        $scope.inProgress = false
+      else
+        $scope.errorMsg = "Oops, we received your request, but there was an error."
+        $log.error data
+      $timeout (->
+        $scope.successMsg = null
+        $scope.errorMsg = null
+        $scope.submitted = false;
+        $modalInstance.close "close"
+      ), 6000
+    .error (data, status, headers, config) ->
+      $scope.progress = data
+      $scope.errorMsg = "There was a network error. Please try again later."
+      $log.error data
+      $timeout (->
+        $scope.errorMsg = null
+        $scope.submitted = false;
+        $modalInstance.close "close"
+      ), 5000
 ]
 .controller "ListingCtrl", ["$scope", ($scope) ->
 

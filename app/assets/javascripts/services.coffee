@@ -35,14 +35,18 @@ angular.module "ZapOrbit.services", []
       address = addr
     getAddress = ->
       address
-    geocodeAddress = (lat, lng, callback) ->
+    geocodeAddress = (lat, lng, callback, query) ->
       geocoder = new google.maps.Geocoder()
-      latlng = new google.maps.LatLng(lat, lng)
-      geocoder.geocode
-        latLng: latlng
-      , (results, status) ->
+      geocodeInput = undefined
+      if query?
+        geocodeInput = query
+      else
+        geocodeInput =
+          latLng: new google.maps.LatLng(lat, lng)
+      geocoder.geocode geocodeInput, (results, status) ->
         if status is google.maps.GeocoderStatus.OK
           if results && results[0]
+            console.log results
             addr = {}
             i = 0
             l = results[0].address_components.length
@@ -53,8 +57,12 @@ angular.module "ZapOrbit.services", []
               if comp.types[0] == "route" then addr.street = comp.long_name
               if comp.types[0] == "street_number" then addr.number = comp.long_name
               i++
+            if !addr.street then addr.street = "none"
             setAddress(addr)
-            callback(addr)
+            callback addr, {
+              latitude: results[0].geometry.location.lat()
+              longitude: results[0].geometry.location.lng()
+            }
           else
             console.log "Location not found"
         else
@@ -75,8 +83,17 @@ angular.module "ZapOrbit.services", []
           url: "/api/listingsbylocation/0/5"
           context: this
         .success (data, status) ->
-          setAllListings(data)
-          callback(data)
+          if data?
+            i = 0
+            l = data.length
+            while i < l
+              lst = data[i]
+              t = lst.listing.updated_on.split(/[- :]/)
+              d = new Date(t[0], t[1]-1, t[2], t[3], t[4], t[5])
+              lst.listing.date = d
+              i++
+            setAllListings(data)
+            callback(data)
       else
         callback(allListings)
     listings: getListings

@@ -38,6 +38,8 @@ libraryDependencies ++= {
     "org.webjars" % "angular-ui-bootstrap" % "0.11.0-2" exclude("org.webjars", "angularjs"),
     "org.webjars" % "lodash" % "2.4.1-4",
     "org.webjars" % "holderjs" % "2.3.0",
+    "org.webjars" % "angular-moment" % "0.6.2-2" exclude("org.webjars", "angularjs"),
+    "org.webjars" % "angular-google-maps" % "1.2.0" exclude("org.webjars", "angularjs"),
     cache,
     filters,
     ws

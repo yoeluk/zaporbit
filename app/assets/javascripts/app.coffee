@@ -7,9 +7,9 @@ angular.module("ZapOrbit", [
   "ZapOrbit.services",
   "ZapOrbit.directives",
   "ZapOrbit.controllers",
-  "infinite-scroll",
   "ui.bootstrap",
-  "google-maps"
+  "google-maps",
+  "angularMoment"
 ])
 .config ["$locationProvider", "$routeProvider",($locationProvider, $routeProvider) ->
   $locationProvider
@@ -29,8 +29,8 @@ angular.module("ZapOrbit", [
     templateUrl: (param) -> "listing_item/" + param.itemid
     controller: "ListingCtrl"
 ]
-angular.module('infinite-scroll', [])
-.directive('infiniteScroll', ['$rootScope', '$window', '$timeout', ($rootScope, $window, $timeout) ->
+angular.module 'infinite-scroll', []
+.directive 'infiniteScroll', ['$rootScope', '$window', '$timeout', ($rootScope, $window, $timeout) ->
 
     link: (scope, elem, attrs) ->
 
@@ -76,4 +76,4 @@ angular.module('infinite-scroll', [])
         else
           handler()
       ), 0
-])
+]

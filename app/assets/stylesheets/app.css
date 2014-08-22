@@ -109,7 +109,9 @@ a.issue-title:hover,a.issue-title:focus {
     padding-top: 10px;
     overflow: hidden;
 }
-.picture-main {
+.outer-container {
+    padding-left: 5px;
+    padding-right: 5px;
 }
 .container-with-shadow {
     border: 10px solid #fff;
@@ -118,8 +120,8 @@ a.issue-title:hover,a.issue-title:focus {
 .center-cropped {
     width: 48%;
     height: 48%;
-    min-width: 230px;
-    min-height: 230px;
+    min-width: 280px;
+    min-height: 280px;
     max-height: 300px;
     background-position: center center;
     background-repeat: no-repeat;
