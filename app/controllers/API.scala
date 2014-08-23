@@ -848,7 +848,8 @@ object API extends Controller {
           case Some(loc) =>
             Users.findById(listing.userid) match {
               case Some(user) =>
-                Ok(partials.html.modalItem(listing.title)(listing, listing.pictures.get, loc, user))
+                //Ok(partials.html.modalItem(listing.title)(listing, listing.pictures.get, loc, user))
+                Ok(partials.html.uiModalItem())
                 /*
                 Ok(Json.obj(
                   "status" -> "OK",

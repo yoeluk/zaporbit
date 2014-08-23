@@ -254,51 +254,31 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       scope: scope
       #templateUrl: "modalListingContent.html"
       templateUrl: "/modal_item/"+$scope.lst.listing.id
-      controller: "ListingModalInstCtrl"
+      controller: "ItemCarouselCtrl"
       size: size
     )
     modalInstance.result.then ( ->
     ), ->
 ]
-.controller "ListingModalInstCtrl", ["$scope", "$http", "$modalInstance", "$timeout", "$log", ($scope, $http, $modalInstance, $timeout, $log) ->
+.controller "ListingModalInstCtrl", ["$scope", "$modalInstance", ($scope, $modalInstance) ->
 
   $scope.cancel = ->
     $modalInstance.dismiss "cancel"
+]
+.controller "ItemCarouselCtrl", ["$scope", ($scope) ->
 
-  $scope.submit = (form) ->
-    $scope.submitted = true
-    return if form.$invalid
+  $scope.myInterval = 5000
+  slides = $scope.slides = []
+  $scope.addSlide = (i) ->
+    slides.push
+      image: "//zaporbit.com/pictures/" + $scope.lst.listing.pictures[i] + ".jpg"
+      text: []
 
-    $scope.inProgress = true
-
-    $http
-      method: "POST"
-      data:
-        "summary": form.summary.$viewValue
-        "description": form.description.$viewValue
-      url: "api/youtrack/createissue"
-    .success (data, status) ->
-      if status == 200
-        $scope.successMsg = "Your issue has been successfully submitted. It will be listed here after it is reviewed by an engineer!";
-        $scope.inProgress = false
-      else
-        $scope.errorMsg = "Oops, we received your request, but there was an error."
-        $log.error data
-      $timeout (->
-        $scope.successMsg = null
-        $scope.errorMsg = null
-        $scope.submitted = false;
-        $modalInstance.close "close"
-      ), 6000
-    .error (data, status, headers, config) ->
-      $scope.progress = data
-      $scope.errorMsg = "There was a network error. Please try again later."
-      $log.error data
-      $timeout (->
-        $scope.errorMsg = null
-        $scope.submitted = false;
-        $modalInstance.close "close"
-      ), 5000
+  i = 0
+  l = $scope.lst.listing.pictures.length
+  while i < l
+    $scope.addSlide(i)
+    i++
 ]
 .controller "ListingCtrl", ["$scope", ($scope) ->
 

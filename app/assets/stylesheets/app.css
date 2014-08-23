@@ -140,3 +140,10 @@ a.issue-title:hover,a.issue-title:focus {
     /* modern browsers */
     opacity: 0;
 }
+.fitted-img {
+    height: 375px;
+}
+.fitted-img img {
+    max-width: 100%;
+    max-height: 100%;
+}

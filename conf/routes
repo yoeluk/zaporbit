@@ -69,7 +69,7 @@ GET         /vassets/*file                                          controllers.
 GET         /assets/*file                                           controllers.Assets.at(path="/public", file)
 
 # WebJars
-GET         /webjars/*file                                          controllers.WebJarAssets.at(file)
+GET         /webjars/*file                                          controllers.StaticWebJarAssets.at(file)
 
 # listing images
 GET         /pictures/:file_name                                    controllers.ServeImage.at(file_name)
