@@ -2,7 +2,7 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/html" ng-app="ZapOrbit">
+<html xmlns="http://www.w3.org/1999/html" data-ng-app="ZapOrbit">
     <head>
         <base href="/">
         <meta charset="utf-8">
@@ -18,13 +18,13 @@
         <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/app.css")">
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
     </head>
-    <body ng-controller="AppCtrl">
+    <body data-ng-controller="AppCtrl">
 
         @mainHeader()
 
         @content
 
-        <div class="view" ng-view></div>
+        <div class="view" data-ng-view></div>
 
         <div class="container">
             <div class="container footer" style="margin-top: 50px;">
@@ -44,10 +44,10 @@
         <!--<script src="StaticWebJarAssets.getUrl(WebJarAssets.locate("holder.js"))"></script>-->
         <!--<script src="StaticWebJarAssets.getUrl(WebJarAssets.locate("bootstrap.min.js"))"></script>-->
 
-        <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("ui-bootstrap.min.js"))"></script>
-        <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("ui-bootstrap-tpls.min.js"))"></script>
-        <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("moment.min.js"))"></script>
-        <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("angular-moment.min.js"))"></script>
+        <script src="@StaticWebJarAssets.getUrl2(WebJarAssets.locate("ui-bootstrap.min.js"), "0.11.0-2")"></script>
+        <script src="@StaticWebJarAssets.getUrl2(WebJarAssets.locate("ui-bootstrap-tpls.min.js"), "0.11.0-2")"></script>
+        <script src="@StaticWebJarAssets.getUrl2(WebJarAssets.locate("moment.min.js"), "2.6.0-2")"></script>
+        <script src="@StaticWebJarAssets.getUrl2(WebJarAssets.locate("angular-moment.min.js"), "0.6.2-2")"></script>
 
         <script src="@routes.Assets.versioned("javascripts/app.js")"></script>
         <script src="@routes.Assets.versioned("javascripts/services.js")"></script>

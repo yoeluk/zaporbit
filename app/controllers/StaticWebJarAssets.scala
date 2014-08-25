@@ -16,4 +16,16 @@ object StaticWebJarAssets extends Controller {
     } getOrElse controllers.routes.StaticWebJarAssets.at(file).url
   }
 
+  def getUrl2(file: String, ver: String) = {
+    val maybeContentUrl = Play.configuration.getString("contentUrl")
+
+    maybeContentUrl.map { contentUrl =>
+      val parts = file.split("/").toList
+      val verFile = (for {
+        (part, i) <- parts.zipWithIndex
+      } yield if (i == 1) ver else part).mkString("/")
+      contentUrl + controllers.routes.StaticWebJarAssets.at(verFile).url
+    } getOrElse controllers.routes.StaticWebJarAssets.at(file).url
+  }
+
 }

@@ -1,5 +1,6 @@
 package controllers
 
+import com.typesafe.plugin._
 import play.api._
 import play.api.mvc._
 import play.api.Play._
@@ -26,7 +27,7 @@ import xml._
  * Created by yoelusa on 21/06/2014.
  */
 
-case class Issue(summary: String, description: String)
+case class Issue(summary: String, description: String, email: Option[String])
 
 object Youtrack extends Controller {
 
@@ -34,7 +35,8 @@ object Youtrack extends Controller {
   val listingForm = Form(
     mapping(
       "summary" -> nonEmptyText,
-      "description" -> nonEmptyText
+      "description" -> nonEmptyText,
+      "email" -> optional(of[String])
     )(Issue.apply)(Issue.unapply)
   )
 
@@ -61,7 +63,7 @@ object Youtrack extends Controller {
               )
             }
           case None =>
-            Future(InternalServerError("there was an error authenticating with youtrack@zaporbit"))
+            Future.successful(InternalServerError("there was an error authenticating with youtrack@zaporbit"))
         }
       case Some(x1_value) =>
         WS.url(url)
@@ -84,30 +86,46 @@ object Youtrack extends Controller {
 
   def createIssue = Action.async(parse.json) { implicit request =>
     request.body.validate[Issue].map { issue =>
-      val urlLogin = "http://youtrack.zaporbit.com/rest/user/login"
-      val url = "http://youtrack.zaporbit.com/rest/issue"
-      val respond = Await.result(WS.url(urlLogin)
-        .withHeaders("Accept" -> "application/json; charset=utf-8")
-        .post(Map("login" -> Seq("web_reporter"), "password" -> Seq("qWerty.19"))), 5.seconds)
-        respond.cookie("JSESSIONID") match {
-          case Some(x3) =>
-            val x4 = respond.cookie("jetbrains.charisma.main.security.PRINCIPAL").get
-            WS.url(url)
-              .withHeaders("Accept" -> "application/json; charset=utf-8")
-              .withHeaders("Cookie" -> ("JSESSIONID=" + x3.value.get + "; jetbrains.charisma.main.security.PRINCIPAL" + x4.value.get))
-              .put(
-                Map("project" -> Seq("ZO"),
-                  "summary" -> Seq(issue.summary),
-                  "description" -> Seq(issue.description))
-              ).map { resp =>
-              Ok("new issue created")
-            }
-          case None =>
-            Future(InternalServerError("there was an error authenticating with youtrack@zaporbit"))
-        }
+
+      issue.email match {
+
+        case None =>
+          val urlLogin = "http://youtrack.zaporbit.com/rest/user/login"
+          val url = "http://youtrack.zaporbit.com/rest/issue"
+          val respond = Await.result(WS.url(urlLogin)
+            .withHeaders("Accept" -> "application/json; charset=utf-8")
+            .post(Map("login" -> Seq("web_reporter"), "password" -> Seq("qWerty.19"))), 5.seconds)
+          respond.cookie("JSESSIONID") match {
+            case Some(x3) =>
+              val x4 = respond.cookie("jetbrains.charisma.main.security.PRINCIPAL").get
+              WS.url(url)
+                .withHeaders("Accept" -> "application/json; charset=utf-8")
+                .withHeaders("Cookie" -> ("JSESSIONID=" + x3.value.get + "; jetbrains.charisma.main.security.PRINCIPAL" + x4.value.get))
+                .put(
+                  Map("project" -> Seq("ZO"),
+                    "summary" -> Seq(issue.summary),
+                    "description" -> Seq(issue.description))
+                ).map { resp =>
+                Ok("new issue created")
+              }
+            case None =>
+              Future.successful(InternalServerError("there was an error authenticating with youtrack@zaporbit"))
+          }
+
+        case _ =>
+
+          val mail = use[MailerPlugin].email
+          mail.setSubject(issue.summary)
+          mail.setFrom(issue.email.get)
+          mail.setRecipient("support@zaporbit.com")
+          mail.send(issue.description)
+
+          Future.successful(Ok("there was an error authenticating with youtrack@zaporbit"))
+
+      }
+
     }.getOrElse {
-      println(request.body)
-      Future(BadRequest("posting an invalid new issue"))
+      Future.successful(BadRequest("posting an invalid new issue"))
     }
   }
 
@@ -132,7 +150,7 @@ object Youtrack extends Controller {
               Ok(resp.json)
             }
           case None =>
-            Future(InternalServerError("there was an error authenticating with youtrack@zaporbit"))
+            Future.successful(InternalServerError("there was an error authenticating with youtrack@zaporbit"))
         }
       case Some(x5_value) =>
         WS.url(url)

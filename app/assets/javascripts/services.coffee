@@ -22,7 +22,7 @@ angular.module "ZapOrbit.services", []
           navigator.geolocation.getCurrentPosition displayPosition, locError,
             enableHighAccuracy: true
             timeout: timeoutVal
-            maximumAge: 1
+            maximumAge: 10
         else
           console.log "geolocation not supported by this browser"
       else callback(coords)
@@ -46,7 +46,6 @@ angular.module "ZapOrbit.services", []
       geocoder.geocode geocodeInput, (results, status) ->
         if status is google.maps.GeocoderStatus.OK
           if results && results[0]
-            console.log results
             addr = {}
             i = 0
             l = results[0].address_components.length

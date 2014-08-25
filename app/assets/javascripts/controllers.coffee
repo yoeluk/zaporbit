@@ -139,7 +139,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
     $scope.allIssues = []
     $scope.oneAtATime = false
-    $scope.isopen = true
+    $scope.isopen = []
 
     $scope.bugs = 0
     $scope.tasks = 0
@@ -171,9 +171,8 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       .success (data, status) ->
         if status == 200
           $scope.allIssues = data["issues"]["issue"]
-          i = 0
-          l = $scope.allIssues.length
-          while i < l
+          i = $scope.allIssues.length - 1
+          while i > -1
             issue = $scope.allIssues[i]
             issue.props = {}
             ii = 0
@@ -183,7 +182,8 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
               val = issue["field"][ii]["value"]
               issue.props[prop] = val
               ++ii
-            ++i
+            $scope.isopen.push (issue.props.State[0] != 'Completed' && issue.props.State[0] != "Fixed")
+            i--
           getStats()
       .error (data, status, headers, config) ->
 
@@ -221,6 +221,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
         data:
           "summary": form.summary.$viewValue
           "description": form.description.$viewValue
+          "email": form.email.$viewValue
         url: "api/youtrack/createissue"
       .success (data, status) ->
         if status == 200
@@ -234,7 +235,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
           $scope.errorMsg = null
           $scope.submitted = false;
           $modalInstance.close "close"
-        ), 6000
+        ), 4000
       .error (data, status, headers, config) ->
         $scope.progress = data
         $scope.errorMsg = "There was a network error. Please try again later."
@@ -254,7 +255,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       scope: scope
       #templateUrl: "modalListingContent.html"
       templateUrl: "/modal_item/"+$scope.lst.listing.id
-      controller: "ItemCarouselCtrl"
+      controller: "ListingModalInstCtrl"
       size: size
     )
     modalInstance.result.then ( ->
@@ -264,6 +265,9 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
   $scope.cancel = ->
     $modalInstance.dismiss "cancel"
+
+  $scope.close = ->
+    $modalInstance.dismiss "close"
 ]
 .controller "ItemCarouselCtrl", ["$scope", ($scope) ->
 
@@ -271,11 +275,11 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
   slides = $scope.slides = []
   $scope.addSlide = (i) ->
     slides.push
-      image: "//zaporbit.com/pictures/" + $scope.lst.listing.pictures[i] + ".jpg"
+      image: "//zaporbit.com/pictures/" + $scope.$parent.lst.listing.pictures[i] + ".jpg"
       text: []
 
   i = 0
-  l = $scope.lst.listing.pictures.length
+  l = $scope.$parent.lst.listing.pictures.length
   while i < l
     $scope.addSlide(i)
     i++
