@@ -1,26 +1,23 @@
 
-<header class="header">
+<header class="header" data-ng-controller="HeaderController">
     <div role="navigation" class="navbar theme-navbar-header">
-        <div class="navbar-inner">
-            <div class="container outer-container">
-                <div class="navbar-header">
-                    <button data-target=".navbar-collapse" data-toggle="collapse" class="navbar-toggle" type="button">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a href="#" class="navbar-brand brand"> ZapOrbit </a>
-                </div>
-                <div class="navbar-collapse collapse brand" ng-controller="HeaderController">
-                    <ul class="nav navbar-nav">
-                        <li ng-class="{ active: isActive('/')}"><a href="#!">Home</a></li>
-                        <li ng-class="{ active: isActive('/shopping')}"><a href="#!/shopping">Shopping</a></li>
-                    </ul>
-                    <ul class="nav navbar-nav navbar-right">
-                        <li ng-class="{ active: isActive('/support')}"><a href="#!/support">Support</a></li>
-                    </ul>
-                </div>
+        <div class="container outer-container">
+            <div class="navbar-header">
+                <button class="navbar-toggle" data-target=".navbar-collapse" data-toggle="collapse" data-ng-init="navCollapsed = true" data-ng-click="navCollapsed = !navCollapsed">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a data-ng-href="#!/" class="navbar-brand brand"> ZapOrbit </a>
+            </div>
+            <div data-collapse="navCollapsed" class="navbar-collapse collapse navbar-responsive-collapse brand">
+                <ul class="nav navbar-nav">
+                    <li data-ng-class="{ active: isActive('/')}"><a data-ng-click="navCollapsed = !navCollapsed" data-ng-href="#!/">Home</a></li>
+                    <li data-ng-class="{ active: isActive('/shopping')}"><a data-ng-click="navCollapsed = !navCollapsed" data-ng-href="#!/shopping">Shopping</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li data-ng-class="{ active: isActive('/support')}"><a data-ng-click="navCollapsed = !navCollapsed" data-ng-href="#!/support">Support</a></li>
+                </ul>
             </div>
         </div>
     </div>

@@ -3,7 +3,7 @@
     <div class="">
         <div class="row template-header">
             <div class="col-xs-12 col-md-8">
-                <form style="padding-left: 10px; margin-bottom: 20px;" name="newSearch" class="form-horizontal form-inline" role="form" ng-show="showSearch">
+                <form style="padding-left: 10px; margin-bottom: 20px;" name="newSearch" class="form-horizontal form-inline" role="form" data-ng-show="showSearch">
                     <div class="form-group" style="">
                         <label style="margin-right: 20px" for="city" class="col-sm-1 control-label">City:</label>
                         <div class="col-sm-4">
@@ -46,14 +46,14 @@
                         <span class="pull-right" style="margin-top: 10px; font-size: 15px; font-weight: 100; letter-spacing: 1px;"><label class="label label-info" style="margin-right: 20px; padding-top: 3px">{{ lst.listing.formatted_price }}</label></span>
                     </div>
 
-                    <div ng-controller="ModalListingCtrl" class="" style="padding-left: 5px; padding-right: 5px; margin-bottom: 10px;"><b>» {{lst.listing.title}}</b>&emsp;<a href="#" data-ng-click="open('lg')">see more...</a></div>
+                    <div data-ng-controller="ModalListingCtrl" class="" style="padding-left: 5px; padding-right: 5px; margin-bottom: 10px;"><b>» {{lst.listing.title}}</b>&emsp;<a href="#" data-ng-click="open('lg')">see more...</a></div>
 
                     <div class="row" style="overflow: hidden; padding-left: 20px; max-height: 300px;">
                         <div class="center-cropped pull-left" style="margin-right: 10px; margin-bottom: 10px; background-size: cover; background-image: url('//zaporbit.com/pictures/{{lst.listing.pictures[0]}}.jpg');">
-                            <img data-ng-src="//zaporbit.com/pictures/{{lst.listing.pictures[0]}}.jpg"/>
+                            <img data-ng-src="https://zaporbit.com/pictures/{{lst.listing.pictures[0]}}.jpg"/>
                         </div>
                         <div data-ng-show="lst.listing.pictures[1]" class="center-cropped" style="background-size: cover; background-image: url('//zaporbit.com/pictures/{{lst.listing.pictures[1]}}.jpg');">
-                            <img data-ng-src="//zaporbit.com/pictures/{{lst.listing.pictures[1]}}.jpg"/>
+                            <img data-ng-src="https://zaporbit.com/pictures/{{lst.listing.pictures[1]}}.jpg"/>
                         </div>
                     </div>
                 </div>
