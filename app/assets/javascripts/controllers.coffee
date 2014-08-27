@@ -16,20 +16,26 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     $scope.locProgMessage = "Discovering your location."
     $scope.allListings = undefined
 
-    geocodeCallback = (addr, latlng) ->
-      console.log addr
-      console.log latlng
-      $scope.coords = latlng
-      $scope.map.control.refresh
-        latitude: latlng.latitude
-        longitude: latlng.longitude
-      addressCallback addr
+    setLocation = (latlng) ->
+      if $scope.map.control.getGMap? && $scope.map.control.getGMap()?
+        $scope.loc.coords = latlng
+        $scope.map.control.getGMap().setZoom 13
+        $scope.map.control.refresh
+          latitude: latlng.latitude
+          longitude: latlng.longitude
+      else
+        $timeout ->
+          setLocation latlng
+        , timeInMs
 
-    $scope.search = (form) ->
+    geocodeCallback = (addr, latlng) ->
+      setLocation latlng
+      addressCallback addr, undefined, true
+
+    $scope.locate = (form) ->
       $scope.submitted = true
       return if form.$invalid
       $scope.inProgress = true
-      console.log form
       $scope.inProgress = false
       $scope.query =
         address: form.city.$viewValue + ", " + form.region.$viewValue
@@ -45,6 +51,8 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       $scope.allListings = listings
 
     zoLocation = (addr) ->
+      $scope.city = addr.locality
+      $scope.region = addr.administrativeArea
       location:
         street: addr.street
         locality: addr.locality
@@ -52,11 +60,11 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
         latitude: $scope.coords.latitude
         longitude: $scope.coords.longitude
 
-    addressCallback = (loc) ->
-      $scope.$apply(->
-        $scope.locProg = false)
+    addressCallback = (loc, dummyParam, remote) ->
+      $scope.$apply ->
+        $scope.locProg = false
       if loc? && loc.locality?
-        ListingService.listings zoLocation(loc), listingCallback
+        ListingService.listings zoLocation(loc), listingCallback, remote
 
     $scope.coords =
       latitude: 37.77
@@ -73,15 +81,18 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
         latitude: $scope.coords.latitude
         longitude: $scope.coords.longitude
 
-    if LocationService.coords()?
+    initLocation = (loc) ->
       $scope.coords =
-        latitude: LocationService.coords().latitude
-        longitude: LocationService.coords().longitude
+        latitude: loc.latitude
+        longitude: loc.longitude
       $scope.loc.options.visible = true
       $scope.loc.coords =
         latitude: $scope.coords.latitude
         longitude: $scope.coords.longitude
       zoom = 13
+
+    if LocationService.coords()? then initLocation LocationService.coords()
+    else if ReverseGeocode.coords()? then initLocation ReverseGeocode.coords()
 
     $scope.map =
       center: $scope.coords
@@ -89,21 +100,21 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       control: {}
       panTo: false
       options:
-        streetViewControl: false,
-        panControl: false,
-        maxZoom: 20,
+        streetViewControl: false
+        panControl: false
+        maxZoom: 20
         minZoom: 3
 
     doAfterMapIsLoaded = (task, args) ->
       if $scope.map.control.getGMap?
         if args? then task(args) else task()
       else
-        $timeout (->
+        $timeout ->
           doAfterMapIsLoaded task, args
-        ), timeInMs
+        , timeInMs
 
     if ReverseGeocode.address()?
-      ListingService.listings zoLocation(ReverseGeocode.address()), listingCallback
+      ListingService.listings zoLocation(ReverseGeocode.address()), listingCallback, false
 
     displayError = (error) ->
       errors =
@@ -123,13 +134,13 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
         $scope.map.control.refresh
           latitude: latlng.latitude
           longitude: latlng.longitude
-        $scope.$apply(->
-          $scope.locProgMessage = "Validating address.")
+        $scope.$apply ->
+          $scope.locProgMessage = "Validating address."
         ReverseGeocode.geocodeAddress latlng.latitude, latlng.longitude, addressCallback
       else
-        $timeout (->
+        $timeout ->
           showLocation(latlng)
-        ), timeInMs
+        , timeInMs
 
     if $scope.showMap && !LocationService.coords()
       $scope.locProg = true
@@ -154,7 +165,6 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
         context: this
       .success (data, status) ->
         if status == 200
-          #console.log data
           count = data["count"]
           $scope.bugs = count[0]
           $scope.tasks = count[1]

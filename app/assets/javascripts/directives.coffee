@@ -25,6 +25,13 @@ angular.module "ZapOrbit.directives", []
 
   replace: true
 ]
+.directive "backImg", [->
+  link: (scope, element, attrs) ->
+    attrs.$observe "backImg", (value) ->
+      element.css
+        "background-image": "url(" + value + ")"
+        "background-size": "cover"
+]
 .directive 'infiniteScroll', ['$rootScope', '$window', '$timeout', 'THROTTLE_MILLISECONDS', ($rootScope, $window, $timeout, THROTTLE_MILLISECONDS) ->
   scope:
     infiniteScroll: '&'

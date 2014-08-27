@@ -28,13 +28,23 @@ angular.module "ZapOrbit.services", []
       else callback(coords)
     location: getLocation
     coords: getCoords
+    setCoords: setCoords
 ]
 .factory "ReverseGeocode", [ ->
+
     address = undefined
+    coords = undefined
+
+    setCoords = (c) ->
+      coords = c
+    getCoords = ->
+      coords
+
     setAddress = (addr) ->
       address = addr
     getAddress = ->
       address
+
     geocodeAddress = (lat, lng, callback, query) ->
       geocoder = new google.maps.Geocoder()
       geocodeInput = undefined
@@ -42,7 +52,7 @@ angular.module "ZapOrbit.services", []
         geocodeInput = query
       else
         geocodeInput =
-          latLng: new google.maps.LatLng(lat, lng)
+          latLng: new google.maps.LatLng lat, lng
       geocoder.geocode geocodeInput, (results, status) ->
         if status is google.maps.GeocoderStatus.OK
           if results && results[0]
@@ -57,11 +67,11 @@ angular.module "ZapOrbit.services", []
               if comp.types[0] == "street_number" then addr.number = comp.long_name
               i++
             if !addr.street then addr.street = "none"
-            setAddress(addr)
-            callback addr, {
+            setAddress addr
+            setCoords
               latitude: results[0].geometry.location.lat()
               longitude: results[0].geometry.location.lng()
-            }
+            callback addr, coords
           else
             console.log "Location not found"
         else
@@ -69,13 +79,14 @@ angular.module "ZapOrbit.services", []
 
     geocodeAddress: geocodeAddress
     address: getAddress
+    coords: getCoords
 ]
 .factory "ListingService", ["$http", ($http) ->
     allListings = undefined
     setAllListings = (listings) ->
       allListings = listings
-    getListings = (zoLoc, callback)->
-      if !allListings
+    getListings = (zoLoc, callback, remote)->
+      if !allListings || remote
         $http
           method: "POST"
           data: zoLoc
@@ -91,9 +102,9 @@ angular.module "ZapOrbit.services", []
               d = new Date(t[0], t[1]-1, t[2], t[3], t[4], t[5])
               lst.listing.date = d
               i++
-            setAllListings(data)
-            callback(data)
+            setAllListings data
+            callback data
       else
-        callback(allListings)
+        callback allListings
     listings: getListings
 ]
