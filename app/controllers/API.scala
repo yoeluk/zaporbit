@@ -129,41 +129,48 @@ object API extends Controller {
   }
   implicit val implicitListingZOLocationWrites = new Writes[Page[(Listing, ZOLocation, User)]] {
     def writes(page: Page[(Listing, ZOLocation, User)]): JsValue = {
-      JsArray(
-        for {
-          item <- page.items
-        } yield Json.obj(
-          "listing" -> Json.obj(
-            "id" -> item._1.id,
-            "title" -> item._1.title,
-            "description" -> item._1.description,
-            "price" -> item._1.price,
-            "locale" -> item._1.locale,
-            "formatted_price" -> formatCurrency(item._1.locale, item._1.price),
-            "pictures" -> item._1.pictures,
-            "shop" -> item._1.shop,
-            "highlight" -> item._1.highlight,
-            "waggle" -> item._1.waggle,
-            "telephone" -> item._1.telephone,
-            "userid" -> item._1.userid,
-            "created_on" -> item._1.created_on.orNull.toString,
-            "updated_on" -> item._1.updated_on.orNull.toString
-          ),
-          "location" -> Json.obj(
-            "street" -> item._2.street,
-            "locality" -> item._2.locality,
-            "latitude" -> item._2.latitude,
-            "longitude" -> item._2.longitude
-          ),
-          "user" -> Json.obj(
-            "id" -> item._3.id,
-            "name" -> item._3.name,
-            "surname" -> item._3.surname,
-            "fbuserid" -> item._3.fbuserid,
-            "isMerchant" -> item._3.isMerchant,
-            "email" -> item._3.email,
-            "created_on" -> item._3.created_on
+      Json.obj(
+        "listings" -> JsArray(
+          for {
+            item <- page.items
+          } yield Json.obj(
+            "listing" -> Json.obj(
+              "id" -> item._1.id,
+              "title" -> item._1.title,
+              "description" -> item._1.description,
+              "price" -> item._1.price,
+              "locale" -> item._1.locale,
+              "formatted_price" -> formatCurrency(item._1.locale, item._1.price),
+              "pictures" -> item._1.pictures,
+              "shop" -> item._1.shop,
+              "highlight" -> item._1.highlight,
+              "waggle" -> item._1.waggle,
+              "telephone" -> item._1.telephone,
+              "userid" -> item._1.userid,
+              "created_on" -> item._1.created_on.orNull.toString,
+              "updated_on" -> item._1.updated_on.orNull.toString
+            ),
+            "location" -> Json.obj(
+              "street" -> item._2.street,
+              "locality" -> item._2.locality,
+              "latitude" -> item._2.latitude,
+              "longitude" -> item._2.longitude
+            ),
+            "user" -> Json.obj(
+              "id" -> item._3.id,
+              "name" -> item._3.name,
+              "surname" -> item._3.surname,
+              "fbuserid" -> item._3.fbuserid,
+              "isMerchant" -> item._3.isMerchant,
+              "email" -> item._3.email,
+              "created_on" -> item._3.created_on
+            )
           )
+        ),
+        "paging" -> Json.obj(
+          "page" -> page.page,
+          "offset" -> page.offset,
+          "total" -> page.total
         )
       )
     }
@@ -592,7 +599,7 @@ object API extends Controller {
   )
 
   /**************************/
-  /**** GET REQUESTS API ****/
+  /**** REQUESTS API ****/
   /**************************/
 
   def listingsByLoc(page: Int, radius: Int) = DBAction(parse.json(maxLength = 1024)) {
@@ -600,6 +607,7 @@ object API extends Controller {
       (rs.request.body \ "location").validate[ZOLocation].map { loc =>
         val userid = rs.request.queryString.get("id").flatMap(_.headOption).getOrElse("0").toLong
         val pageResult = Locations.listByLoc(page = page, radius = radius, loc = loc, userid = userid)
+        //val pageResult = Locations.testListByLoc(page = page, radius = radius, loc = loc, userid = userid)
         Ok(Json.toJson(pageResult))
       }.getOrElse(BadRequest(Json.obj(
         "status" -> "KO",
@@ -640,8 +648,6 @@ object API extends Controller {
   def downloadPicture(picture: String) = Action {
     Ok.sendFile(new File(configuration.getString("pictures_dir").get + picture + ".jpg"))
   }
-
-  /**** PUT/POST REQUESTS API ****/
 
   /**
    *

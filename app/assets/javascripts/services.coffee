@@ -3,13 +3,17 @@
 # Services
 angular.module "ZapOrbit.services", []
 .factory "LocationService", [ ->
+
     coords = undefined
+
     setCoords = (co) ->
       coords =
         latitude: co.latitude
         longitude: co.longitude
+
     getCoords = ->
       coords
+
     getLocation = (callback, displayError) ->
       displayPosition = (position) ->
         setCoords(position.coords)
@@ -26,6 +30,7 @@ angular.module "ZapOrbit.services", []
         else
           console.log "geolocation not supported by this browser"
       else callback(coords)
+
     location: getLocation
     coords: getCoords
     setCoords: setCoords
@@ -81,30 +86,53 @@ angular.module "ZapOrbit.services", []
     address: getAddress
     coords: getCoords
 ]
-.factory "ListingService", ["$http", ($http) ->
+.factory "ListingService", ["$http", "pageSize", ($http, pageSize) ->
+
     allListings = undefined
-    setAllListings = (listings) ->
-      allListings = listings
-    getListings = (zoLoc, callback, remote)->
-      if !allListings || remote
-        $http
-          method: "POST"
-          data: zoLoc
-          url: "/api/listingsbylocation/0/5"
-          context: this
-        .success (data, status) ->
-          if data?
-            i = 0
-            l = data.length
-            while i < l
-              lst = data[i]
-              t = lst.listing.updated_on.split(/[- :]/)
-              d = new Date(t[0], t[1]-1, t[2], t[3], t[4], t[5])
-              lst.listing.date = d
-              i++
-            setAllListings data
-            callback data
+    paging = undefined
+    filterStr = undefined
+
+    setAllListings = (d) ->
+      allListings = d.listings
+      paging = d.paging
+
+    getPaging = ->
+      paging
+
+    getFilterStr = ->
+      filterStr
+
+    getData = (url, body, callback) ->
+      $http
+        method: "POST"
+        data: body
+        url: url
+        context: this
+      .success (data, status) ->
+        if data?
+          i = 0
+          l = data.listings.length
+          while i < l
+            lst = data.listings[i]
+            t = lst.listing.updated_on.split(/[- :]/)
+            d = new Date(t[0], t[1]-1, t[2], t[3], t[4], t[5])
+            lst.listing.date = d
+            i++
+          setAllListings data
+          callback allListings
+
+    getListings = (body, callback, remote, filter, page)->
+      if !page then page = 0
+      if (!filter || filter == "") && (!allListings || remote)
+        getData "/api/listingsbylocation/"+page+"/10", body, callback
+        filterStr = undefined
+      else if filter
+        getData "/api/filterlocation/"+page+"?filter="+filter, body, callback
+        filterStr = filter
       else
         callback allListings
+
     listings: getListings
+    paging: getPaging
+    filter: getFilterStr
 ]

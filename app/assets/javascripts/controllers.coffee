@@ -10,11 +10,17 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     $scope.message = "Entice with higher confidence!"
     $scope.motivation = "Free App, lots of possibilities!"
 ]
-.controller "ShoppingCtrl", ["$timeout", "$scope", "LocationService", "ReverseGeocode", "ListingService", ($timeout, $scope, LocationService, ReverseGeocode, ListingService) ->
+.controller "ShoppingCtrl", ["$timeout", "$scope", "LocationService", "ReverseGeocode", "ListingService", "pageSize",
+  ($timeout, $scope, LocationService, ReverseGeocode, ListingService, pageSize) ->
 
     $scope.locProg = false
     $scope.locProgMessage = "Discovering your location."
     $scope.allListings = undefined
+    $scope.pageSize = pageSize
+    $scope.pageRange = ->
+      new Array(Math.ceil $scope.paging.total/5)
+    $scope.indexes = ->
+      Math.floor $scope.paging.total/5/25
 
     setLocation = (latlng) ->
       if $scope.map.control.getGMap? && $scope.map.control.getGMap()?
@@ -38,7 +44,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       $scope.inProgress = true
       $scope.inProgress = false
       $scope.query =
-        address: form.city.$viewValue + ", " + form.region.$viewValue
+        address: $scope.city + ", " + $scope.region
       ReverseGeocode.geocodeAddress 1, 1, geocodeCallback, $scope.query
 
     zoom = 10
@@ -49,6 +55,8 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
     listingCallback = (listings) ->
       $scope.allListings = listings
+      $scope.paging = ListingService.paging()
+      $scope.filterStr = ListingService.filter()
 
     zoLocation = (addr) ->
       $scope.city = addr.locality
@@ -113,8 +121,11 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
           doAfterMapIsLoaded task, args
         , timeInMs
 
+    $scope.listingsForLocation = (remote, filter, page)->
+      ListingService.listings zoLocation(ReverseGeocode.address()), listingCallback, remote, filter, page
+
     if ReverseGeocode.address()?
-      ListingService.listings zoLocation(ReverseGeocode.address()), listingCallback, false
+      $scope.listingsForLocation(false)
 
     displayError = (error) ->
       errors =
@@ -145,6 +156,18 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     if $scope.showMap && !LocationService.coords()
       $scope.locProg = true
       LocationService.location showLocation, displayError
+]
+.controller "SearchCtrl", ["$scope", "ListingService", ($scope, ListingService) ->
+
+  if ListingService.filter()?
+    $scope.filterString = ListingService.filter()
+
+  $scope.filter = (form) ->
+    if $scope.filterString? && $scope.filterString.replace(/(^\s+|\s+$)/g, '') != ""
+      console.log $scope.filterString
+      $scope.$parent.listingsForLocation(true, $scope.filterString.replace(/(^\s+|\s+$)/g, ''))
+    else
+      $scope.$parent.listingsForLocation(true)
 ]
 .controller "SupportCtrl", ["$scope", "$http", ($scope, $http) ->
 

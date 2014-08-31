@@ -35,7 +35,7 @@ libraryDependencies ++= {
     "org.webjars" % "jquery" % "1.11.1",
     "org.webjars" % "bootstrap" % "3.2.0",
     "org.webjars" % "requirejs" % "2.1.14-1",
-    "org.webjars" % "angular-ui-bootstrap" % "0.11.0-2" exclude("org.webjars", "angularjs"),
+    "org.webjars" % "angular-ui-bootstrap" % "0.11.0-2",
     "org.webjars" % "holderjs" % "2.3.0",
     "org.webjars" % "angular-moment" % "0.6.2-2" exclude("org.webjars", "angularjs"),
     "org.webjars" % "angular-google-maps" % "1.2.1" exclude("org.webjars", "angularjs"),
@@ -45,14 +45,12 @@ libraryDependencies ++= {
   )
 }
 
+// Asset pipeline tasks
+pipelineStages := Seq(digest, gzip)
+
 includeFilter in (Assets, LessKeys.less) := "star-rating.less"
 
 LessKeys.compress in Assets := true
-
-// Asset pipeline tasks
-pipelineStages := Seq(closure, digest, gzip)
-
-Closure.flags := Seq("--formatting=PRETTY_PRINT", "--accept_const_keyword")
 
 //JsEngineKeys.engineType := JsEngineKeys.EngineType.Node
 

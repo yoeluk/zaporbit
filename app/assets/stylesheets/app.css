@@ -115,11 +115,11 @@ a.issue-title:hover,a.issue-title:focus {
     padding-left: 75px
 }
 .listing {
-    margin-bottom: 10px;
-    margin-top: 10px;
     padding-bottom: 5px;
     padding-top: 10px;
     overflow: hidden;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 .outer-container {
     padding-left: 5px;
@@ -184,4 +184,135 @@ and (max-device-width : 480px) {
 }
 .item-description {
     padding: 15px;
+}
+.getAll {
+    margin: 0;
+    padding-top: 7px;
+    padding-right: 0;
+    padding-left: 0;
+    text-align: center;
+}
+.paging {
+    margin-right: 0;
+    margin-left: 0;
+    margin-bottom: 10px;
+}
+.pagination {
+    margin: 0!important;
+}
+.pagination > li > a,
+.pagination > li > a:hover,
+.pagination > li > a:focus {
+    color: #41760c;
+}
+.searchPanel {
+    background-color: rgb(247, 247, 249);
+}
+.search-wrapper {
+    overflow: hidden;
+}
+.form-inline > .form-group {
+    margin: 0 !important;
+}
+.locateBtn {
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+.locateGroup {
+    float: right;
+}
+.col-centered {
+    float: none;
+    margin: 0 auto;
+}
+@media all
+and (max-width : 768px) {
+    .locateBtn {
+        margin-top: 10px;
+    }
+}
+
+input.search-query {
+    padding-left:26px!important;
+    width: 100%!important;
+    min-width: 0;
+    max-width: 100%!important;
+    /*height: 30px;*/
+}
+form.form-search {
+    position: relative;
+}
+form.form-search:before {
+    display: block;
+    width: 14px;
+    height: 14px;
+    content: "\e003";
+    font-family: 'Glyphicons Halflings';
+    background-position: -48px 0;
+    position: absolute;
+    top:6px;
+    left:8px;
+    opacity: .5;
+    z-index: 1000;
+}
+.col-xs-3ths,
+.col-sm-3ths,
+.col-md-3ths,
+.col-lg-3ths {
+    position: relative;
+    min-height: 1px;
+    margin-right: 0;
+    margin-bottom: 10px;
+}
+.col-xs-3ths {
+    width: 33.33%;
+    float: left;
+}
+@media (min-width: 768px) {
+    .col-sm-3ths {
+        width: 33.33%;
+        float: left;
+        margin-right: 75px;
+    }
+}
+@media (min-width: 992px) {
+    .col-md-3ths {
+        width: 33.33%;
+        float: left;
+        margin-right: 75px;
+    }
+}
+@media (min-width: 1200px) {
+    .col-lg-3ths {
+        width: 33.33%;
+        float: left;
+        margin-right: 75px;
+    }
+}
+.btn-buy {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
+    display: block;
+    padding: 5px 8px;
+    font-size: 12px;
+    color: rgb(119, 119, 119);
+    cursor: pointer;
+    background-color: rgb(255, 255, 255);
+    border: 1px solid rgb(225, 225, 232);
+    border-radius: 0 4px 0 4px;
+}
+.pagination > .active > a,
+.pagination > .active > a:hover,
+.pagination > .active > a:focus {
+    background-color: #92d13d;
+    border-color: #92d13d;
+}
+
+input:focus,
+textarea:focus {
+    border-color: #92d13d!important;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.055) inset, 0 0 8px rgba(84, 139, 12, 0.5)!important;
+    outline: 0 none;
 }

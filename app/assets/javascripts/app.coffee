@@ -11,6 +11,7 @@ angular.module("ZapOrbit", [
   "google-maps",
   "angularMoment"
 ])
+.constant "pageSize", 25
 .config ["$locationProvider", "$routeProvider",($locationProvider, $routeProvider) ->
   $locationProvider
     .html5Mode false

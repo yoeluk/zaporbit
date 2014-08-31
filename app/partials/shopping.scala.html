@@ -3,25 +3,27 @@
     <div class="">
         <div class="row template-header">
             <div class="col-xs-12 col-md-8">
-                <form style="padding-left: 10px; margin-bottom: 20px;" name="newSearch" class="form-horizontal form-inline" role="form" data-ng-show="showSearch">
-                    <div class="form-group" style="">
-                        <label style="margin-right: 20px" for="city" class="col-sm-1 control-label">City:</label>
-                        <div class="col-sm-4">
-                            <input type="text" class="input-styled form-control" name="city" data-ng-model="city" id="city" placeholder="City Name" required>
+
+                <div class="row paging" data-ng-show="showSearch">
+                    <form style="" name="newLoc" class="form-horizontal form-inline" role="form">
+                        <div class="col-sm-3ths col-md-3ths col-lg-3ths">
+                            <div class="input-group input-group-sm" style="width: 100%!important;">
+                                <span class="input-group-addon">City:</span>
+                                <input type="text" class="form-control" name="city" data-ng-model="city" id="city" placeholder="City Name" required>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label style="margin-right: 20px" for="region" class="col-sm-2 control-label">Region:</label>
-                        <div class="col-sm-4">
-                            <input type="text" class="input-styled form-control" name="region" data-ng-model="region" id="region" placeholder="Region or State" required>
+                        <div class="col-sm-3ths col-md-3ths col-lg-3ths">
+                            <div class="input-group input-group-sm" style="width: 100%!important;">
+                                <span class="input-group-addon">Region:</span>
+                                <input type="text" class="form-control" name="region" data-ng-model="region" id="region" placeholder="Region or State" required>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-offset-1 col-sm-11">
-                            <button data-ng-disabled="inProgress" data-ng-click="locate(newSearch)" class="btn btn-default">Locate</button>
+                        <div class="col-sm-3ths col-md-3ths col-lg-3ths" style="width: 50px; margin-right: 0;">
+                            <button data-ng-disabled="inProgress" data-ng-click="locate(newLoc)" class="btn btn-default btn-sm">Locate</button>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
+
                 <google-map
                 center="map.center"
                 pan="map.panTo"
@@ -32,8 +34,50 @@
                 events="map.events"
                 options="map.options"
                 zoom="map.zoom">
-                    <marker idkey="loc.id" coords="loc.coords" options="loc.options" control="loc.control"></marker>
-                </google-map>
+                    <marker
+                    idkey="loc.id"
+                    coords="loc.coords"
+                    options="loc.options"
+                    control="loc.control"></marker></google-map>
+
+                <div class="panel panel-default" data-ng-if="(paging && paging.total > 0) || filterStr" data-ng-controller="SearchCtrl">
+                    <div class="panel-body searchPanel">
+                        <div class="search-wrapper">
+                            <form name="search" class="form-search" role="form">
+                                <div class="input-group input-group-sm">
+                                    <input type="text" class="form-control search-query" data-ng-model="filterString"
+                                    id="filter" name="filter" placeholder="Search..." />
+                                    <span class="input-group-btn">
+                                        <button type="submit" data-ng-click="filter(search)" class="btn btn-default btn-sm"> Search</button>
+                                    </span>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row paging" data-ng-if="paging && paging.total > 0">
+                    <label style="padding-left:5px;margin-bottom:0;margin-top:15px;" > Listing {{ paging.offset+1 }} to {{ paging.offset + allListings.length }} out of {{ paging.total }} </label>
+                    <div class="pull-right">
+                        <ul class="pagination" data-ng-repeat="i in pageRange() track by $index" data-ng-if="$index*5 < paging.page + 1 && paging.page + 1 < $index*5 + 6">
+                            <li data-ng-class="{disabled:$index==0}">
+                                <a href="javascript:;" data-ng-click="$index>0 && listingsForLocation(true,'',$index*5-1)">&laquo;</a></li>
+                            <li data-ng-class="{active:$index*5==paging.page}">
+                                <a href="javascript:;" data-ng-click="listingsForLocation(true,'',$index*5)"> {{ ($index * 5) + 1 }} </a></li>
+                            <li data-ng-class="{active:$index*5+1==paging.page}" data-ng-if="$index*5*pageSize + pageSize+1 <= paging.total">
+                                <a href="javascript:;" data-ng-click="listingsForLocation(true,'',$index*5+1)"> {{ ($index * 5) + 2 }} </a></li>
+                            <li data-ng-class="{active:$index*5+2==paging.page}" data-ng-if="$index*5*pageSize + 2*pageSize+1 <= paging.total">
+                                <a href="javascript:;" data-ng-click="listingsForLocation(true,'',$index*5+2)"> {{ ($index * 5) + 3 }} </a></li>
+                            <li data-ng-class="{active:$index*5+3==paging.page}" data-ng-if="$index*5*pageSize + 3*pageSize+1 <= paging.total">
+                                <a href="javascript:;" data-ng-click="listingsForLocation(true,'',$index*5+3)"> {{ ($index * 5) + 4 }} </a></li>
+                            <li data-ng-class="{active:$index*5+4==paging.page}" data-ng-if="$index*5*pageSize + 4*pageSize+1 <= paging.total">
+                                <a href="javascript:;" data-ng-click="listingsForLocation(true,'',$index*5+4)"> {{ ($index * 5) + 5 }} </a></li>
+                            <li data-ng-class="{disabled: $index == indexes()}">
+                                <a href="javascript:;" data-ng-click="$index < indexes() && listingsForLocation(true,'',$index*5+5)">&raquo;</a></li>
+                        </ul>
+                    </div>
+                </div>
+
                 <progressbar ng-if="locProg" class="progress-striped active progress" animate="true" value="100" type="info"> {{ locProgMessage }} </progressbar>
 
                 <div class="listing container-with-shadow" data-ng-repeat="lst in allListings" data-ng-if="lst.listing.pictures[0]">
@@ -41,21 +85,37 @@
                         <div class="pull-right" style="padding-right: 20px; color: grey; font-size: 12px;">
                             <span data-am-time-ago="{{lst.listing.date}}" data-am-preprocess="unix"></span>
                         </div>
-                        <img class="profile-img pull-left" data-ng-src="//graph.facebook.com/{{lst.user.fbuserid}}/picture?type=large" src="" alt=""/>
+                        <img class="profile-img pull-left" data-ng-src="//graph.facebook.com/v2.1/{{lst.user.fbuserid}}/picture?height=200&width=200" src="" alt=""/>
                         <div class="profile-crd" style=""><a href="#"><b>{{ lst.user.name }} {{ lst.user.surname }}</b></a></div>
                         <span class="pull-right" style="margin-top: 10px; font-size: 15px; font-weight: 100; letter-spacing: 1px;">
-                            <label class="label label-info" style="margin-right: 20px; padding-top: 3px">{{ lst.listing.formatted_price }}</label>
+                            <label class="label label-info" style="margin-right: 20px; padding-top: 3px"> {{ lst.listing.formatted_price }} </label>
                         </span>
                     </div>
-
                     <div data-ng-controller="ModalListingCtrl" class="" style="padding-left: 5px; padding-right: 5px; margin-bottom: 10px;">
-                        <b>» {{lst.listing.title}}</b>&emsp;<a href="#" data-ng-click="open('lg')">see more...</a>
+                        <b>» {{ lst.listing.title }} </b>&emsp;<a href="#" data-ng-click="open('lg')">see more...</a>
                     </div>
-
                     <div class="row" style="overflow: scroll; padding-left: 20px; max-height: 300px;">
                         <div class="center-cropped pull-left" data-back-img="https://zaporbit.com/pictures/{{lst.listing.pictures[0]}}.jpg" style="margin-right: 10px; margin-bottom: 10px;"></div>
                         <div class="center-cropped" data-back-img="https://zaporbit.com/pictures/{{lst.listing.pictures[1]}}.jpg" data-ng-if="lst.listing.pictures[1]"></div>
                     </div>
+                </div>
+                <div class="row paging" style="text-align: center" data-ng-if="paging && paging.total > 0">
+                    <ul class="pagination" data-ng-repeat="i in pageRange() track by $index" data-ng-if="$index*5 < paging.page + 1 && paging.page + 1 < $index*5 + 6">
+                        <li data-ng-class="{disabled:$index==0}">
+                            <a href="javascript:;" data-ng-click="$index>0 && listingsForLocation(true,'',$index*5-1)">&laquo;</a></li>
+                        <li data-ng-class="{active:$index*5==paging.page}">
+                            <a href="javascript:;" data-ng-click="listingsForLocation(true,'',$index*5)"> {{ ($index * 5) + 1 }} </a></li>
+                        <li data-ng-class="{active:$index*5+1==paging.page}" data-ng-if="$index*5*pageSize + pageSize+1 <= paging.total">
+                            <a href="javascript:;" data-ng-click="listingsForLocation(true,'',$index*5+1)"> {{ ($index * 5) + 2 }} </a></li>
+                        <li data-ng-class="{active:$index*5+2==paging.page}" data-ng-if="$index*5*pageSize + 2*pageSize+1 <= paging.total">
+                            <a href="javascript:;" data-ng-click="listingsForLocation(true,'',$index*5+2)"> {{ ($index * 5) + 3 }} </a></li>
+                        <li data-ng-class="{active:$index*5+3==paging.page}" data-ng-if="$index*5*pageSize + 3*pageSize+1 <= paging.total">
+                            <a href="javascript:;" data-ng-click="listingsForLocation(true,'',$index*5+3)"> {{ ($index * 5) + 4 }} </a></li>
+                        <li data-ng-class="{active:$index*5+4==paging.page}" data-ng-if="$index*5*pageSize + 4*pageSize+1 <= paging.total">
+                            <a href="javascript:;" data-ng-click="listingsForLocation(true,'',$index*5+4)"> {{ ($index * 5) + 5 }} </a></li>
+                        <li data-ng-class="{disabled: $index == indexes()}">
+                            <a href="javascript:;" data-ng-click="$index < indexes() && listingsForLocation(true,'',$index*5+5)">&raquo;</a></li>
+                    </ul>
                 </div>
             </div>
             <div class="col-xs-6 col-md-4">

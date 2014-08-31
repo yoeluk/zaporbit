@@ -56,18 +56,19 @@ object Locations extends DAO {
 
   /**
    *
-   * @param page
-   * @param pageSize
-   * @param radius
-   * @param loc
-   * @param session
+   * @param page page
+   * @param pageSize page size
+   * @param radius radius around latlng
+   * @param loc zo location
+   * @param session bd session
    * @return
    */
   def listByLoc(page: Int = 0,
-            pageSize: Int = 20,
+            pageSize: Int = 25,
               radius: Int = 10,
                  loc: ZOLocation,
-                 userid: Long)(implicit session: Session): Page[(Listing, ZOLocation, User)] = {
+              userid: Long)(implicit session: Session): Page[(Listing, ZOLocation, User)] = {
+
     val offset = pageSize * page
 
     val friendsLQ = for {
@@ -107,8 +108,8 @@ object Locations extends DAO {
         l.administrativeArea.toLowerCase === loc.administrativeArea.toLowerCase
       o <- l.offer
       u <- o.user
-    } yield ((
-        o.id.?,
+    } yield (
+        (o.id.?,
         o.title,
         o.description,
         o.price,
@@ -167,8 +168,8 @@ object Locations extends DAO {
       o <- offers.filter(_.userid === f.friendid)
       l <- locations if l.locality =!= loc.locality
       u <- o.user
-    } yield ((
-        o.id.?,
+    } yield (
+        (o.id.?,
         o.title,
         o.description,
         o.price,
@@ -227,7 +228,7 @@ object Locations extends DAO {
       .list.filter( x => filters.count(
         _.r findFirstIn x._1._2.toLowerCase match {
           case None => false
-          case Some(_) => true
+          case _ => true
         }) == filters.length )
     val totalRows = q.length
     q.drop(offset).take(pageSize)
@@ -263,5 +264,102 @@ object Locations extends DAO {
    */
   def delete(id: Long)(implicit session: Session): Unit =
     locations.filter(_.id === id).delete
+
+
+  /*************** TESTING METHODS ********************/
+
+  /**
+   *
+   * @param page page
+   * @param pageSize page size
+   * @param radius radius around latlng
+   * @param loc zo location
+   * @param session bd session
+   * @return
+   */
+  def testListByLoc(page: Int = 0,
+                pageSize: Int = 25,
+                radius: Int = 10,
+                loc: ZOLocation,
+                userid: Long)(implicit session: Session): Page[(Listing, ZOLocation, User)] = {
+
+    val testPage = 0
+    val testOffset = pageSize * testPage
+    val offset = pageSize * page
+
+    val friendsLQ = for {
+      f <- friends.filter(_.userid === userid)
+      o <- offers.filter(_.userid === f.friendid)
+      l <- locations if l.locality =!= loc.locality
+      u <- o.user
+    } yield ((
+        o.id.?,
+        o.title,
+        o.description,
+        o.price,
+        o.locale,
+        o.shop,
+        o.highlight,
+        o.waggle,
+        o.telephone.?,
+        o.userid,
+        o.created_on.?,
+        o.updated_on.?),
+        (l.street,
+          l.locality,
+          l.administrativeArea,
+          l.latitude,
+          l.longitude),
+        (u.id.?,
+          u.name,
+          u.surname,
+          u.fbuserid,
+          u.email,
+          u.isMerchant.?,
+          u.created_on.?))
+
+    val q = ((for {
+      l <- locations if
+    l.locality.toLowerCase === loc.locality.toLowerCase &&
+      l.administrativeArea.toLowerCase === loc.administrativeArea.toLowerCase
+      o <- l.offer
+      u <- o.user
+    } yield (
+        (o.id.?,
+          o.title,
+          o.description,
+          o.price,
+          o.locale,
+          o.shop,
+          o.highlight,
+          o.waggle,
+          o.telephone.?,
+          o.userid,
+          o.created_on.?,
+          o.updated_on.?),
+        (l.street,
+          l.locality,
+          l.administrativeArea,
+          l.latitude,
+          l.longitude),
+        (u.id.?,
+          u.name,
+          u.surname,
+          u.fbuserid,
+          u.email,
+          u.isMerchant.?,
+          u.created_on.?))
+      ) ++ friendsLQ).sortBy(_._1._11.desc).drop(testOffset).take(pageSize).list
+    val totalRows = this.count(loc.locality, loc.administrativeArea)
+    val result = q.map { row =>
+      (Listing(row._1._1, row._1._2, row._1._3, row._1._4, row._1._5,
+        Option((for {
+          p <- pictures if p.offerid === row._1._1.get
+        } yield p.name).list), row._1._6, row._1._7, row._1._8, row._1._9, row._1._10, row._1._11, row._1._12),
+        ZOLocation(row._2._1, row._2._2, row._2._3, row._2._4, row._2._5),
+        User(row._3._1, row._3._2, row._3._3, row._3._4, row._3._5, row._3._6, row._3._7)
+        )}
+    Page(result, page, offset, 75*3)
+  }
 
 }
