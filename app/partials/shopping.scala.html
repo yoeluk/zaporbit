@@ -24,6 +24,8 @@
                     </form>
                 </div>
 
+                <progressbar ng-if="locProg" class="progress-striped active progress" animate="true" value="100" type="info"> {{ locProgMessage }} </progressbar>
+
                 <google-map
                 center="map.center"
                 pan="map.panTo"
@@ -77,8 +79,6 @@
                         </ul>
                     </div>
                 </div>
-
-                <progressbar ng-if="locProg" class="progress-striped active progress" animate="true" value="100" type="info"> {{ locProgMessage }} </progressbar>
 
                 <div class="listing container-with-shadow" data-ng-repeat="lst in allListings" data-ng-if="lst.listing.pictures[0]">
                     <div class="profile row">

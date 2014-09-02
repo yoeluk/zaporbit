@@ -10,8 +10,8 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     $scope.message = "Entice with higher confidence!"
     $scope.motivation = "Free App, lots of possibilities!"
 ]
-.controller "ShoppingCtrl", ["$timeout", "$scope", "LocationService", "ReverseGeocode", "ListingService", "pageSize",
-  ($timeout, $scope, LocationService, ReverseGeocode, ListingService, pageSize) ->
+.controller "ShoppingCtrl", ["$timeout", "$scope", "LocationService", "ReverseGeocode", "ListingService", "pageSize", "$cookies"
+  ($timeout, $scope, LocationService, ReverseGeocode, ListingService, pageSize, $cookies) ->
 
     $scope.locProg = false
     $scope.locProgMessage = "Discovering your location."
@@ -21,6 +21,9 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       new Array(Math.ceil $scope.paging.total/5)
     $scope.indexes = ->
       Math.floor $scope.paging.total/5/25
+
+    browserLoc = undefined
+    if $cookies.ZOLoc? then browserLoc = JSON.parse $cookies.ZOLoc
 
     setLocation = (latlng) ->
       if $scope.map.control.getGMap? && $scope.map.control.getGMap()?
@@ -59,6 +62,12 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       $scope.filterStr = ListingService.filter()
 
     zoLocation = (addr) ->
+      $cookies.ZOLoc = JSON.stringify
+        s: addr.street
+        c: addr.locality
+        r: addr.administrativeArea
+        lt: $scope.coords.latitude
+        ln: $scope.coords.longitude
       $scope.city = addr.locality
       $scope.region = addr.administrativeArea
       location:
@@ -101,6 +110,23 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
     if LocationService.coords()? then initLocation LocationService.coords()
     else if ReverseGeocode.coords()? then initLocation ReverseGeocode.coords()
+
+    if browserLoc && !LocationService.coords() && !ReverseGeocode.coords()
+      $scope.city = browserLoc.c
+      $scope.region = browserLoc.r
+      initLocation
+        latitude: browserLoc.lt
+        longitude: browserLoc.ln
+      zoom = 13
+      ListingService.listings
+        location:
+          street: browserLoc.s
+          locality: browserLoc.c
+          administrativeArea: browserLoc.r
+          latitude: $scope.coords.latitude
+          longitude: $scope.coords.longitude
+      , listingCallback
+      , true
 
     $scope.map =
       center: $scope.coords
@@ -147,7 +173,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
           longitude: latlng.longitude
         $scope.$apply ->
           $scope.locProgMessage = "Validating address."
-        ReverseGeocode.geocodeAddress latlng.latitude, latlng.longitude, addressCallback
+        ReverseGeocode.geocodeAddress latlng.latitude, latlng.longitude, geocodeCallback
       else
         $timeout ->
           showLocation(latlng)

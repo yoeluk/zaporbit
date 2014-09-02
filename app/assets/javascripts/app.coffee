@@ -3,6 +3,8 @@
 # Declare app level module which depends on filters, and services
 angular.module("ZapOrbit", [
   "ngRoute",
+  "ngResource",
+  "ngCookies",
   "ZapOrbit.filters",
   "ZapOrbit.services",
   "ZapOrbit.directives",
