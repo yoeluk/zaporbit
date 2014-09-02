@@ -8,6 +8,8 @@ import securesocial.core.RuntimeEnvironment
 import securesocial.core.providers.FacebookProvider
 import service.{SocialUser, MyEventListener, SocialUserService}
 
+import socialViews.MyViewTemplates
+
 import scala.collection.immutable.ListMap
 
 object Global extends WithFilters(new GzipFilter()) with play.api.GlobalSettings {

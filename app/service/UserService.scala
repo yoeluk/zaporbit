@@ -47,7 +47,7 @@ object UserFromIdentity {
 }
 
 object ExportedUserFromUser {
-  def apply(u: User, providerId: String, userId: String): BasicProfile =
+  def apply(u: User, providerId: String, userId: String)(implicit session: Session): BasicProfile =
     BasicProfile(
       providerId,
       userId,
@@ -58,7 +58,7 @@ object ExportedUserFromUser {
       None,
       AuthenticationMethod.OAuth2,
       None,
-      None,
+      OAuth2s.findByUserId(userId.toLong),
       None)
 }
 
@@ -78,11 +78,13 @@ class SocialUserService extends UserService[SocialUser] {
 
   def find(providerId: String, userId: String): Future[Option[BasicProfile]] = {
     DB.withSession { implicit s =>
-      Future(Users.findByFbId(userId.toLong) match {
+      Future.successful(
+        Users.findByFbId(userId.toLong) match {
         case Some(user) =>
-          Option(ExportedUserFromUser(user, providerId, userId))
-        case None => None
-      })
+          Some(ExportedUserFromUser(user, providerId, userId))
+        case _ => None
+        }
+      )
     }
   }
 
@@ -95,18 +97,22 @@ class SocialUserService extends UserService[SocialUser] {
    */
   def save(basicUser: BasicProfile, mode: SaveMode): Future[SocialUser] = {
     DB.withSession { implicit s =>
-      Future(Users.findByFbId(basicUser.userId.toLong) match {
-        case None =>
-          val preUser = UserFromIdentity(basicUser)
-          val id = Option(Users.insertReturningId(preUser))
-          val user = User(id, preUser.name, preUser.surname, basicUser.userId.toLong, preUser.email, preUser.isMerchant)
-          SocialUser(main = user, identities = Nil )
-        case Some(existingUser) =>
-          val persistantUser: User = UserFromIdentity(basicUser)
-          Users.update(existingUser.id, persistantUser.isMerchant, persistantUser)
-          val user = User(existingUser.id, persistantUser.name, persistantUser.surname, basicUser.userId.toLong, persistantUser.email, persistantUser.isMerchant)
-          SocialUser(main = user, identities = Nil )
-      })
+      Future.successful(
+        Users.findByFbId(basicUser.userId.toLong) match {
+          case None =>
+            val preUser = UserFromIdentity(basicUser)
+            val id = Option(Users.insertReturningId(preUser))
+            val user = preUser.copy(id = id)
+            OAuth2s.insertUpdate(basicUser.oAuth2Info.get, user.fbuserid)
+            SocialUser(main = user, identities = Nil)
+          case Some(existingUser) =>
+            val persistantUser: User = UserFromIdentity(basicUser)
+            Users.update(existingUser.id, persistantUser.isMerchant, persistantUser)
+            val user = persistantUser.copy(id = existingUser.id)
+            OAuth2s.insertUpdate(basicUser.oAuth2Info.get, user.fbuserid)
+            SocialUser(main = user, identities = Nil)
+        }
+      )
     }
   }
 

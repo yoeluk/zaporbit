@@ -5,6 +5,7 @@ package models
  */
 
 import play.api.db.slick.Config.driver.simple._
+import securesocial.core.OAuth2Info
 
 case class Page[A](items: Seq[A], page: Int, offset: Long, total: Long) {
   lazy val prev = Option(page - 1).filter(_ >= 0)
@@ -27,4 +28,5 @@ private[models] trait DAO {
   val ratings = TableQuery[Ratings]
   val merchants = TableQuery[Merchants]
   val friends = TableQuery[Friends]
+  val oauth2info = TableQuery[OAuth2s]
 }

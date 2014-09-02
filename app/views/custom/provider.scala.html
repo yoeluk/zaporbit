@@ -1,4 +1,4 @@
-@(providerId: String, loginForm: Option[Form[(String, String)]] = None)(implicit request: RequestHeader, lang: Lang, env: securesocial.core.RuntimeEnvironment[_])
+@(providerId: String, loginForm: Option[Form[(String, String)]] = None, redirect: Option[String] = None)(implicit request: RequestHeader, lang: Lang, env: securesocial.core.RuntimeEnvironment[_])
 
 @import securesocial.core.providers.UsernamePasswordProvider
 @import securesocial.core.AuthenticationMethod._
@@ -14,7 +14,7 @@
                     <a href="@env.routes.authenticationUrl(provider.id)"> <img src="@securesocial.controllers.routes.Assets.at(imageUrl)"/></a>
                 }
             } else {
-                <a href="@env.routes.authenticationUrl(provider.id)"> <img class="displayed" src="@routes.Assets.versioned("images/lwfb-medium.png")"/></a>
+                <a href="@env.routes.authenticationUrl(provider.id, redirect)"> <img class="displayed" src="@routes.Assets.versioned("images/lwfb-medium.png")"/></a>
             }
 
             @if( provider.authMethod == UserPassword ) {
@@ -46,7 +46,7 @@
                             <button type="submit" class="btn btn-primary">@play.api.i18n.Messages("securesocial.login.title")</button>
                         </div>
                         <div class="clearfix">
-                            <a href="@env.routes.resetPasswordUrl"><p>@play.api.i18n.Messages("securesocial.login.forgotPassword") </a></p>
+                            <p><a href="@env.routes.resetPasswordUrl"><p>@play.api.i18n.Messages("securesocial.login.forgotPassword") </a></p>
                         </div>
                         @if(Play.current.configuration.getBoolean("securesocial.registrationEnabled").getOrElse(true) ){
                              <div class="clearfix">

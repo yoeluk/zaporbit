@@ -1,4 +1,4 @@
-package socialViews
+package socialViewTemplates
 
 import play.api.data.Form
 import play.api.i18n.Lang
@@ -8,11 +8,11 @@ import securesocial.controllers.{ChangeInfo, RegistrationInfo, ViewTemplates}
 import securesocial.core.RuntimeEnvironment
 
 trait MyViewTemplates extends ViewTemplates {
+
   /**
-   * Returns the html for the login page
+   * Returns the html for embeded login
    */
-  def getEmbededLoginPage(form: Form[(String, String)], msg: Option[String] = None, redirect: Option[String] = None)
-                         (implicit request: RequestHeader, lang: Lang): Html
+  def getEmbededLoginPartial(form: Form[(String, String)], msg: Option[String] = None, redirect: Option[String] = None)(implicit request: RequestHeader, lang: Lang): Html
 }
 
 object MyViewTemplates {
@@ -23,14 +23,14 @@ object MyViewTemplates {
 
     implicit val implicitEnv = env
 
-    def getLoginPage(form: Form[(String, String)], msg: Option[String] = None)
-                    (implicit request: RequestHeader, lang: Lang): Html = {
+    def getLoginPage(form: Form[(String, String)],
+                              msg: Option[String] = None)(implicit request: RequestHeader, lang: Lang): Html = {
       views.html.custom.login(form, msg)(request, lang, env)
     }
 
-    def getEmbededLoginPage(form: Form[(String, String)], msg: Option[String] = None, redirect: Option[String] = None)
-                           (implicit request: RequestHeader, lang: Lang): Html = {
-      views.html.custom.embededLogin(loginForm = form, errorMsg = msg, redirect = redirect)(request, lang, env)
+    def getEmbededLoginPartial(form: Form[(String, String)],
+                              msg: Option[String] = None, redirect: Option[String] = None)(implicit request: RequestHeader, lang: Lang): Html = {
+      views.html.custom.embededLogin(form, msg, redirect)(request, lang, env)
     }
 
     def getSignUpPage(form: Form[RegistrationInfo], token: String)(implicit request: RequestHeader, lang: Lang): Html = {
@@ -56,7 +56,5 @@ object MyViewTemplates {
     def getNotAuthorizedPage(implicit request: RequestHeader, lang: Lang): Html = {
       views.html.custom.notAuthorized()(request, lang, env)
     }
-
   }
-
 }

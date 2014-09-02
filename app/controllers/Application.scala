@@ -5,6 +5,7 @@ import play.api.mvc._
 import play.api.db.slick._
 import play.api.libs.json._
 import securesocial.controllers.BaseLoginPage
+import securesocial.core.providers.UsernamePasswordProvider
 
 import securesocial.core.services.RoutesService
 import securesocial.core.{RuntimeEnvironment, IdentityProvider}
@@ -15,6 +16,7 @@ import service.SocialUser
 import AppCryptor._
 import play.api.data._
 import play.api.data.Forms._
+import socialViews.MyViewTemplates
 
 class Application(override implicit val env: RuntimeEnvironment[SocialUser]) extends securesocial.core.SecureSocial[SocialUser] {
 
@@ -57,8 +59,17 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
       Ok(partials.html.support(""))
     } else if (partial == "shopping") {
       Ok(partials.html.shopping(""))
+    } else if (partial == "profile") {
+      Redirect( routes.CustomLoginController.embededLogin( "/#!/shopping" ) )
     } else {
       BadRequest(partial + " could not be found")
+    }
+  }
+
+  def profileTemplate = SecuredAction { implicit request =>
+    request.user.main match {
+      case user =>
+        Ok( partials.html.profile( user.fbuserid, user.name ) )
     }
   }
 
@@ -73,10 +84,22 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
 }
 
 class CustomLoginController(implicit override val env: RuntimeEnvironment[SocialUser]) extends BaseLoginPage[SocialUser] {
+
+  lazy val myViews = new MyViewTemplates.Default(env)
+
   override def login: Action[AnyContent] = {
     Logger.debug("using CustomLoginController")
     super.login
   }
+
+  def embededLogin(redirect: String) = UserAwareAction { implicit request =>
+    if ( request.user.isDefined ) {
+      Redirect( routes.Application.profileTemplate() )
+    } else {
+      Ok( myViews.getEmbededLoginPage(form = UsernamePasswordProvider.loginForm, redirect = Some(redirect)) )
+    }
+  }
+
 }
 
 class CustomRoutesService extends RoutesService.Default {
