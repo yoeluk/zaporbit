@@ -23,7 +23,9 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       Math.floor $scope.paging.total/5/25
 
     browserLoc = undefined
-    if $cookies.ZOLoc? then browserLoc = JSON.parse $cookies.ZOLoc
+    if $cookies.ZOLoc? then browserLoc = JSON.parse(
+      LZString.decompress $cookies.ZOLoc
+    )
 
     setLocation = (latlng) ->
       if $scope.map.control.getGMap? && $scope.map.control.getGMap()?
@@ -62,12 +64,14 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       $scope.filterStr = ListingService.filter()
 
     zoLocation = (addr) ->
-      $cookies.ZOLoc = JSON.stringify
-        s: addr.street
-        c: addr.locality
-        r: addr.administrativeArea
-        lt: $scope.coords.latitude
-        ln: $scope.coords.longitude
+      $cookies.ZOLoc = LZString.compress(
+        JSON.stringify
+          s: addr.street
+          c: addr.locality
+          r: addr.administrativeArea
+          lt: $scope.coords.latitude
+          ln: $scope.coords.longitude
+      )
       $scope.city = addr.locality
       $scope.region = addr.administrativeArea
       location:
