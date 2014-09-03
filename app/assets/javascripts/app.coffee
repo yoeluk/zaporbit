@@ -11,7 +11,8 @@ angular.module("ZapOrbit", [
   "ZapOrbit.controllers",
   "ui.bootstrap",
   "google-maps",
-  "angularMoment"
+  "angularMoment",
+  "LocalStorageModule"
 ])
 .constant "pageSize", 25
 .config ["$locationProvider", "$routeProvider",($locationProvider, $routeProvider) ->
