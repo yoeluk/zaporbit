@@ -1,7 +1,7 @@
 'use strict'
 
 # Declare app level module which depends on filters, and services
-angular.module("ZapOrbit", [
+angular.module "ZapOrbit", [
   "ngRoute",
   "ngResource",
   "ngCookies",
@@ -13,25 +13,27 @@ angular.module("ZapOrbit", [
   "google-maps",
   "angularMoment",
   "LocalStorageModule"
-])
+]
 .constant "pageSize", 25
-.config ["$locationProvider", "$routeProvider",($locationProvider, $routeProvider) ->
+.config ["$locationProvider", "$routeProvider", "$httpProvider", ($locationProvider, $routeProvider, $httpProvider) ->
   $locationProvider
     .html5Mode false
-    .hashPrefix("!")
+    .hashPrefix "!"
+  $httpProvider
+    .interceptors.push "sessionInjector"
   $routeProvider
-  .when "/",
-    templateUrl: "/partials/home"
-    controller: "HomeCtr"
-  .when "/shopping",
-    templateUrl: "/partials/shopping"
-    controller: "ShoppingCtrl"
-  .when "/support",
-    templateUrl: "/partials/support"
-    controller: "SupportCtrl"
-  .when "/listing_item/:itemid",
-    templateUrl: (param) -> "listing_item/" + param.itemid
-    controller: "ListingCtrl"
+    .when "/",
+      templateUrl: "/partials/home"
+      controller: "HomeCtr"
+    .when "/listings",
+      templateUrl: "/partials/listings"
+      controller: "ShoppingCtrl"
+    .when "/support",
+      templateUrl: "/partials/support"
+      controller: "SupportCtrl"
+    .when "/listing_item/:itemid",
+      templateUrl: (param) -> "listing_item/" + param.itemid
+      controller: "ListingCtrl"
 ]
 angular.module 'infinite-scroll', []
 .directive 'infiniteScroll', ['$rootScope', '$window', '$timeout', ($rootScope, $window, $timeout) ->

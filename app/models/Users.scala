@@ -12,7 +12,7 @@ import play.api.db.slick.Config.driver.simple._
 case class User(id: Option[Long],
                 name: String,
                 surname: String,
-                fbuserid: Long,
+                fbuserid: String,
                 email: String,
                 isMerchant: Option[Boolean] = Some(false),
                 created_on: Option[Timestamp] = None)
@@ -34,7 +34,7 @@ class Users(tag: Tag) extends Table[User](tag, "Users") {
   def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
   def name = column[String]("name", O.NotNull)
   def surname = column[String]("surname", O.NotNull)
-  def fbuserid = column[Long]("fbuserid", O.NotNull)
+  def fbuserid = column[String]("fbuserid", O.NotNull)
   def email = column[String]("email", O.NotNull)
   def isMerchant = column[Boolean]("isMerchant", O.Nullable)
   def created_on =  column[Timestamp]("created_on", O.NotNull)
@@ -43,11 +43,14 @@ class Users(tag: Tag) extends Table[User](tag, "Users") {
 
 object Users extends DAO {
 
-  def findByFbId(fbuserid: Long)(implicit session: Session): Option[User] =
+  def findByFbId(fbuserid: String)(implicit session: Session): Option[User] =
     users.filter(_.fbuserid === fbuserid).firstOption
 
   def findById(id: Long)(implicit session: Session): Option[User] =
     users.filter(_.id === id).firstOption
+
+  def findByEmail(email: String)(implicit session: Session): Option[User] =
+    users.filter(_.email === email).firstOption
 
   def insert(user: User)(implicit s: Session): Unit =
     users.insert(user)

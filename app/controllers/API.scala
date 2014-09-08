@@ -175,6 +175,56 @@ object API extends Controller {
       )
     }
   }
+  implicit val implicitListingZOLocationWithRatingsWrites = new Writes[(Page[(Listing, ZOLocation, User)], Map[Long, (Int, Int)])] {
+    def writes(res: (Page[(Listing, ZOLocation, User)], Map[Long, (Int, Int)])): JsValue = {
+      Json.obj(
+        "listings" -> JsArray(
+          for {
+            item <- res._1.items
+          } yield Json.obj(
+            "listing" -> Json.obj(
+              "id" -> item._1.id,
+              "title" -> item._1.title,
+              "description" -> item._1.description,
+              "price" -> item._1.price,
+              "locale" -> item._1.locale,
+              "formatted_price" -> formatCurrency(item._1.locale, item._1.price),
+              "pictures" -> item._1.pictures,
+              "shop" -> item._1.shop,
+              "highlight" -> item._1.highlight,
+              "waggle" -> item._1.waggle,
+              "telephone" -> item._1.telephone,
+              "userid" -> item._1.userid,
+              "created_on" -> item._1.created_on.orNull.toString,
+              "updated_on" -> item._1.updated_on.orNull.toString
+            ),
+            "location" -> Json.obj(
+              "street" -> item._2.street,
+              "locality" -> item._2.locality,
+              "latitude" -> item._2.latitude,
+              "longitude" -> item._2.longitude
+            ),
+            "user" -> Json.obj(
+              "id" -> item._3.id,
+              "name" -> item._3.name,
+              "surname" -> item._3.surname,
+              "fbuserid" -> item._3.fbuserid,
+              "isMerchant" -> item._3.isMerchant,
+              "rating" -> res._2.getOrElse(item._3.id.get, (5,1))._1,
+              "ratingCount" -> res._2.getOrElse(item._3.id.get, (5,1))._2,
+              "email" -> item._3.email,
+              "created_on" -> item._3.created_on
+            )
+          )
+        ),
+        "paging" -> Json.obj(
+          "page" -> res._1.page,
+          "offset" -> res._1.offset,
+          "total" -> res._1.total
+        )
+      )
+    }
+  }
   implicit val implicitListingUserWrites = new Writes[Page[(Listing, User)]] {
     def writes(page: Page[(Listing, User)]): JsValue = {
       JsArray(
@@ -350,7 +400,7 @@ object API extends Controller {
       "id" -> optional(longNumber),
       "name" -> nonEmptyText,
       "surname" -> nonEmptyText,
-      "fbuserid" -> longNumber,
+      "fbuserid" -> nonEmptyText,
       "email" -> nonEmptyText,
       "isMerchant" -> optional(boolean),
       "created_on" -> optional(of[Timestamp])

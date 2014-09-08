@@ -8,13 +8,13 @@
                     <form style="" name="newLoc" class="form-horizontal form-inline" role="form">
                         <div class="col-sm-3ths col-md-3ths col-lg-3ths">
                             <div class="input-group input-group-sm" style="width: 100%!important;">
-                                <span class="input-group-addon">City:</span>
+                                <span class="input-group-addon"> City: </span>
                                 <input type="text" class="form-control" name="city" data-ng-model="city" id="city" placeholder="City Name" required>
                             </div>
                         </div>
                         <div class="col-sm-3ths col-md-3ths col-lg-3ths">
                             <div class="input-group input-group-sm" style="width: 100%!important;">
-                                <span class="input-group-addon">Region:</span>
+                                <span class="input-group-addon"> Region: </span>
                                 <input type="text" class="form-control" name="region" data-ng-model="region" id="region" placeholder="Region or State" required>
                             </div>
                         </div>
@@ -41,6 +41,8 @@
                     coords="loc.coords"
                     options="loc.options"
                     control="loc.control"></marker></google-map>
+
+                <alert ng-repeat="alert in alerts track by $index" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
 
                 <div class="panel panel-default" data-ng-if="(paging && paging.total > 0) || filterStr" data-ng-controller="SearchCtrl">
                     <div class="panel-body searchPanel">
@@ -87,12 +89,20 @@
                         </div>
                         <img class="profile-img pull-left" data-ng-src="//graph.facebook.com/v2.1/{{lst.user.fbuserid}}/picture?height=200&width=200" src="" alt=""/>
                         <div class="profile-crd" style=""><a href="#"><b>{{ lst.user.name }} {{ lst.user.surname }}</b></a></div>
+                        <div class="stars pull-left">
+                            <div class="rating" data-ng-style="getRatingWidth(lst.user)"></div>
+                            <i></i>
+                            <i></i>
+                            <i></i>
+                            <i></i>
+                            <i></i>
+                        </div>
                         <span class="pull-right" style="margin-top: 10px; font-size: 15px; font-weight: 100; letter-spacing: 1px;">
                             <label class="label label-info" style="margin-right: 20px; padding-top: 3px"> {{ lst.listing.formatted_price }} </label>
                         </span>
                     </div>
                     <div data-ng-controller="ModalListingCtrl" class="" style="padding-left: 5px; padding-right: 5px; margin-bottom: 10px;">
-                        <b>» {{ lst.listing.title }} </b>&emsp;<a href="#" data-ng-click="open('lg')">see more...</a>
+                        <b>» {{ lst.listing.title }} </b>&emsp;<a href="javascript:;" data-ng-click="open('lg')">see more...</a>
                     </div>
                     <div class="row" style="overflow: scroll; padding-left: 20px; max-height: 300px;">
                         <div class="center-cropped pull-left" data-back-img="https://zaporbit.com/pictures/{{lst.listing.pictures[0]}}.jpg" style="margin-right: 10px; margin-bottom: 10px;"></div>
@@ -118,10 +128,17 @@
                     </ul>
                 </div>
             </div>
-            <div class="col-xs-6 col-md-4">
-               <!-- <div class="well well-lg"> -->
-               <div data-ng-include="'/partials/profile'"></div>
-               <!--</div>-->
+            <div class="col-xs-6 col-md-4" data-ng-controller="ProfileCtrl">
+                <div data-ng-include="profileTemplate.url" data-ng-if="loggedIn"></div>
+                <div id="fbId" data-fb-login>
+                    <div class="fb-login-button"
+                    data-scope="public_profile,email"
+                    data-max-rows="2"
+                    data-size="large"
+                    data-show-faces="true"
+                    data-auto-logout-link="false"
+                    onlogin="angular.element(document.getElementById('fbId')).scope().status()"></div>
+                </div>
             </div>
         </div>
     </div>

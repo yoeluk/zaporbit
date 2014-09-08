@@ -217,3 +217,11 @@ angular.module "ZapOrbit.directives", []
         handler()
     ), 0
 ]
+.directive "fbLogin", ["$rootScope", "$timeout", ($rootScope, $timeout) ->
+  link: (scope, iElement, iAttrs) ->
+    reparse = (e) ->
+      if FB? then FB.XFBML.parse e[0]
+    $timeout ->
+      reparse(iElement)
+    , 500
+]

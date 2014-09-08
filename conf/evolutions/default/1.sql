@@ -4,7 +4,7 @@ CREATE TABLE `Users`(
   `id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `name` VARCHAR(255) NOT NULL,
   `surname` VARCHAR(255) NOT NULL,
-  `fbuserid` BIGINT NOT NULL,
+  `fbuserid` VARCHAR(255) NULL,
   `email` VARCHAR(255) NOT NULL,
   `isMerchant` BOOL NOT NULL,
   `created_on` TIMESTAMP DEFAULT 0,

@@ -112,7 +112,7 @@ a.issue-title:hover,a.issue-title:focus {
     border-radius: 50%;
 }
 .profile-crd {
-    padding-left: 75px
+    padding-left: 65px
 }
 .listing {
     padding-bottom: 5px;
@@ -315,4 +315,18 @@ textarea:focus {
     border-color: #92d13d!important;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.055) inset, 0 0 8px rgba(84, 139, 12, 0.5)!important;
     outline: 0 none;
+}
+
+.stars{
+    width: 90px;
+    height: 18px;
+    background: url(/vassets/images/newStars.png) 0 0 repeat-x;
+    position: relative;
+    margin-left: 12px;
+    margin-top: 5px;
+}
+
+.stars .rating{
+    height: 18px;
+    background: url(/vassets/images/newStars.png) 0 -18px repeat-x;
 }

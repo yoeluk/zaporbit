@@ -67,7 +67,7 @@ object Locations extends DAO {
             pageSize: Int = 25,
               radius: Int = 10,
                  loc: ZOLocation,
-              userid: Long)(implicit session: Session): Page[(Listing, ZOLocation, User)] = {
+              userid: Long)(implicit session: Session): (Page[(Listing, ZOLocation, User)], Map[Long, (Int, Int)]) = {
 
     val offset = pageSize * page
 
@@ -143,7 +143,8 @@ object Locations extends DAO {
         ZOLocation(row._2._1, row._2._2, row._2._3, row._2._4, row._2._5),
         User(row._3._1, row._3._2, row._3._3, row._3._4, row._3._5, row._3._6, row._3._7)
         )}
-    Page(result, page, offset, totalRows)
+    val uniqueRatings = this.calcRatingForUsers(result)
+    (Page(result, page, offset, totalRows), uniqueRatings)
   }
 
   /**
@@ -159,7 +160,7 @@ object Locations extends DAO {
                 pageSize: Int = 20,
                 loc: ZOLocation,
                 filterStr: String = "%",
-                userid: Long)(implicit session: Session): Page[(Listing, ZOLocation, User)] = {
+                userid: Long)(implicit session: Session): (Page[(Listing, ZOLocation, User)], Map[Long, (Int, Int)]) = {
     val filters = filterStr.split("\\s+").filterNot(_ == " ").map( x => x.toLowerCase).toVector
     //println( filters.count(_.r.findAllIn("the dog").length > 0) )
 
@@ -240,7 +241,8 @@ object Locations extends DAO {
         ZOLocation(row._2._1, row._2._2, row._2._3, row._2._4, row._2._5),
         User(row._3._1, row._3._2, row._3._3, row._3._4, row._3._5, row._3._6, row._3._7)
         )}
-    Page(result, page, offset, totalRows)
+    val uniqueRatings = this.calcRatingForUsers(result)
+    (Page(result, page, offset, totalRows), uniqueRatings)
   }
   /**
    * Retrieve a location
@@ -265,6 +267,18 @@ object Locations extends DAO {
   def delete(id: Long)(implicit session: Session): Unit =
     locations.filter(_.id === id).delete
 
+  def calcRatingForUsers(page: List[(Listing, ZOLocation, User)])(implicit session: Session): Map[Long, (Int, Int)] = {
+    val diffUsers = page.foldLeft(Nil: List[Long]) {
+      (acc, next) => if (acc contains next._3.id.get) acc else next._3.id.get :: acc
+    }
+    val ratings = (for {
+      rt <- TableQuery[Ratings].filter(_.id inSet diffUsers)
+    } yield rt.userid -> rt.rating).toMap
+    ratings.foldLeft(Map(): Map[Long, (Int, Int)]) {
+      case (a, (k, v)) => if (a contains k) adjust(a, k){case (v1,c) => (v+v1,c+1)} else a + (k -> (v, 1))
+    }
+  }
+
 
   /*************** TESTING METHODS ********************/
 
@@ -281,7 +295,7 @@ object Locations extends DAO {
                 pageSize: Int = 25,
                 radius: Int = 10,
                 loc: ZOLocation,
-                userid: Long)(implicit session: Session): Page[(Listing, ZOLocation, User)] = {
+                userid: Long)(implicit session: Session): (Page[(Listing, ZOLocation, User)], Map[Long, (Int, Int)]) = {
 
     val testPage = 0
     val testOffset = pageSize * testPage
@@ -359,7 +373,8 @@ object Locations extends DAO {
         ZOLocation(row._2._1, row._2._2, row._2._3, row._2._4, row._2._5),
         User(row._3._1, row._3._2, row._3._3, row._3._4, row._3._5, row._3._6, row._3._7)
         )}
-    Page(result, page, offset, 75*3)
+    val uniqueRatings = this.calcRatingForUsers(result)
+    (Page(result, page, offset, totalRows), uniqueRatings)
   }
 
 }

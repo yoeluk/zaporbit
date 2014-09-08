@@ -2,7 +2,7 @@
 
 CREATE TABLE `OAuth2s`(
   `id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `userid` BIGINT NOT NULL,
+  `userid` VARCHAR(255) NOT NULL,
   `accessToken` VARCHAR(255) NOT NULL,
   `tokenType` VARCHAR(255) NULL,
   `expiresIn` INT NULL,

@@ -1,5 +1,6 @@
 package controllers
 
+import models.Users
 import play.api._
 import play.api.mvc._
 import play.api.db.slick._
@@ -13,15 +14,20 @@ import securesocial.core.{RuntimeEnvironment, IdentityProvider}
 import securesocial.core._
 import service.SocialUser
 
+import play.api.Play.current
+
 import AppCryptor._
 import play.api.data._
 import play.api.data.Forms._
+
 import socialViews.MyViewTemplates
 
 class Application(override implicit val env: RuntimeEnvironment[SocialUser]) extends securesocial.core.SecureSocial[SocialUser] {
 
   // HOME PAGE
+
   case class UpgradeListing(offerid: Long, waggle: Boolean, highlight: Boolean)
+
   implicit val upgradeFormat = Json.format[UpgradeListing]
   val upgradeForm = Form(
     mapping(
@@ -52,18 +58,22 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
     }
   }
 
-  def partialTemplates(partial: String) = Action {
+  def partialTemplates(partial: String) = Action { implicit request =>
     if (partial == "home") {
       Ok(partials.html.home(""))
     } else if (partial == "support") {
       Ok(partials.html.support(""))
-    } else if (partial == "shopping") {
+    } else if (partial == "listings") {
       Ok(partials.html.shopping(""))
     } else if (partial == "profile") {
-      Redirect( routes.CustomLoginController.embededLogin( "/#!/shopping" ) )
-    } else {
-      BadRequest(partial + " could not be found")
-    }
+      request.headers.get("X-Auth-Token") match {
+        case Some(_) =>
+          Redirect( routes.Application.profileTemplate() )
+        case None =>
+          Redirect( routes.CustomLoginController.embededLogin( "/#!/listings" ) )
+      }
+    } else
+        BadRequest(partial + " could not be found")
   }
 
   def profileTemplate = SecuredAction { implicit request =>

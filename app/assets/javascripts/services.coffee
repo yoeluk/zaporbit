@@ -2,34 +2,39 @@
 
 # Services
 angular.module "ZapOrbit.services", []
-.factory "LocationService", [ ->
+.factory "LocationService", ["$timeout", ($timeout) ->
 
-    coords = undefined
+    that = {}
 
     setCoords = (co) ->
-      coords =
+      that.coords =
         latitude: co.latitude
         longitude: co.longitude
 
     getCoords = ->
-      coords
+      that.coords
 
-    getLocation = (callback, displayError) ->
+    getLocation = (callback, displayError, scope) ->
       displayPosition = (position) ->
         setCoords(position.coords)
         callback(position.coords)
       locError = (error) ->
+        if that.progPromise? then $timeout.cancel(that.progPromise)
         displayError error
-      if !coords
+      if !that.coords
         if navigator.geolocation
           timeoutVal = 2 * 60 * 1000
           navigator.geolocation.getCurrentPosition displayPosition, locError,
             enableHighAccuracy: true
             timeout: timeoutVal
             maximumAge: 10
+            if scope
+              that.progPromise = $timeout ->
+                scope.locProg = true
+              , 200
         else
           console.log "geolocation not supported by this browser"
-      else callback(coords)
+      else callback(that.coords)
 
     location: getLocation
     coords: getCoords
@@ -114,20 +119,20 @@ angular.module "ZapOrbit.services", []
           l = data.listings.length
           while i < l
             lst = data.listings[i]
-            t = lst.listing.updated_on.split(/[- :]/)
-            d = new Date(t[0], t[1]-1, t[2], t[3], t[4], t[5])
+            t = lst.listing.updated_on.split /[- :]/
+            d = new Date t[0], t[1]-1, t[2], t[3], t[4], t[5]
             lst.listing.date = d
             i++
           setAllListings data
           callback allListings
 
-    getListings = (body, callback, remote, filter, page)->
+    getListings = (body, callback, remote, filter, page) ->
       if !page then page = 0
       if (!filter || filter == "") && (!allListings || remote)
         getData "/api/listingsbylocation/"+page+"/10", body, callback
         filterStr = undefined
       else if filter
-        getData "/api/filterlocation/"+page+"?filter="+filter, body, callback
+        getData "/api/filterlocation/" + page + "?filter=" + filter, body, callback
         filterStr = filter
       else
         callback allListings
@@ -135,4 +140,37 @@ angular.module "ZapOrbit.services", []
     listings: getListings
     paging: getPaging
     filter: getFilterStr
+]
+.factory "sessionInjector", ["$log", "SocialService", ($log, SocialService) ->
+
+    sessionInjector = request: (config) ->
+      if SocialService.social()?
+        config.headers["X-Auth-Token"] = SocialService.social().token
+      config
+
+    sessionInjector
+]
+.factory "SocialService", ["$q", "$location", "$injector", ($q, $location, $injector) ->
+
+    that = {}
+
+    social = ->
+      that.social
+
+    getSocial = (body, callback) ->
+      if !that.social
+        $http = $injector.get '$http'
+        $http
+          method: "POST"
+          data: body
+          url: 'auth/api/authenticate/facebook'
+          context: this
+        .success (data, status) ->
+          if data? && data.token?
+            that.social = data
+            callback(true)
+          else that.social = undefined
+
+    getSocial: getSocial
+    social: social
 ]

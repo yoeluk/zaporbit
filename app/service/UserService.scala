@@ -15,15 +15,14 @@ import models._
 
 object UserFromIdentity {
   def apply(b: BasicProfile)(implicit session: Session): User =
-    User(None,
-      b.firstName.getOrElse("no name"),
-      b.lastName.getOrElse("no surname"),
-      b.userId.toLong,
-      b.email.orNull,
-      Users.findByFbId(b.userId.toLong) match {
-        case Some(user) => user.isMerchant
-        case None => Some(false)
-      })
+    User(
+      id = None,
+      name = b.firstName.getOrElse("no name"),
+      surname = b.lastName.getOrElse("no surname"),
+      fbuserid = b.userId,
+      email = b.email.getOrElse(""),
+      isMerchant = Option(false)
+    )
 }
 
 object ExportedUserFromUser {
@@ -38,7 +37,7 @@ object ExportedUserFromUser {
       None,
       AuthenticationMethod.OAuth2,
       None,
-      OAuth2s.findByUserId(userId.toLong),
+      OAuth2s.findByUserId(userId),
       None
     )
 }
@@ -59,7 +58,7 @@ class SocialUserService extends UserService[SocialUser] {
   def find(providerId: String, userId: String): Future[Option[BasicProfile]] = {
     DB.withSession { implicit s =>
       Future.successful(
-        Users.findByFbId(userId.toLong) match {
+        Users.findByFbId(userId) match {
         case Some(user) =>
           Some(ExportedUserFromUser(user, providerId, userId))
         case _ => None
@@ -78,7 +77,7 @@ class SocialUserService extends UserService[SocialUser] {
   def save(basicUser: BasicProfile, mode: SaveMode): Future[SocialUser] = {
     DB.withSession { implicit s =>
       Future.successful(
-        Users.findByFbId(basicUser.userId.toLong) match {
+        Users.findByFbId(basicUser.userId) match {
           case None =>
             val preUser = UserFromIdentity(basicUser)
             val id = Option(Users.insertReturningId(preUser))
@@ -86,8 +85,8 @@ class SocialUserService extends UserService[SocialUser] {
             OAuth2s.insertUpdate(basicUser.oAuth2Info.get, user.fbuserid)
             SocialUser(main = user, identities = Nil)
           case Some(existingUser) =>
-            val persistantUser: User = UserFromIdentity(basicUser)
-            Users.update(existingUser.id, persistantUser.isMerchant, persistantUser)
+            val persistantUser = UserFromIdentity(basicUser)
+            Users.update(existingUser.id, existingUser.isMerchant, persistantUser)
             val user = persistantUser.copy(id = existingUser.id)
             OAuth2s.insertUpdate(basicUser.oAuth2Info.get, user.fbuserid)
             SocialUser(main = user, identities = Nil)

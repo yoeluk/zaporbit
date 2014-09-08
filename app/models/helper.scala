@@ -13,6 +13,7 @@ case class Page[A](items: Seq[A], page: Int, offset: Long, total: Long) {
 }
 
 private[models] trait DAO {
+  def adjust[A, B](m: Map[A, B], k: A)(f: B => B) = m.updated(k, f(m(k)))
   val users = TableQuery[Users]
   val offers = TableQuery[Offers]
   val shops = TableQuery[Shops]
