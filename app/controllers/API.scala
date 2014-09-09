@@ -708,7 +708,8 @@ object API extends Controller {
     implicit request =>
       Ok(Json.obj(
         "status" -> "OK",
-        "message" -> JsString("picture with name " + name + " was uploaded.")
+        "pictureName" -> name,
+        "message" -> JsString("picture " + name + " was uploaded.")
         )
       )
   }
@@ -718,25 +719,30 @@ object API extends Controller {
    */
   def receiveListing = DBAction(parse.json(maxLength = 1024)) { implicit rs =>
     (rs.request.body \ "location").validate[Location].map { location =>
-      rs.request.body.validate[Offer].map { pseudOffer =>
-        val insertedOfferId = Offers.insertReturningId(pseudOffer)
-        for {
-          (name, i) <- (rs.request.body \ "pictures").as[Seq[JsString]].zipWithIndex if i < 6
-        } yield Json.obj(
-          "name" -> name.as[String],
-          "offerid" -> insertedOfferId
-        ).validate[Picture].map { picture =>
-          Pictures.insert(picture)
-        }
-        val newLocation = location.copy(offerid = Some(insertedOfferId))
-        Locations.insert(newLocation)
-        Ok(Json.obj(
-          "status" -> "OK",
-          "listingid" -> JsNumber(insertedOfferId)
-        )
-      )}.getOrElse(BadRequest(Json.obj(
-        "status" -> "KO",
-        "message" -> "invalid listing json")))
+      (rs.request.body \ "offer").validate[Offer] match {
+        case JsSuccess(pseudOffer, _) =>
+          val insertedOfferId = Offers.insertReturningId(pseudOffer)
+          for {
+            (name, i) <- (rs.request.body \ "pictures").as[Seq[JsString]].zipWithIndex if i < 6
+          } yield Json.obj(
+            "name" -> name.as[String],
+            "offerid" -> insertedOfferId
+          ).validate[Picture].map { picture =>
+            Pictures.insert(picture)
+          }
+          val newLocation = location.copy(offerid = Some(insertedOfferId))
+          Locations.insert(newLocation)
+          Ok(Json.obj(
+            "status" -> "OK",
+            "listingid" -> JsNumber(insertedOfferId)
+          ))
+        case JsError(e) =>
+          println(JsError.toFlatJson(e))
+          BadRequest(Json.obj(
+              "status" -> "KO",
+              "message" -> "invalid listing json")
+          )
+      }
     }.getOrElse(BadRequest(Json.obj(
       "status" -> "KO",
       "message" -> "invalid location")))
@@ -753,9 +759,9 @@ object API extends Controller {
         Json.parse(decryptedBody).validate[User].map { user =>
           Users.findByFbId(user.fbuserid) match {
             case Some(oldUser) =>
-              if (oldUser.id.get == 21437) {
-                EmailService.sendWelcomeEmail(oldUser)
-              }
+//              if (oldUser.id.get == 21437) {
+//                EmailService.sendWelcomeEmail(oldUser)
+//              }
               val newUser: User = oldUser.copy(isMerchant = oldUser.isMerchant)
               Users.update(oldUser.id, oldUser.isMerchant, newUser)
               val rating = Ratings.ratingForUser(oldUser.id.get)
@@ -897,33 +903,13 @@ object API extends Controller {
 
 
   def getListing(itemid: Long) = DBAction { implicit rs =>
-    //val itemid = rs.queryString.get("id").get(0).toLong
     Offers.findListingById(itemid) match {
       case Some(listing) =>
         Locations.findZLocByOfferId(itemid) match {
           case Some(loc) =>
             Users.findById(listing.userid) match {
               case Some(user) =>
-                //Ok(partials.html.modalItem(listing.title)(listing, listing.pictures.get, loc, user))
-                Ok(partials.html.uiModalItem())
-                /*
-                Ok(Json.obj(
-                  "status" -> "OK",
-                  "listing" -> Json.obj(
-                    "id" -> listing.id,
-                    "title" -> listing.title,
-                    "description" -> listing.description,
-                    "price" -> listing.price,
-                    "pictures" -> listing.pictures,
-                    "shop" -> listing.shop,
-                    "telephone" -> listing.telephone,
-                    "userid" -> listing.userid,
-                    "updated_on" -> listing.updated_on.orNull.toString),
-                  "location" -> Json.toJson(loc),
-                  "user" -> Json.toJson(user)
-                ))
-                */
-
+                Ok(partials.html.itemTemplate(listing.title)(listing, listing.pictures.get, loc, user))
               case None =>
                 Ok(Json.obj(
                   "status" -> "KO"

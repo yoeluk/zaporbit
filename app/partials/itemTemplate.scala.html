@@ -1,0 +1,61 @@
+@(title: String)(listing: Listing, pictures:List[String], loc: Location, user: User, ext: String = ".jpg")
+
+<div class="container outer-container">
+    <div class="">
+        <div class="row template-header">
+            <div class="col-xs-12 col-md-8">
+
+                <div class="modal-header">
+                    <h3 class="modal-title"> @title </h3>
+                </div>
+                <div class="modal-body">
+                    <div data-ng-controller="ItemCarouselCtrl">
+                        <div style="">
+                            <carousel interval="myInterval">
+                                @for((pic, i) <- pictures.zipWithIndex) {
+                                    <slide active="slides[@i].active">
+                                        <div class="fitted-img main-item" style="background-color: #000000">
+                                            <div class="centerer"></div>
+                                            <img data-ng-src="/pictures/@pic@ext" style="">
+                                        </div>
+                                        <div class="carousel-caption">
+                                            <h4> Slide @i </h4>
+                                        </div>
+                                    </slide>
+                                }
+                            </carousel>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+
+                            </div>
+                            <div class="col-md-6">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="item-description">
+                    <p>
+                        @listing.description
+                    </p>
+                </div>
+                <div class="modal-footer" style="padding-right: 20px;">
+                    <button class="btn btn-default" data-ng-click="cancel()"> OK </button>
+                </div>
+            </div>
+            <div class="col-xs-6 col-md-4" data-ng-controller="ProfileCtrl">
+                <div data-ng-include="profileTemplate.url" data-ng-if="loggedIn"></div>
+                <div id="fbId" data-fb-login>
+                    <div class="fb-login-button"
+                    data-scope="public_profile,email"
+                    data-max-rows="2"
+                    data-size="large"
+                    data-show-faces="true"
+                    data-auto-logout-link="false"
+                    onlogin="angular.element(document.getElementById('fbId')).scope().status()"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

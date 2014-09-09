@@ -170,6 +170,9 @@ a.issue-title:hover,a.issue-title:focus {
     vertical-align: middle;  /* vertical alignment of the inline element */
     font: 16px/1 Arial sans-serif;        /* <-- reset the font property */
 }
+.fitted-img.main-item {
+    height: 549px!important;
+}
 @media only screen
 and (min-device-width : 320px)
 and (max-device-width : 480px) {
@@ -310,6 +313,7 @@ form.form-search:before {
     border-color: #92d13d;
 }
 
+#searchBar,
 input:focus,
 textarea:focus {
     border-color: #92d13d!important;

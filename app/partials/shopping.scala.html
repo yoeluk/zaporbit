@@ -40,7 +40,8 @@
                     idkey="loc.id"
                     coords="loc.coords"
                     options="loc.options"
-                    control="loc.control"></marker></google-map>
+                    control="loc.control"></marker>
+                </google-map>
 
                 <alert ng-repeat="alert in alerts track by $index" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
 
@@ -49,7 +50,7 @@
                         <div class="search-wrapper">
                             <form name="search" class="form-search" role="form">
                                 <div class="input-group input-group-sm">
-                                    <input type="text" class="form-control search-query" data-ng-model="filterString"
+                                    <input id="searchBar" type="text" class="form-control search-query" data-ng-model="filterString"
                                     id="filter" name="filter" placeholder="Search..." />
                                     <span class="input-group-btn">
                                         <button type="submit" data-ng-click="filter(search)" class="btn btn-default btn-sm"> Search</button>
@@ -77,10 +78,48 @@
                             <li data-ng-class="{active:$index*5+4==paging.page}" data-ng-if="$index*5*pageSize + 4*pageSize+1 <= paging.total">
                                 <a href="javascript:;" data-ng-click="listingsForLocation(true,'',$index*5+4)"> {{ ($index * 5) + 5 }} </a></li>
                             <li data-ng-class="{disabled: $index == indexes()}">
-                                <a href="javascript:;" data-ng-click="$index < indexes() && listingsForLocation(true,'',$index*5+5)">&raquo;</a></li>
+                                <a href="javascript:;" data-ng-click="$index < indexes() && listingsForLocation(true,'',$index*5+5)">&raquo;</a>
+                            </li>
                         </ul>
                     </div>
                 </div>
+
+                <script type="text/ng-template" id="modal-template.html">
+                    <div class="modal-header">
+                        <h3 class="modal-title"> {{lst.listing.title}} </h3>
+                    </div>
+                    <div class="modal-body">
+                        <div data-ng-controller="ModalItemCarouselCtrl">
+                            <div style="">
+                                <carousel interval="myInterval">
+                                    <slide ng-repeat="slide in slides" active="slide.active">
+                                        <div class="fitted-img" style="background-color: #000000">
+                                            <div class="centerer"></div>
+                                            <img data-ng-src="{{slide.image}}" style="">
+                                        </div>
+                                        <div class="carousel-caption">
+                                            <h4> Slide {{$index+1}} </h4>
+                                        </div>
+                                    </slide>
+                                </carousel>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+
+                                </div>
+                                <div class="col-md-6">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item-description">
+                        <p> {{lst.listing.description}} </p>
+                    </div>
+                    <div class="modal-footer" style="padding-right: 20px;">
+                        <button class="btn btn-default" data-ng-click="cancel()"> OK </button>
+                    </div>
+                </script>
 
                 <div class="listing container-with-shadow" data-ng-repeat="lst in allListings" data-ng-if="lst.listing.pictures[0]">
                     <div class="profile row">
@@ -105,10 +144,11 @@
                         <b>» {{ lst.listing.title }} </b>&emsp;<a href="javascript:;" data-ng-click="open('lg')">see more...</a>
                     </div>
                     <div class="row" style="overflow: scroll; padding-left: 20px; max-height: 300px;">
-                        <div class="center-cropped pull-left" data-back-img="https://zaporbit.com/pictures/{{lst.listing.pictures[0]}}.jpg" style="margin-right: 10px; margin-bottom: 10px;"></div>
-                        <div class="center-cropped" data-back-img="https://zaporbit.com/pictures/{{lst.listing.pictures[1]}}.jpg" data-ng-if="lst.listing.pictures[1]"></div>
+                        <div class="center-cropped pull-left" data-back-img="/pictures/{{lst.listing.pictures[0]}}.jpg" style="margin-right: 10px; margin-bottom: 10px;"></div>
+                        <div class="center-cropped" data-back-img="/pictures/{{lst.listing.pictures[1]}}.jpg" data-ng-if="lst.listing.pictures[1]"></div>
                     </div>
                 </div>
+
                 <div class="row paging" style="text-align: center" data-ng-if="paging && paging.total > 0">
                     <ul class="pagination" data-ng-repeat="i in pageRange() track by $index" data-ng-if="$index*5 < paging.page + 1 && paging.page + 1 < $index*5 + 6">
                         <li data-ng-class="{disabled:$index==0}">
@@ -124,15 +164,17 @@
                         <li data-ng-class="{active:$index*5+4==paging.page}" data-ng-if="$index*5*pageSize + 4*pageSize+1 <= paging.total">
                             <a href="javascript:;" data-ng-click="listingsForLocation(true,'',$index*5+4)"> {{ ($index * 5) + 5 }} </a></li>
                         <li data-ng-class="{disabled: $index == indexes()}">
-                            <a href="javascript:;" data-ng-click="$index < indexes() && listingsForLocation(true,'',$index*5+5)">&raquo;</a></li>
+                            <a href="javascript:;" data-ng-click="$index < indexes() && listingsForLocation(true,'',$index*5+5)">&raquo;</a>
+                        </li>
                     </ul>
                 </div>
+
             </div>
             <div class="col-xs-6 col-md-4" data-ng-controller="ProfileCtrl">
                 <div data-ng-include="profileTemplate.url" data-ng-if="loggedIn"></div>
                 <div id="fbId" data-fb-login>
                     <div class="fb-login-button"
-                    data-scope="public_profile,email"
+                    data-scope="public_profile,email,user_friends"
                     data-max-rows="2"
                     data-size="large"
                     data-show-faces="true"
@@ -140,6 +182,7 @@
                     onlogin="angular.element(document.getElementById('fbId')).scope().status()"></div>
                 </div>
             </div>
+
         </div>
     </div>
 </div>

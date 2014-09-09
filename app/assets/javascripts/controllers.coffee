@@ -332,8 +332,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     $scope.open = (size) ->
       modalInstance = $modal.open(
         scope: scope
-        #templateUrl: "modalListingContent.html"
-        templateUrl: "/modal_item/"+$scope.lst.listing.id
+        templateUrl: "modal-template.html"
         controller: "ListingModalInstCtrl"
         size: size
       )
@@ -348,20 +347,36 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     $scope.close = ->
       $modalInstance.dismiss "close"
 ]
-.controller "ItemCarouselCtrl", ["$scope", ($scope) ->
+.controller "ModalItemCarouselCtrl", ["$scope", ($scope) ->
 
     $scope.myInterval = 5000
     slides = $scope.slides = []
     $scope.addSlide = (i) ->
       slides.push
-        image: "//zaporbit.com/pictures/" + $scope.$parent.lst.listing.pictures[i] + ".jpg"
+        image: "/pictures/" + $scope.$parent.lst.listing.pictures[i] + ".jpg"
         text: []
 
-    i = 0
-    l = $scope.$parent.lst.listing.pictures.length
-    while i < l
-      $scope.addSlide(i)
-      i++
+    if $scope.$parent.lst?
+      i = 0
+      l = $scope.$parent.lst.listing.pictures.length
+      while i < l
+        $scope.addSlide(i)
+        i++
+]
+.controller "ItemCarouselCtrl", ["$scope", ($scope) ->
+
+  $scope.myInterval = 5000
+  slides = $scope.slides = []
+  $scope.addSlide = (i) ->
+    slides.push
+      text: []
+      active: false
+
+  i = 0
+  l = 20
+  while i < l
+    $scope.addSlide(i)
+    i++
 ]
 .controller "ListingCtrl", ["$scope", ($scope) ->
 
@@ -395,7 +410,5 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     , 600
 ]
 .controller "AlertCtrl", ["$scope", "$timeout", "ListingService", ($scope, $timeout, ListingService) ->
-
-
 
 ]

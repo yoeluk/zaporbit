@@ -65,6 +65,8 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
       Ok(partials.html.support(""))
     } else if (partial == "listings") {
       Ok(partials.html.shopping(""))
+    } else if (partial == "modalItem") {
+      Ok(partials.html.uiModalItem())
     } else if (partial == "profile") {
       request.headers.get("X-Auth-Token") match {
         case Some(_) =>

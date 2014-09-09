@@ -32,7 +32,7 @@ angular.module "ZapOrbit", [
       templateUrl: "/partials/support"
       controller: "SupportCtrl"
     .when "/listing_item/:itemid",
-      templateUrl: (param) -> "listing_item/" + param.itemid
+      templateUrl: (params) -> "listing_item/" + params.itemid
       controller: "ListingCtrl"
 ]
 angular.module 'infinite-scroll', []
