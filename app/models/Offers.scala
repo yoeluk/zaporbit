@@ -76,6 +76,24 @@ object Offers extends DAO {
   def findById(id: Long)(implicit session: Session): Option[Offer] =
     offers.filter(_.id === id).firstOption
 
+  def listingWithOffer(offer: Offer)(implicit session: Session): Listing =
+  Listing(
+    id = offer.id,
+    title = offer.title,
+    description = offer.description,
+    price = offer.price,
+    locale = offer.locale,
+    pictures = Option((for {
+      p <- pictures.filter(_.offerid === offer.id.get)
+    } yield p.name).list),
+    shop = offer.shop,
+    highlight = offer.highlight,
+    waggle = offer.waggle,
+    telephone = offer.telephone,
+    userid = offer.userid,
+    created_on = offer.created_on,
+    updated_on = offer.updated_on)
+
   def findListingById(id: Long)(implicit session: Session): Option[Listing] = {
     val oOpt = offers.filter(_.id === id).firstOption
     oOpt match {

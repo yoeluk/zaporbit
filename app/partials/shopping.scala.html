@@ -12,6 +12,7 @@
                                 <input type="text" class="form-control" name="city" data-ng-model="city" id="city" placeholder="City Name" required>
                             </div>
                         </div>
+
                         <div class="col-sm-3ths col-md-3ths col-lg-3ths">
                             <div class="input-group input-group-sm" style="width: 100%!important;">
                                 <span class="input-group-addon"> Region: </span>
@@ -48,12 +49,13 @@
                 <div class="panel panel-default" data-ng-if="(paging && paging.total > 0) || filterStr" data-ng-controller="SearchCtrl">
                     <div class="panel-body searchPanel">
                         <div class="search-wrapper">
-                            <form name="search" class="form-search" role="form">
+                            <form name="search" class="" role="form">
                                 <div class="input-group input-group-sm">
-                                    <input id="searchBar" type="text" class="form-control search-query" data-ng-model="filterString"
-                                    id="filter" name="filter" placeholder="Search..." />
+                                    <input type="text" class="form-control" data-ng-model="filterString" id="searchBar" name="filter" placeholder="Search..." />
                                     <span class="input-group-btn">
-                                        <button type="submit" data-ng-click="filter(search)" class="btn btn-default btn-sm"> Search</button>
+                                        <button type="submit" data-ng-click="filter(search)" class="btn btn-default btn-sm search-btn">
+                                            <span class="gbqfi gb_Fa"></span>
+                                        </button>
                                     </span>
                                 </div>
                             </form>
@@ -127,7 +129,7 @@
                             <span data-am-time-ago="{{lst.listing.date}}" data-am-preprocess="unix"></span>
                         </div>
                         <img class="profile-img pull-left" data-ng-src="//graph.facebook.com/v2.1/{{lst.user.fbuserid}}/picture?height=200&width=200" src="" alt=""/>
-                        <div class="profile-crd" style=""><a href="#"><b>{{ lst.user.name }} {{ lst.user.surname }}</b></a></div>
+                        <div class="profile-crd" style=""><a href="javascript:;"><b>{{ lst.user.name }} {{ lst.user.surname }}</b></a></div>
                         <div class="stars pull-left">
                             <div class="rating" data-ng-style="getRatingWidth(lst.user)"></div>
                             <i></i>
@@ -170,6 +172,7 @@
                 </div>
 
             </div>
+
             <div class="col-xs-6 col-md-4" data-ng-controller="ProfileCtrl">
                 <div data-ng-include="profileTemplate.url" data-ng-if="loggedIn"></div>
                 <div id="fbId" data-fb-login>

@@ -901,32 +901,6 @@ object API extends Controller {
     ))
   }
 
-
-  def getListing(itemid: Long) = DBAction { implicit rs =>
-    Offers.findListingById(itemid) match {
-      case Some(listing) =>
-        Locations.findZLocByOfferId(itemid) match {
-          case Some(loc) =>
-            Users.findById(listing.userid) match {
-              case Some(user) =>
-                Ok(partials.html.itemTemplate(listing.title)(listing, listing.pictures.get, loc, user))
-              case None =>
-                Ok(Json.obj(
-                  "status" -> "KO"
-                ))
-            }
-          case None =>
-            Ok(Json.obj(
-              "status" -> "KO"
-            ))
-        }
-      case None =>
-        Ok(Json.obj(
-          "status" -> "KO"
-        ))
-    }
-  }
-
   /**
    *
    * @param listingId

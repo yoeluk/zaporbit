@@ -224,6 +224,28 @@ and (max-device-width : 480px) {
 .locateGroup {
     float: right;
 }
+.btn.search-btn{
+    background: #92d13d!important;
+    vertical-align: top;
+    padding-top: 2px!important;
+    box-shadow: none;
+    border: none!important;
+    z-index: 2!important;
+}
+/*
+these two helper classes display the search icon
+*/
+.gbqfi {
+    background-position: -69px -349px;
+    display: inline-block;
+    margin: -1px;
+    height: 30px;
+    width: 30px;
+}
+.gb_Fa {
+    background-image: url('//ssl.gstatic.com/gb/images/v1_2e543709.png');
+    background-size: 112px 1828px;
+}
 .col-centered {
     float: none;
     margin: 0 auto;
@@ -271,27 +293,6 @@ form.form-search:before {
     width: 33.33%;
     float: left;
 }
-@media (min-width: 768px) {
-    .col-sm-3ths {
-        width: 33.33%;
-        float: left;
-        margin-right: 75px;
-    }
-}
-@media (min-width: 992px) {
-    .col-md-3ths {
-        width: 33.33%;
-        float: left;
-        margin-right: 75px;
-    }
-}
-@media (min-width: 1200px) {
-    .col-lg-3ths {
-        width: 33.33%;
-        float: left;
-        margin-right: 75px;
-    }
-}
 .btn-buy {
     position: absolute;
     top: 0;
@@ -312,7 +313,6 @@ form.form-search:before {
     background-color: #92d13d;
     border-color: #92d13d;
 }
-
 #searchBar,
 input:focus,
 textarea:focus {
@@ -320,7 +320,6 @@ textarea:focus {
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.055) inset, 0 0 8px rgba(84, 139, 12, 0.5)!important;
     outline: 0 none;
 }
-
 .stars{
     width: 90px;
     height: 18px;
@@ -333,4 +332,41 @@ textarea:focus {
 .stars .rating{
     height: 18px;
     background: url(/vassets/images/newStars.png) 0 -18px repeat-x;
+}
+.posFixed {
+    position: relative;
+}
+@media (min-width: 768px) {
+    .col-sm-3ths {
+        width: 33.33%;
+        float: left;
+        margin-right: 75px;
+    }
+    .posFixed{
+        position: relative;
+    }
+}
+@media (min-width: 992px) {
+    .col-md-3ths {
+        width: 33.33%;
+        float: left;
+        margin-right: 75px;
+    }
+    .posFixed{
+        position: fixed;
+        top: 5px;
+        width: 300px;
+    }
+}
+@media (min-width: 1200px) {
+    .col-lg-3ths {
+        width: 33.33%;
+        float: left;
+        margin-right: 75px;
+    }
+    .posFixed{
+        position: fixed;
+        top: 5px;
+        width: 366px;
+    }
 }

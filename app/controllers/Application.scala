@@ -1,6 +1,7 @@
 package controllers
 
-import models.Users
+import controllers.Wallet._
+import models._
 import play.api._
 import play.api.mvc._
 import play.api.db.slick._
@@ -10,6 +11,9 @@ import securesocial.core.providers.UsernamePasswordProvider
 
 import securesocial.core.services.RoutesService
 import securesocial.core.{RuntimeEnvironment, IdentityProvider}
+
+//import play.api.db.slick.Config.driver.simple._
+//import play.api.db.slick.Config.driver.simple.{Session => DBSession}
 
 import securesocial.core._
 import service.SocialUser
@@ -41,6 +45,19 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
     val message = "Entice with higher confidence!"
     Ok(views.html.index(message))
   }
+  /***
+  def calcRatingForUsers(page: List[(Listing, ZOLocation, User)])(implicit session: DBSession): Map[Long, (Int, Int)] = {
+    val diffUsers = page.foldLeft(Nil: List[Long]) {
+      (acc, next) => if (acc contains next._3.id.get) acc else next._3.id.get :: acc
+    }
+    val rtgs = (for {
+      rt <- ratings.filter(_.id inSet diffUsers)
+    } yield rt.userid -> rt.rating).toMap
+    rtgs.foldLeft(Map(): Map[Long, (Int, Int)]) {
+      case (a, (k, v)) => if (a contains k) adjust(a, k){case (v1,c) => (v+v1,c+1)} else a + (k -> (v, 1))
+    }
+  }
+  ***/
 
   def upgradeListing(tick: String) = DBAction(parse.raw) { implicit rs =>
     rs.request.body.asBytes(maxLength = 1024) match {
@@ -55,6 +72,47 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
         )))
       case None =>
         BadRequest("no post body found")
+    }
+  }
+
+  def getListing(itemid: Long) = DBAction { implicit rs =>
+    Offers.findById(itemid) match {
+      case Some(offer) =>
+        Locations.findZLocByOfferId(itemid) match {
+          case Some(loc) =>
+            val ZOLoc = ZOLocation(
+              street = loc.street,
+              locality = loc.locality,
+              administrativeArea = loc.administrativeArea,
+              latitude = loc.latitude,
+              longitude = loc.longitude
+            )
+            Users.findById(offer.userid) match {
+              case Some(user) =>
+                val optToken = if(user.isMerchant.get) {
+                  Merchants.findByUserId(offer.userid) match {
+                    case Some(merchant) =>
+                      Some(generateToken(offer, merchant.identifier, merchant.secret, user.id.get))
+                  }
+                } else None
+                val lst = Offers.listingWithOffer(offer)
+                val rt = Locations.calcRatingForUsers(List((lst, ZOLoc, user))).getOrElse(user.id.get, (5,1))
+                val rating = 100*((50+rt._1)/(5*(rt._2+10))).toFloat
+                Ok(partials.html.itemTemplate(lst, lst.pictures.get, loc, user, rating, currency = offer.currency_code, token = optToken))
+              case None =>
+                Ok(Json.obj(
+                  "status" -> "KO"
+                ))
+            }
+          case None =>
+            Ok(Json.obj(
+              "status" -> "KO"
+            ))
+        }
+      case None =>
+        Ok(Json.obj(
+          "status" -> "KO"
+        ))
     }
   }
 
