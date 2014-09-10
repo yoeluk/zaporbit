@@ -7,72 +7,22 @@ import play.api.mvc._
 import play.api.db.slick._
 import play.api.libs.json._
 import securesocial.controllers.BaseLoginPage
-import securesocial.core.providers.UsernamePasswordProvider
 
 import securesocial.core.services.RoutesService
 import securesocial.core.{RuntimeEnvironment, IdentityProvider}
-
-//import play.api.db.slick.Config.driver.simple._
-//import play.api.db.slick.Config.driver.simple.{Session => DBSession}
 
 import securesocial.core._
 import service.SocialUser
 
 import play.api.Play.current
 
-import AppCryptor._
-import play.api.data._
-import play.api.data.Forms._
-
-import socialViews.MyViewTemplates
-
 class Application(override implicit val env: RuntimeEnvironment[SocialUser]) extends securesocial.core.SecureSocial[SocialUser] {
 
   // HOME PAGE
 
-  case class UpgradeListing(offerid: Long, waggle: Boolean, highlight: Boolean)
-
-  implicit val upgradeFormat = Json.format[UpgradeListing]
-  val upgradeForm = Form(
-    mapping(
-      "offerid" -> longNumber,
-      "waggle" -> boolean,
-      "highlight" -> boolean
-    )(UpgradeListing.apply)(UpgradeListing.unapply)
-  )
-
   def index = Action {
     val message = "Entice with higher confidence!"
     Ok(views.html.index(message))
-  }
-  /***
-  def calcRatingForUsers(page: List[(Listing, ZOLocation, User)])(implicit session: DBSession): Map[Long, (Int, Int)] = {
-    val diffUsers = page.foldLeft(Nil: List[Long]) {
-      (acc, next) => if (acc contains next._3.id.get) acc else next._3.id.get :: acc
-    }
-    val rtgs = (for {
-      rt <- ratings.filter(_.id inSet diffUsers)
-    } yield rt.userid -> rt.rating).toMap
-    rtgs.foldLeft(Map(): Map[Long, (Int, Int)]) {
-      case (a, (k, v)) => if (a contains k) adjust(a, k){case (v1,c) => (v+v1,c+1)} else a + (k -> (v, 1))
-    }
-  }
-  ***/
-
-  def upgradeListing(tick: String) = DBAction(parse.raw) { implicit rs =>
-    rs.request.body.asBytes(maxLength = 1024) match {
-      case Some(body) =>
-        val pass = password + tick
-        val decryptedBody = appCryptor.decryptData(body, pass.toCharArray)
-        Json.parse(decryptedBody).validate[UpgradeListing].map { upgrade =>
-          Redirect(routes.Application.index())
-        }.getOrElse(BadRequest(Json.obj(
-          "status" -> "KO",
-          "message" -> ""
-        )))
-      case None =>
-        BadRequest("no post body found")
-    }
   }
 
   def getListing(itemid: Long) = DBAction { implicit rs =>
@@ -130,7 +80,7 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
         case Some(_) =>
           Redirect( routes.Application.profileTemplate() )
         case None =>
-          Redirect( routes.CustomLoginController.embededLogin( "/#!/listings" ) )
+          Redirect( routes.Application.loggedoutTemplate() )
       }
     } else
         BadRequest(partial + " could not be found")
@@ -139,8 +89,13 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
   def profileTemplate = SecuredAction { implicit request =>
     request.user.main match {
       case user =>
-        Ok( partials.html.profile( user.fbuserid, user.name ) )
+        println(user)
+        Ok( partials.html.profile( user ) )
     }
+  }
+
+  def loggedoutTemplate = Action {
+    Ok( partials.html.loggedoutTemplate() )
   }
 
   def currentUser = Action.async { implicit request =>
@@ -155,19 +110,9 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
 
 class CustomLoginController(implicit override val env: RuntimeEnvironment[SocialUser]) extends BaseLoginPage[SocialUser] {
 
-  lazy val myViews = new MyViewTemplates.Default(env)
-
   override def login: Action[AnyContent] = {
     Logger.debug("using CustomLoginController")
     super.login
-  }
-
-  def embededLogin(redirect: String) = UserAwareAction { implicit request =>
-    if ( request.user.isDefined ) {
-      Redirect( routes.Application.profileTemplate() )
-    } else {
-      Ok( myViews.getEmbededLoginPage(form = UsernamePasswordProvider.loginForm, redirect = Some(redirect)) )
-    }
   }
 
 }

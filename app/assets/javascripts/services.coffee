@@ -157,7 +157,7 @@ angular.module "ZapOrbit.services", []
     social = ->
       that.social
 
-    getSocial = (body, callback) ->
+    getSocial = (body, setupUI) ->
       if !that.social
         $http = $injector.get '$http'
         $http
@@ -168,8 +168,10 @@ angular.module "ZapOrbit.services", []
         .success (data, status) ->
           if data? && data.token?
             that.social = data
-            callback(true)
-          else that.social = undefined
+            setupUI(true)
+          else
+            that.social = undefined
+            setupUI(false)
 
     getSocial: getSocial
     social: social

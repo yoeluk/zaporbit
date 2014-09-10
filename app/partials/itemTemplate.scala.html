@@ -10,7 +10,6 @@
     // Failure handler
     var failureHandler = function(status) {
         if (window.console != undefined) {
-            //window.location.href = "ZapOrbit://";
             console.log("failed")
         }
     };
@@ -44,7 +43,7 @@
                                             <img data-ng-src="/pictures/@pic@ext" style="">
                                         </div>
                                         <div class="carousel-caption">
-                                            <h4> Slide @i </h4>
+                                            <h4> Slide @(i+1) </h4>
                                         </div>
                                     </slide>
                                 }
@@ -115,9 +114,9 @@
                         <div style="text-align : center">
                             <button
                             id="token_button"
-                            style="background: none;border: none;padding-top: 20px;"
+                            style="background: none;border: none;padding: 0;"
                             data-token=@token onclick="purchase();">
-                                <img src="https://developers.google.com/wallet/images/buy-button.png"/>
+                                <img class="resize" src="https://developers.google.com/wallet/images/buy-button.png"/>
                             </button>
                         </div>
                     }

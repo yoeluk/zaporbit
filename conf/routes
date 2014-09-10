@@ -26,6 +26,7 @@ GET         /modal_item/:itemid                                     @controllers
 # Partials
 GET         /partials/:partial                                      @controllers.Application.partialTemplates(partial: String)
 GET         /profileTemplate                                        @controllers.Application.profileTemplate()
+GET         /loggedoutTemplate                                     @controllers.Application.loggedoutTemplate()
 
 # web Api
 
@@ -78,6 +79,5 @@ GET         /thumbnails/:file_name                                  controllers.
 # SecureSocial
 GET         /custom/login                                           @controllers.CustomLoginController.login
 GET         /custom/logout                                          @controllers.CustomLoginController.logout
-GET         /custom/embededLogin                                    @controllers.CustomLoginController.embededLogin(redirect)
 
 ->          /auth                                                   securesocial.Routes

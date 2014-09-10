@@ -382,8 +382,16 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
 ]
 .controller "ProfileCtrl", ["$scope", "$timeout", "SocialService", ($scope, $timeout, SocialService) ->
-    $scope.profileTemplate =
-      url: "/partials/profile"
+    $scope.title = "Profile"
+    $scope.profileTemplates = [
+      {
+        url: "/loggedoutTemplate"
+      }
+      {
+        url: "/partials/profile"
+      }
+    ]
+    $scope.profileTemplate = $scope.profileTemplates[0]
     $scope.status = ->
       FB.getLoginStatus (response) ->
         if response.status is "connected"
@@ -402,12 +410,15 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
           console.log "not_authorized"
         else
           console.log "donno"
-    setupUI = (logged) ->
-      $scope.loggedIn = true if logged?
+    setupUI = (auth) ->
+      $scope.showTplt = true
+      console.log "auth is " + auth
+      if (auth == true) then $scope.profileTemplate = $scope.profileTemplates[1]
     if SocialService.social()? then setupUI(true)
-    $timeout ->
-      $scope.status()
-    , 600
+    else
+      $timeout ->
+        $scope.status()
+      , 600
 ]
 .controller "AlertCtrl", ["$scope", "$timeout", "ListingService", ($scope, $timeout, ListingService) ->
 

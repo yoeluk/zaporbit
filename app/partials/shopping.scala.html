@@ -174,15 +174,17 @@
             </div>
 
             <div class="col-xs-6 col-md-4" data-ng-controller="ProfileCtrl">
-                <div data-ng-include="profileTemplate.url" data-ng-if="loggedIn"></div>
-                <div id="fbId" data-fb-login>
-                    <div class="fb-login-button"
-                    data-scope="public_profile,email,user_friends"
-                    data-max-rows="2"
-                    data-size="large"
-                    data-show-faces="true"
-                    data-auto-logout-link="false"
-                    onlogin="angular.element(document.getElementById('fbId')).scope().status()"></div>
+                <div data-scroll data-ng-class="{posFixed: fixedToTop}" class="btn-block">
+                    <div data-ng-include="profileTemplate.url" data-ng-if="showTplt"></div>
+                    <div id="fbId" data-fb-login>
+                        <div class="fb-login-button"
+                        data-scope="public_profile,email,user_friends"
+                        data-max-rows="2"
+                        data-size="large"
+                        data-show-faces="true"
+                        data-auto-logout-link="false"
+                        onlogin="angular.element(document.getElementById('fbId')).scope().status()"></div>
+                    </div>
                 </div>
             </div>
 

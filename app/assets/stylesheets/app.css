@@ -1,7 +1,7 @@
 /* app css stylesheet */
 .head {
     z-index: 0;
-    background:  url(../images/grey.png) scroll;
+    background:  url(http://www.khaleejtimes.com/images/shoeless_2610.jpg) scroll;
 }
 .container .jumbotron-b {
     padding-left: 60px;
@@ -369,4 +369,8 @@ textarea:focus {
         top: 5px;
         width: 366px;
     }
+}
+img.resize{
+    width:250px; /* you can use % */
+    height: auto;
 }

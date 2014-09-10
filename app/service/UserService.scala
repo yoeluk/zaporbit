@@ -86,10 +86,10 @@ class SocialUserService extends UserService[SocialUser] {
             SocialUser(main = user, identities = Nil)
           case Some(existingUser) =>
             val persistantUser = UserFromIdentity(basicUser)
-            Users.update(existingUser.id, existingUser.isMerchant, persistantUser)
-            val user = persistantUser.copy(id = existingUser.id)
+            val user = Users.update(existingUser.id, existingUser.isMerchant, persistantUser)
+            val fullUser = user.copy(created_on = existingUser.created_on)
             OAuth2s.insertUpdate(basicUser.oAuth2Info.get, user.fbuserid)
-            SocialUser(main = user, identities = Nil)
+            SocialUser(main = fullUser, identities = Nil)
         }
       )
     }

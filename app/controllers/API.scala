@@ -690,6 +690,35 @@ object API extends Controller {
       Ok(Json.toJson(pageResult))
   }
 
+  /*
+  case class UpgradeListing(offerid: Long, waggle: Boolean, highlight: Boolean)
+
+  implicit val upgradeFormat = Json.format[UpgradeListing]
+  val upgradeForm = Form(
+    mapping(
+      "offerid" -> longNumber,
+      "waggle" -> boolean,
+      "highlight" -> boolean
+    )(UpgradeListing.apply)(UpgradeListing.unapply)
+  )
+
+  def upgradeListing(tick: String) = DBAction(parse.raw) { implicit rs =>
+    rs.request.body.asBytes(maxLength = 1024) match {
+      case Some(body) =>
+        val pass = password + tick
+        val decryptedBody = appCryptor.decryptData(body, pass.toCharArray)
+        Json.parse(decryptedBody).validate[UpgradeListing].map { upgrade =>
+          Redirect(routes.Application.index())
+        }.getOrElse(BadRequest(Json.obj(
+          "status" -> "KO",
+          "message" -> ""
+        )))
+      case None =>
+        BadRequest("no post body found")
+    }
+  }
+  */
+
   /**
    *
    * @param picture

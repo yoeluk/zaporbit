@@ -1,3 +1,20 @@
-@(profileId: String, profileName: String)
-<div>hello profile Id: @profileId</div>
-<div>hello profile name: @profileName</div>
+@(user: User)
+
+<div class="" style="margin-bottom: 10px; border-bottom: 1px solid rgb(229, 229, 229)">
+    <h5> {{ title }} </h5>
+</div>
+<div class="profile row">
+    <img class="profile-img pull-left" data-ng-src="//graph.facebook.com/v2.1/@user.fbuserid/picture?height=200&width=200" src="" alt=""/>
+    <div class="profile-crd" style=""><a href="javascript:;"><b> @user.name @user.surname </b></a></div>
+    <div class="stars pull-left">
+        <div class="rating" style="width: 0"></div>
+        <i></i>
+        <i></i>
+        <i></i>
+        <i></i>
+        <i></i>
+    </div>
+    <div class="pull-right" style="padding-right: 20px; color: grey; font-size: 12px;">
+        <p class="pull-right">@if(user.isMerchant.get){is <i>merchant</i>}else{is <i>not</i> merchant}</p>
+    </div>
+</div>
