@@ -166,12 +166,11 @@ angular.module "ZapOrbit.services", []
           url: 'auth/api/authenticate/facebook'
           context: this
         .success (data, status) ->
+          setupUI(data?)
           if data? && data.token?
             that.social = data
-            setupUI(true)
           else
             that.social = undefined
-            setupUI(false)
 
     getSocial: getSocial
     social: social

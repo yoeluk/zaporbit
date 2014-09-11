@@ -412,7 +412,6 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
           console.log "donno"
     setupUI = (auth) ->
       $scope.showTplt = true
-      console.log "auth is " + auth
       if (auth == true) then $scope.profileTemplate = $scope.profileTemplates[1]
     if SocialService.social()? then setupUI(true)
     else

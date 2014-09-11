@@ -1,7 +1,7 @@
 /* app css stylesheet */
 .head {
     z-index: 0;
-    background:  url(http://www.khaleejtimes.com/images/shoeless_2610.jpg) scroll;
+    background:  url(../images/shoeless_2610.jpg) scroll;
 }
 .container .jumbotron-b {
     padding-left: 60px;

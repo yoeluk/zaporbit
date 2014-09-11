@@ -89,7 +89,6 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
   def profileTemplate = SecuredAction { implicit request =>
     request.user.main match {
       case user =>
-        println(user)
         Ok( partials.html.profile( user ) )
     }
   }
