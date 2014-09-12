@@ -40,7 +40,15 @@
                     <marker
                     idkey="loc.id"
                     coords="loc.coords"
+                    icon="'@routes.Assets.versioned("images/marker.png")'"
                     options="loc.options"
+                    control="loc.control"></marker>
+                    <marker
+                    data-ng-repeat="lst in allListings track by $index"
+                    idkey="lst.listing.id"
+                    coords="{latitude: lst.location.latitude, longitude: lst.location.longitude}"
+                    click="openListing($index)"
+                    options="loc.lstOptions"
                     control="loc.control"></marker>
                 </google-map>
 

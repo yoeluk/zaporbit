@@ -10,11 +10,14 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     $scope.message = "Entice with higher confidence!"
     $scope.motivation = "Free App, lots of possibilities!"
 ]
-.controller "ShoppingCtrl", ["$timeout", "$scope", "LocationService", "ReverseGeocode", "ListingService", "pageSize", "$cookieStore", "localStorageService"
-    ($timeout, $scope, LocationService, ReverseGeocode, ListingService, pageSize, $cookieStore, localStorageService) ->
+.controller "ShoppingCtrl", ["$timeout", "$scope", "LocationService", "ReverseGeocode", "ListingService", "pageSize", "$cookieStore", "localStorageService", "$rootScope",
+  ($timeout, $scope, LocationService, ReverseGeocode, ListingService, pageSize, $cookieStore, localStorageService, $rootScope) ->
 
       $scope.getRatingWidth = (user) ->
         'width': 100*((50+user.rating)/(5*(user.ratingCount+10)))+"%"
+
+      $scope.openListing = (index) ->
+        $rootScope.$emit "openListing", index
 
       $scope.locProg = false
       $scope.locProgMessage = "Discovering your location."
@@ -106,7 +109,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
         control: {}
         options:
           visible: false
-          title: "Your Location"
+          title: ""
           draggable: false
         coords:
           latitude: $scope.coords.latitude
@@ -182,8 +185,9 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
           1: 'Permission denied'
           2: 'Position unavailable'
           3: 'Request timeout'
+        $scope.$apply( ->
         $scope.showSearch = true
-        $scope.locProg = false
+        $scope.locProg = false)
 
       showLocation = (latlng) ->
         if $scope.map.control.getGMap?
@@ -210,7 +214,6 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
     $scope.filter = (form) ->
       if $scope.filterString? && $scope.filterString.replace(/(^\s+|\s+$)/g, '') != ""
-        console.log $scope.filterString
         $scope.$parent.listingsForLocation(true, $scope.filterString.replace(/(^\s+|\s+$)/g, ''))
       else
         $scope.$parent.listingsForLocation(true)
@@ -338,6 +341,9 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       )
       modalInstance.result.then ( ->
       ), ->
+
+    $rootScope.$on "openListing", (e, index) ->
+      $scope.open('lg') if $scope.$index == index
 ]
 .controller "ListingModalInstCtrl", ["$scope", "$modalInstance", ($scope, $modalInstance) ->
 
@@ -410,6 +416,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
           console.log "not_authorized"
         else
           console.log "donno"
+          setupUI(false)
     setupUI = (auth) ->
       $scope.showTplt = true
       if (auth == true) then $scope.profileTemplate = $scope.profileTemplates[1]

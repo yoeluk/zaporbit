@@ -1,14 +1,11 @@
 package controllers
 
 import com.typesafe.plugin._
-import play.api._
 import play.api.mvc._
-import play.api.Play._
 import play.api.libs.json._
 
 import play.api.data._
 import play.api.data.Forms._
-import play.api.data.format._
 import play.api.data.format.Formats._
 
 import play.api.Play.current
@@ -42,7 +39,7 @@ object Youtrack extends Controller {
 
   def allIssues = Action.async {
     val urlLogin = "http://youtrack.zaporbit.com/rest/user/login"
-    val url = "http://youtrack.zaporbit.com/rest/issue?all"
+    val url = "http://youtrack.zaporbit.com/rest/issue?max=25"
     Cache.getAs[String]("login.key1") match {
       case None =>
         val respond = Await.result(WS.url(urlLogin)
