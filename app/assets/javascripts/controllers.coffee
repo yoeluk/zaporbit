@@ -211,9 +211,9 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
           1: 'Permission denied'
           2: 'Position unavailable'
           3: 'Request timeout'
-        $scope.$apply( ->
-        $scope.showSearch = true
-        $scope.locProg = false)
+        $scope.$apply ->
+          $scope.showSearch = true
+          $scope.locProg = false
 
       showLocation = (latlng) ->
         if $scope.map.control.getGMap?
@@ -453,8 +453,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
           console.log "donno"
           setupUI(false)
     setupUI = (auth) ->
-      $scope.$apply ->
-        $scope.showTplt = true
+      $scope.showTplt = true
       if (auth == true) then $scope.profileTemplate = $scope.profileTemplates[1]
     if SocialService.social()? then setupUI(true)
     else

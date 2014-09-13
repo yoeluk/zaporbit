@@ -14,9 +14,7 @@ angular.module "ZapOrbit", [
   "angularMoment",
   "LocalStorageModule"
 ]
-
 .constant "pageSize", 25
-
 .config ["$locationProvider", "$routeProvider", "$httpProvider", ($locationProvider, $routeProvider, $httpProvider) ->
   $locationProvider
     .html5Mode false
