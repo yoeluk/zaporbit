@@ -30,6 +30,15 @@ object Wallet extends Controller {
     val localeInfo = localeIdentifier.split("_")
     val aLocale = new Locale(localeInfo(0), localeInfo(1))
     val currencyFormatter = NumberFormat.getCurrencyInstance(aLocale)
+    if (price < 100) {
+      currencyFormatter.setMinimumFractionDigits(2)
+      currencyFormatter.setMaximumFractionDigits(2)
+    }
+    else if (price.isValidInt) currencyFormatter.setMaximumFractionDigits(0)
+    else {
+      currencyFormatter.setMinimumFractionDigits(2)
+      currencyFormatter.setMaximumFractionDigits(2)
+    }
     currencyFormatter.format(price)
   }
 

@@ -13,10 +13,14 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 .controller "ShoppingCtrl", ["$timeout", "$scope", "LocationService", "ReverseGeocode", "ListingService", "pageSize", "$cookieStore", "localStorageService", "$rootScope",
   ($timeout, $scope, LocationService, ReverseGeocode, ListingService, pageSize, $cookieStore, localStorageService, $rootScope) ->
 
+      $scope.markers = undefined
+
       $scope.getRatingWidth = (user) ->
         'width': 100*((50+user.rating)/(5*(user.ratingCount+10)))+"%"
 
-      $scope.openListing = (index) ->
+      timeInMs = 500
+
+      openListing = (index) ->
         $rootScope.$emit "openListing", index
 
       $scope.locProg = false
@@ -67,7 +71,6 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
         ReverseGeocode.geocodeAddress 1, 1, geocodeCallback, $scope.query
 
       zoom = 10
-      timeInMs = 500
 
       $scope.showSearch = !navigator.geolocation
 
@@ -77,6 +80,29 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
         $scope.filterStr = ListingService.filter()
         if !$scope.filterStr && listings.length == 0 && $scope.alerts.length == 0
           $scope.addAlert "There are not listings in this location."
+        doListingsMarkers()
+
+      doListingsMarkers = ->
+        $scope.markers = []
+        i = 0
+        l = $scope.allListings.length
+        while i < l
+          lst = $scope.allListings[i]
+          $scope.markers.push
+            id: lst.listing.id
+            coords:
+              latitude: lst.location.latitude
+              longitude: lst.location.longitude
+            control: {}
+            index: i
+            options:
+              visible: true
+              title: lst.listing.title
+              draggable: false
+          ++i
+        _.each $scope.markers, (m) ->
+          m.onClicked = ->
+            openListing(m.index)
 
       zoLocation = (addr) ->
         localStorageService.set 'loc'
@@ -252,7 +278,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
         context: this
       .success (data, status) ->
         if status == 200
-          $scope.allIssues = data["issues"]["issue"]
+          $scope.allIssues = data["issues"]
           i = $scope.allIssues.length - 1
           while i > -1
             issue = $scope.allIssues[i]
@@ -328,7 +354,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
           $modalInstance.close "close"
         ), 5000
 ]
-.controller "ModalListingCtrl", ["$rootScope", "$scope", "$modal", ($rootScope, $scope, $modal) ->
+.controller "ModalListingCtrl", ["$rootScope", "$scope", "$modal", "$timeout", ($rootScope, $scope, $modal, $timeout) ->
     $scope.lst = $scope.$parent.allListings[$scope.$index]
     scope = $rootScope.$new()
     scope.lst = $scope.lst
@@ -342,8 +368,15 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       modalInstance.result.then ( ->
       ), ->
 
+    timeInMs = 250
+
     $rootScope.$on "openListing", (e, index) ->
-      $scope.open('lg') if $scope.$index == index
+      if !$rootScope.recentOpen && $scope.$index == index
+        $rootScope.recentOpen = true
+        $scope.open('lg')
+        $timeout ->
+          $rootScope.recentOpen = false
+        , timeInMs
 ]
 .controller "ListingModalInstCtrl", ["$scope", "$modalInstance", ($scope, $modalInstance) ->
 
@@ -418,7 +451,8 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
           console.log "donno"
           setupUI(false)
     setupUI = (auth) ->
-      $scope.showTplt = true
+      $scope.$apply ->
+        $scope.showTplt = true
       if (auth == true) then $scope.profileTemplate = $scope.profileTemplates[1]
     if SocialService.social()? then setupUI(true)
     else

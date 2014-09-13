@@ -39,7 +39,7 @@ object Youtrack extends Controller {
 
   def allIssues = Action.async {
     val urlLogin = "http://youtrack.zaporbit.com/rest/user/login"
-    val url = "http://youtrack.zaporbit.com/rest/issue?max=25"
+    val url = "http://youtrack.zaporbit.com/rest/issue/byproject/ZO?max=25"
     Cache.getAs[String]("login.key1") match {
       case None =>
         val respond = Await.result(WS.url(urlLogin)
@@ -47,20 +47,26 @@ object Youtrack extends Controller {
           .post(Map("login" -> Seq("appuser"), "password" -> Seq("qWerty.19"))), 5.seconds)
         respond.cookie("JSESSIONID") match {
           case Some(x1) =>
-            val x2 = respond.cookie("jetbrains.charisma.main.security.PRINCIPAL").get
-            Cache.set("login.key1", x1.value.get, 1.day)
-            Cache.set("login.key2", x2.value.get, 1.day)
-            WS.url(url)
-              .withHeaders("Accept" -> "application/json; charset=utf-8")
-              .withHeaders("Cookie" -> ("JSESSIONID="+x1.value.get+"; jetbrains.charisma.main.security.PRINCIPAL"+x2.value.get))
-              .get().map { resp =>
-              Ok(
-                Json.obj(
-                "issues" -> resp.json)
-              )
+            respond.cookie("jetbrains.charisma.main.security.PRINCIPAL") match {
+              case Some(x2) =>
+                val x2 = respond.cookie("jetbrains.charisma.main.security.PRINCIPAL").get
+                Cache.set("login.key1", x1.value.get, 1.day)
+                Cache.set("login.key2", x2.value.get, 1.day)
+                WS.url(url)
+                  .withHeaders("Accept" -> "application/json; charset=utf-8")
+                  .withHeaders("Cookie" -> ("JSESSIONID="+x1.value.get+"; jetbrains.charisma.main.security.PRINCIPAL"+x2.value.get))
+                  .get().map { resp =>
+                  Ok(
+                    Json.obj(
+                      "issues" -> resp.json
+                    )
+                  )
+                }
+              case None =>
+                Future.successful(InternalServerError("invalid server authentication"))
             }
           case None =>
-            Future.successful(InternalServerError("there was an error authenticating with youtrack@zaporbit"))
+            Future.successful(InternalServerError("invalid server authentication"))
         }
       case Some(x1_value) =>
         WS.url(url)

@@ -36,20 +36,22 @@
                 bounds="map.bounds"
                 events="map.events"
                 options="map.options"
-                zoom="map.zoom">
+                zoom="map.zoom"
+                >
                     <marker
                     idkey="loc.id"
                     coords="loc.coords"
                     icon="'@routes.Assets.versioned("images/marker.png")'"
                     options="loc.options"
-                    control="loc.control"></marker>
-                    <marker
-                    data-ng-repeat="lst in allListings track by $index"
-                    idkey="lst.listing.id"
-                    coords="{latitude: lst.location.latitude, longitude: lst.location.longitude}"
-                    click="openListing($index)"
-                    options="loc.lstOptions"
-                    control="loc.control"></marker>
+                    control="loc.control"
+                    ></marker>
+                    <markers
+                    models="markers"
+                    doRebuildAll="true"
+                    coords="'coords'"
+                    options="'options'"
+                    click="'onClicked'"
+                    ></markers>
                 </google-map>
 
                 <alert ng-repeat="alert in alerts track by $index" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>

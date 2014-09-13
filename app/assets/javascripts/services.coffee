@@ -115,15 +115,20 @@ angular.module "ZapOrbit.services", []
         context: this
       .success (data, status) ->
         if data?
+          results =
+            listings: []
+            paging: data.paging
           i = 0
           l = data.listings.length
           while i < l
-            lst = data.listings[i]
-            t = lst.listing.updated_on.split /[- :]/
-            d = new Date t[0], t[1]-1, t[2], t[3], t[4], t[5]
-            lst.listing.date = d
+            if data.listings[i].listing.pictures.length > 0
+              lst = data.listings[i]
+              t = lst.listing.updated_on.split /[- :]/
+              d = new Date t[0], t[1]-1, t[2], t[3], t[4], t[5]
+              lst.listing.date = d
+              results.listings.push lst
             i++
-          setAllListings data
+          setAllListings results
           callback allListings
 
     getListings = (body, callback, remote, filter, page) ->
