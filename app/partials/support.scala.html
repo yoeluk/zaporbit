@@ -40,8 +40,8 @@
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button class="btn btn-success" data-ng-disabled="inProgress" data-ng-click="submit(newIssue)">Submit</button>
-                                    <button class="btn btn-warning" data-ng-click="cancel()">Cancel</button>
+                                    <button class="btn btn-success" data-ng-disabled="inProgress || posted" data-ng-click="submit(newIssue)">Submit</button>
+                                    <button class="btn btn-warning" data-ng-disabled="disableCancel" data-ng-click="cancel()">Cancel</button>
                                 </div>
                             </form>
                         </div>

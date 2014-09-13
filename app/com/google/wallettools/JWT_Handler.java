@@ -43,7 +43,7 @@ public class JWT_Handler {
         token.setAudience("Google");
         token.setParam("typ", "google/payments/inapp/item/v1");
         token.setIssuedAt(new org.joda.time.Instant(cal.getTimeInMillis()));
-        token.setExpiration(new org.joda.time.Instant(cal.getTimeInMillis() + 120000L));
+        token.setExpiration(new org.joda.time.Instant(cal.getTimeInMillis() + 300000L));
 
         //Configure request object, which provides information of the item
         JsonObject request = new JsonObject();

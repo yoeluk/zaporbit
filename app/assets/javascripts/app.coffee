@@ -14,7 +14,9 @@ angular.module "ZapOrbit", [
   "angularMoment",
   "LocalStorageModule"
 ]
+
 .constant "pageSize", 25
+
 .config ["$locationProvider", "$routeProvider", "$httpProvider", ($locationProvider, $routeProvider, $httpProvider) ->
   $locationProvider
     .html5Mode false
@@ -35,6 +37,7 @@ angular.module "ZapOrbit", [
       templateUrl: (params) -> "listing_item/" + params.itemid
       controller: "ListingCtrl"
 ]
+
 angular.module 'infinite-scroll', []
 .directive 'infiniteScroll', ['$rootScope', '$window', '$timeout', ($rootScope, $window, $timeout) ->
 

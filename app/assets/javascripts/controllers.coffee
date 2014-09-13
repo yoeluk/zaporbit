@@ -321,9 +321,8 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     $scope.submit = (form) ->
       $scope.submitted = true
       return if form.$invalid
-
       $scope.inProgress = true
-
+      $scope.disableCancel = true
       $http
         method: "POST"
         data:
@@ -333,11 +332,14 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
         url: "api/youtrack/createissue"
       .success (data, status) ->
         if status == 200
-          $scope.successMsg = "Your issue has been successfully submitted. It will be listed here after it is reviewed by an engineer!";
+          $scope.posted = true
           $scope.inProgress = false
+          $scope.disableCancel = false
+          $scope.successMsg = "Your issue has been successfully submitted. It will be listed here after it is reviewed by an engineer!";
         else
           $scope.errorMsg = "Oops, we received your request, but there was an error."
           $log.error data
+          $scope.disableCancel = false
         $timeout (->
           $scope.successMsg = null
           $scope.errorMsg = null
