@@ -67,16 +67,12 @@ angular.module "ZapOrbit.services", []
         if status is google.maps.GeocoderStatus.OK
           if results && results[0]
             addr = {}
-            i = 0
-            l = results[0].address_components.length
-            while i < l
-              comp = results[0].address_components[i]
-              if comp.types[0] == "locality" then addr.locality = comp.long_name
-              if comp.types[0] == "administrative_area_level_1" then addr.administrativeArea = comp.long_name
-              if comp.types[0] == "route" then addr.street = comp.long_name
-              if comp.types[0] == "street_number" then addr.number = comp.long_name
-              i++
-            if !addr.street then addr.street = "none"
+            _.each results[0].address_components, (comp) ->
+              addr.locality = comp.long_name if comp.types[0] == "locality"
+              addr.administrativeArea = comp.long_name if comp.types[0] == "administrative_area_level_1"
+              addr.street = comp.long_name if comp.types[0] == "route"
+              addr.number = comp.long_name if comp.types[0] == "street_number"
+            addr.street = "none" if !addr.street
             setAddress addr
             setCoords
               latitude: results[0].geometry.location.lat()
@@ -118,16 +114,12 @@ angular.module "ZapOrbit.services", []
           results =
             listings: []
             paging: data.paging
-          i = 0
-          l = data.listings.length
-          while i < l
-            if data.listings[i].listing.pictures.length > 0
-              lst = data.listings[i]
+          _.each data.listings, (lst) ->
+            if lst.listing.pictures.length > 0
               t = lst.listing.updated_on.split /[- :]/
               d = new Date t[0], t[1]-1, t[2], t[3], t[4], t[5]
               lst.listing.date = d
               results.listings.push lst
-            i++
           setAllListings results
           callback allListings
 
@@ -146,9 +138,13 @@ angular.module "ZapOrbit.services", []
     paging: getPaging
     filter: getFilterStr
 ]
-.factory "sessionInjector", ["$log", "SocialService", ($log, SocialService) ->
+.factory "hackedFB", [ ->
+
+]
+.factory "sessionInjector", ['$q', "$log", "SocialService", ($q, $log, SocialService) ->
 
     sessionInjector = request: (config) ->
+      #deferred = $q.defer()
       if SocialService.social()?
         config.headers["X-Auth-Token"] = SocialService.social().token
       config
@@ -158,6 +154,9 @@ angular.module "ZapOrbit.services", []
 .factory "SocialService", ["$q", "$location", "$injector", ($q, $location, $injector) ->
 
     that = {}
+
+    logout = ->
+      that.social = undefined
 
     social = ->
       that.social
@@ -175,8 +174,9 @@ angular.module "ZapOrbit.services", []
           if data? && data.token?
             that.social = data
           else
-            that.social = undefined
+            logout()
 
     getSocial: getSocial
     social: social
+    logout: logout
 ]

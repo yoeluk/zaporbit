@@ -84,10 +84,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
       doListingsMarkers = ->
         $scope.markers = []
-        i = 0
-        l = $scope.allListings.length
-        while i < l
-          lst = $scope.allListings[i]
+        _.each $scope.allListings, (lst, i) ->
           $scope.markers.push
             id: lst.listing.id
             coords:
@@ -99,7 +96,6 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
               visible: true
               title: lst.listing.title
               draggable: false
-          ++i
         _.each $scope.markers, (m) ->
           m.onClicked = ->
             openListing(m.index)
@@ -425,7 +421,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 .controller "ListingCtrl", ["$scope", ($scope) ->
 
 ]
-.controller "ProfileCtrl", ["$scope", "$timeout", "SocialService", ($scope, $timeout, SocialService) ->
+.controller "ProfileCtrl", ["$scope", "$timeout", "SocialService", "$log", ($scope, $timeout, SocialService, $log) ->
     $scope.title = "Profile"
     $scope.showTplt = false
     $scope.profileTemplates = [
@@ -436,13 +432,14 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
         url: "/partials/profile"
       }
     ]
-    $scope.profileTemplate = $scope.profileTemplates[0]
-    $scope.status = ->
-      FB.getLoginStatus (response) ->
-        if response.status is "connected"
-          uid = response.authResponse.userID
-          accessToken = response.authResponse.accessToken
-          expiresIn = response.authResponse.expiresIn
+    statusCallback = (response) ->
+      $log.debug response
+      if response.status is "connected"
+        uid = response.authResponse.userID
+        accessToken = response.authResponse.accessToken
+        expiresIn = response.authResponse.expiresIn
+        if SocialService.social()? then setupUI(true)
+        else
           FB.api "/me", (response) ->
             if response.email?
               SocialService.getSocial
@@ -451,20 +448,28 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
                   accessToken: accessToken
                   expiresIn: expiresIn
               , setupUI
-        else if response.status is "not_authorized"
-          console.log "not_authorized"
-        else
-          console.log "donno"
-          setupUI(false)
+      else if response.status is "not_authorized"
+        $log.warn "not_authorized"
+        SocialService.logout()
+        setupUI(false)
+      else
+        $log.warn "donno"
+        SocialService.logout()
+        setupUI(false)
+
+    $scope.profileTemplate = $scope.profileTemplates[0]
+    $scope.loginStatus = ->
+      $log.info "getting logging status"
+      FB.getLoginStatus statusCallback, true
     setupUI = (auth) ->
       $timeout ->
         $scope.showTplt = true
         $scope.profileTemplate = $scope.profileTemplates[1] if auth
-    if SocialService.social()? then setupUI(true)
-    else
-      $timeout ->
-        $scope.status()
-      , 600
+    $timeout ->
+      $scope.loginStatus()
+
+#    FB.Event.subscribe 'auth.logout', (response) ->
+#      alert 'logged out!'
 ]
 .controller "AlertCtrl", ["$scope", "$timeout", "ListingService", ($scope, $timeout, ListingService) ->
 
