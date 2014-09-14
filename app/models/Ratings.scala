@@ -45,7 +45,7 @@ object Ratings extends DAO {
       r <- ratings.filter(_.userid === userid)
     } yield r.rating).list match {
       case Nil => None
-      case head::tail => Some(head::tail)
+      case l => Some(l)
     }
   }
 

@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <queries>
-    <query>#Unresolved #Bug</query>
-    <query>#Unresolved #Task</query>
-    <query>#Unresolved #Feature</query>
-    <query>#Unresolved #iOS</query>
-    <query>#Unresolved #Web</query>
+    <query>#ZapOrbit #Unresolved #Bug</query>
+    <query>#ZapOrbit #Unresolved #Task</query>
+    <query>#ZapOrbit #Unresolved #Feature</query>
 </queries>

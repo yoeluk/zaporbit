@@ -83,10 +83,6 @@ object API extends Controller {
   implicit val wrsTimestamp: Writes[Timestamp] = (__ \ "time").write[String].contramap{ (a: Timestamp) => a.toString }
   implicit val fmtTimestamp: Format[Timestamp] = Format(rdsTimestamp, wrsTimestamp)
 
-  //implicit val rdsIdentityId: Reads[IdentityId] = ((__ \ "userId").read[String] and (__ \ "providerId").read[String]).tupled.map { case (userId,providerId) => new IdentityId(userId,providerId)}
-  //implicit val wrsIdentityId: Writes[IdentityId] = ((__ \ "userId").write[String] and (__ \ "providerId").write[String]).tupled.contramap { (a: IdentityId) => (a.userId,a.providerId) }
-  //implicit val fmtIdentityId: Format[IdentityId] = Format(rdsIdentityId, wrsIdentityId)
-
   // IMPLICIT JSON WRITES
   implicit val implicitListingZOConverstionWrites = new Writes[Page[(ZOConversation, User, User)]] {
     def writes(page: Page[(ZOConversation, User, User)]): JsValue = {
@@ -331,10 +327,10 @@ object API extends Controller {
     }
   }
   implicit val implicitGetRatingsWrites = new Writes[(Float,Int)] {
-    def writes(myTuple: (Float,Int)): JsValue = {
+    def writes(t: (Float,Int)): JsValue = {
       Json.obj(
-        "rating" -> myTuple._1.toString,
-        "total_ratings" -> myTuple._2
+        "rating" -> t._1.toString,
+        "total_ratings" -> t._2
       )
     }
   }
@@ -518,6 +514,7 @@ object API extends Controller {
     )(Billing.apply)(Billing.unapply)
   )
   */
+
   implicit val implicitBillingWrites = new Writes[Billing] {
     def writes(bill: Billing): JsValue = {
       Json.obj(

@@ -134,13 +134,15 @@ object Youtrack extends Controller {
 
   def getStats = Action.async {
     val urlLogin = "http://youtrack.zaporbit.com/rest/user/login"
-    val url = "http://youtrack.zaporbit.com/rest/issue/counts"
+    val url = "http://youtrack.zaporbit.com/rest/issue/counts?rough=true"
     val queryData = xml.query.render()
     Cache.getAs[String]("login.key5") match {
       case None =>
         val respond = Await.result(WS.url(urlLogin)
-          .withHeaders("Accept" -> "application/json; charset=utf-8")
-          .post(Map("login" -> Seq("yoeluk"), "password" -> Seq("qWerty.19"))), 5.seconds)
+          .withHeaders(
+            "Accept" -> "application/json; charset=utf-8"/*,
+            "Content-Type" -> "application/json; charset=utf-8"*/
+          ).post(Map("login" -> Seq("yoeluk"), "password" -> Seq("qWerty.19"))), 5.seconds)
         respond.cookie("JSESSIONID") match {
           case Some(x5) =>
             val x6 = respond.cookie("jetbrains.charisma.main.security.PRINCIPAL").get

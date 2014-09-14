@@ -315,6 +315,8 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 ]
 .controller "IssueModalInstCtrl", ["$scope", "$http", "$modalInstance", "$timeout", "$log", ($scope, $http, $modalInstance, $timeout, $log) ->
 
+    $scope.cancelTitle = "Cancel"
+
     $scope.cancel = ->
       $modalInstance.dismiss "cancel"
 
@@ -335,6 +337,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
           $scope.posted = true
           $scope.inProgress = false
           $scope.disableCancel = false
+          $scope.cancelTitle = "Dismiss"
           $scope.successMsg = "Your issue has been successfully submitted. It will be listed here after it is reviewed by an engineer!";
         else
           $scope.errorMsg = "Oops, we received your request, but there was an error."
@@ -424,6 +427,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 ]
 .controller "ProfileCtrl", ["$scope", "$timeout", "SocialService", ($scope, $timeout, SocialService) ->
     $scope.title = "Profile"
+    $scope.showTplt = false
     $scope.profileTemplates = [
       {
         url: "/loggedoutTemplate"
@@ -453,8 +457,9 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
           console.log "donno"
           setupUI(false)
     setupUI = (auth) ->
-      $scope.showTplt = true
-      if (auth == true) then $scope.profileTemplate = $scope.profileTemplates[1]
+      $timeout ->
+        $scope.showTplt = true
+        $scope.profileTemplate = $scope.profileTemplates[1] if auth
     if SocialService.social()? then setupUI(true)
     else
       $timeout ->

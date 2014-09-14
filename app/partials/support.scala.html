@@ -41,7 +41,7 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button class="btn btn-success" data-ng-disabled="inProgress || posted" data-ng-click="submit(newIssue)">Submit</button>
-                                    <button class="btn btn-warning" data-ng-disabled="disableCancel" data-ng-click="cancel()">Cancel</button>
+                                    <button class="btn btn-warning" data-ng-disabled="disableCancel" data-ng-click="cancel()"> {{ cancelTitle }} </button>
                                 </div>
                             </form>
                         </div>
@@ -105,9 +105,7 @@
                         </accordion-heading>
                         <div class="well well-sm">Bugs:  {{ bugs }}</div>
                         <div class="well well-sm">Tasks:  {{ tasks }}</div>
-                        <div class="well well-sm">New Features:  {{ features }}</div>
-                        <div class="well well-sm">iOS Issues:  {{ ioss }}</div>
-                        <div class="well well-sm" style="margin-bottom: 2px;">Web Issues:  {{ webs }}</div>
+                        <div class="well well-sm" style="margin-bottom: 2px;">New Features:  {{ features }}</div>
                     </accordion-group>
                 </accordion>
             </div>

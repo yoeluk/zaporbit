@@ -46,8 +46,8 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
                   }
                 } else None
                 val lst = Offers.listingWithOffer(offer)
-                val rt = Locations.calcRatingForUsers(List((lst, ZOLoc, user))).getOrElse(user.id.get, (5,1))
-                val rating = 100*((50+rt._1)/(5*(rt._2+10))).toFloat
+                val rt = Ratings.ratingForUser(user.id.get)
+                val rating = 100*rt._1.toInt
                 Ok(partials.html.itemTemplate(lst, lst.pictures.get, loc, user, rating, currency = offer.currency_code, token = optToken))
               case None =>
                 Ok(Json.obj(
@@ -89,7 +89,11 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
   def profileTemplate = SecuredAction { implicit request =>
     request.user.main match {
       case user =>
-        Ok( partials.html.profile( user ) )
+        DB.withSession { implicit s =>
+          val rt = Ratings.ratingForUser(user.id.get)
+          val rating = 100*rt._1.toInt
+          Ok( partials.html.profile( user, rating ) )
+        }
     }
   }
 

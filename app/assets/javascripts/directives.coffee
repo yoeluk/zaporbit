@@ -223,7 +223,6 @@ angular.module "ZapOrbit.directives", []
       if FB? then FB.XFBML.parse e[0]
     $timeout ->
       reparse(iElement)
-    , 500
 ]
 .directive "scroll", ["$window", ($window) ->
   link: (scope, element, attrs) ->

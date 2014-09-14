@@ -280,7 +280,7 @@ object Locations extends DAO {
   }
 
 
-  /*************** TESTING METHODS ********************/
+  /*************** TESTING METHODS *******************/
 
   /**
    *
