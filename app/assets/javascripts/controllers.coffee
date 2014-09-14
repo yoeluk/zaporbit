@@ -6,12 +6,12 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     $scope.go = (path) ->
       $location.path path
 ]
-.controller "HomeCtr", ["$scope", "$http", ($scope, $http) ->
+.controller "HomeCtr", ["$scope", ($scope) ->
     $scope.message = "Entice with higher confidence!"
     $scope.motivation = "Free App, lots of possibilities!"
 ]
-.controller "ShoppingCtrl", ["$timeout", "$scope", "LocationService", "ReverseGeocode", "ListingService", "pageSize", "$cookieStore", "localStorageService", "$rootScope",
-  ($timeout, $scope, LocationService, ReverseGeocode, ListingService, pageSize, $cookieStore, localStorageService, $rootScope) ->
+.controller "ShoppingCtrl", ["$timeout", "$scope", "LocationService", "ReverseGeocode", "ListingService", "pageSize", "localStorageService", "$rootScope",
+  ($timeout, $scope, LocationService, ReverseGeocode, ListingService, pageSize, localStorageService, $rootScope) ->
 
       $scope.markers = undefined
 
@@ -421,7 +421,8 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 .controller "ListingCtrl", ["$scope", ($scope) ->
 
 ]
-.controller "ProfileCtrl", ["$scope", "$timeout", "SocialService", "$log", ($scope, $timeout, SocialService, $log) ->
+.controller "ProfileCtrl", ["$scope", "$timeout", "SocialService", "$log", '$window', ($scope, $timeout, SocialService, $log, $window) ->
+    $scope.FB = $window.FB
     $scope.title = "Profile"
     $scope.showTplt = false
     $scope.profileTemplates = [
@@ -432,6 +433,9 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
         url: "/partials/profile"
       }
     ]
+
+    $scope.profileTemplate = $scope.profileTemplates[0]
+
     statusCallback = (response) ->
       $log.debug response
       if response.status is "connected"
@@ -440,7 +444,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
         expiresIn = response.authResponse.expiresIn
         if SocialService.social()? then setupUI(true)
         else
-          FB.api "/me", (response) ->
+          $scope.FB.api "/me", (response) ->
             if response.email?
               SocialService.getSocial
                 email: response.email
@@ -457,18 +461,19 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
         SocialService.logout()
         setupUI(false)
 
-    $scope.profileTemplate = $scope.profileTemplates[0]
-    $scope.loginStatus = ->
+    $scope.loginStatus = (caching) ->
       $log.info "getting logging status"
-      FB.getLoginStatus statusCallback, true
+      $scope.FB.getLoginStatus statusCallback, caching
+
     setupUI = (auth) ->
       $timeout ->
         $scope.showTplt = true
         $scope.profileTemplate = $scope.profileTemplates[1] if auth
-    $timeout ->
-      $scope.loginStatus()
 
-#    FB.Event.subscribe 'auth.logout', (response) ->
+    $timeout ->
+      $scope.loginStatus(true)
+
+#    $window.FB.Event.subscribe 'auth.logout', (response) ->
 #      alert 'logged out!'
 ]
 .controller "AlertCtrl", ["$scope", "$timeout", "ListingService", ($scope, $timeout, ListingService) ->

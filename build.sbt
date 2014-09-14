@@ -34,7 +34,6 @@ libraryDependencies ++= {
     "org.webjars" %% "webjars-play" % "2.3.0",
     "org.webjars" % "jquery" % "1.11.1",
     "org.webjars" % "bootstrap" % "3.2.0",
-    "org.webjars" % "requirejs" % "2.1.14-1",
     "org.webjars" % "angularjs" % "1.2.23",
     "org.webjars" % "angular-ui-bootstrap" % "0.11.0-2" exclude("org.webjars", "angularjs"),
     "org.webjars" % "holderjs" % "2.3.0",
