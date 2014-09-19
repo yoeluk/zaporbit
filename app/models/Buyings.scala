@@ -53,7 +53,7 @@ object Buyings extends DAO {
     buyings.filter(_.userid === id).firstOption
 
   def buyingTransByUserId(page: Int = 0,
-                          pageSize: Int = 20,
+                          pageSize: Int = 25,
                           userid: Long)(implicit session: Session): Page[BuyingTrans] = {
     val offset = pageSize * page
     val query = (for {

@@ -1,6 +1,5 @@
 package controllers
 
-import controllers.Wallet._
 import models._
 import play.api._
 import play.api.mvc._
@@ -42,7 +41,7 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
                 val optToken = if(user.isMerchant.get) {
                   Merchants.findByUserId(offer.userid) match {
                     case Some(merchant) =>
-                      Some(generateToken(offer, merchant.identifier, merchant.secret, user.id.get))
+                      Some(Wallet.generateToken(offer, merchant.identifier, merchant.secret, user.id.get))
                   }
                 } else None
                 val lst = Offers.listingWithOffer(offer)
@@ -75,6 +74,10 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
       Ok(partials.html.shopping(""))
     } else if (partial == "modalItem") {
       Ok(partials.html.uiModalItem())
+    } else if (partial == "loginPartial") {
+      Ok( partials.html.loginPartial() )
+    } else if (partial == "userhome") {
+      Ok( partials.html.userhome())
     } else if (partial == "profile") {
       request.headers.get("X-Auth-Token") match {
         case Some(_) =>

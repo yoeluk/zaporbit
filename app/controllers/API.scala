@@ -1,6 +1,5 @@
 package controllers
 
-import controllers.Wallet._
 import play.api._
 import play.api.mvc._
 import play.api.Play._
@@ -21,9 +20,6 @@ import play.api.libs.functional.syntax._
 import java.io.File
 
 import models._
-import views._
-import partials._
-import Wallet.{displayCurrency => formatCurrency}
 
 import org.cryptonode.jncryptor._
 import play.api.libs.ws._
@@ -31,6 +27,7 @@ import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits._
 
 import securesocial.core._
+import service.SocialUser
 
 /**
  * Created by yoelusa on 13/03/2014.
@@ -70,11 +67,10 @@ object AppCryptor {
   val password = "bjmlBqAfiBEQ4oZfaGtI0oMcd5IGkCp"
 }
 
-object API extends Controller {
-  import AppCryptor._
+object writers {
+
   import FormMappings._
 
-  implicit val context = scala.concurrent.ExecutionContext.Implicits.global
   /*
    * reference from accepted answer in stackoverlow
    * http://stackoverflow.com/questions/17281291/how-do-i-write-a-json-format-for-an-object-in-the-java-library-that-doesnt-have
@@ -136,7 +132,7 @@ object API extends Controller {
               "description" -> item._1.description,
               "price" -> item._1.price,
               "locale" -> item._1.locale,
-              "formatted_price" -> formatCurrency(item._1.locale, item._1.price),
+              "formatted_price" -> Wallet.displayCurrency(item._1.locale, item._1.price),
               "pictures" -> item._1.pictures,
               "shop" -> item._1.shop,
               "highlight" -> item._1.highlight,
@@ -184,7 +180,7 @@ object API extends Controller {
               "description" -> item._1.description,
               "price" -> item._1.price,
               "locale" -> item._1.locale,
-              "formatted_price" -> formatCurrency(item._1.locale, item._1.price),
+              "formatted_price" -> Wallet.displayCurrency(item._1.locale, item._1.price),
               "pictures" -> item._1.pictures,
               "shop" -> item._1.shop,
               "highlight" -> item._1.highlight,
@@ -644,7 +640,14 @@ object API extends Controller {
       "updated_on" -> optional(of[Timestamp])
     )(Rating.apply)(Rating.unapply)
   )
+}
 
+class API(override implicit val env: RuntimeEnvironment[SocialUser]) extends securesocial.core.SecureSocial[SocialUser] {
+  import AppCryptor._
+
+  implicit val context = scala.concurrent.ExecutionContext.Implicits.global
+
+  import writers._
   /**************************/
   /**** REQUESTS API ****/
   /**************************/
@@ -777,45 +780,23 @@ object API extends Controller {
    * this method is called every time a user login (it inserts user if doesn't exists else updates user)
    * @return
    */
-  def verifyingUser(tick: String) = DBAction(parse.raw) { implicit rs =>
-    rs.request.body.asBytes(maxLength = 1024) match {
-      case Some(body) =>
-        val pass =  password+tick
-        val decryptedBody = appCryptor.decryptData(body, pass.toCharArray)
-        Json.parse(decryptedBody).validate[User].map { user =>
-          Users.findByFbId(user.fbuserid) match {
-            case Some(oldUser) =>
-//              if (oldUser.id.get == 21437) {
-//                EmailService.sendWelcomeEmail(oldUser)
-//              }
-              val newUser: User = oldUser.copy(isMerchant = oldUser.isMerchant)
-              Users.update(oldUser.id, oldUser.isMerchant, newUser)
-              val rating = Ratings.ratingForUser(oldUser.id.get)
-              Ok(Json.obj(
-                "status" -> "OK",
-                "message" -> JsString("user " + user.name +
-                  " with old email " + oldUser.email +
-                  " has been updated."),
-                "userid" -> JsString("" + oldUser.id.get),
-                "rating" -> rating
-              ))
-            case None =>
-              val newUser: User = user.copy(isMerchant = Option(false))
-              val id = Users.insertReturningId(newUser)
-              //EmailService.sendWelcomeEmail(newUser)
-              Ok(Json.obj(
-                "status" -> "OK",
-                "userid" -> JsString("" + id),
-                "rating" -> Json.obj(
-                  "rating" -> 1,
-                  "total_ratings" -> 0)
-              ))
-          }
-        }.getOrElse(BadRequest(Json.obj(
-          "status" -> "OK",
-          "message" -> "invalid user json")))
-      case None =>
-        BadRequest("invalid request")
+  def currentUser = SecuredAction { implicit request =>
+    request.user.main match {
+      case user =>
+//        if (oldUser.id.get == 21437) {
+//          EmailService.sendWelcomeEmail(oldUser)
+//        }
+        DB.withSession { implicit s =>
+          val rating = Ratings.ratingForUser(user.id.get)
+          Ok(Json.obj(
+            "status" -> "OK",
+            "message" -> JsString("user " + user.name +
+              " with old email " + user.email +
+              " has been updated."),
+            "userid" -> JsString("" + user.id.get),
+            "rating" -> rating
+          ))
+        }
     }
   }
 
@@ -911,20 +892,27 @@ object API extends Controller {
 
   /**
    *
-   * @param id
    * @param page
    * @return
    */
-  def returnUsersRecords(id: Long, page: Int) = DBAction { implicit rs =>
-    val buyingTransPage = Buyings.buyingTransByUserId(page = page, userid = id)
-    val sellingTransPage = Sellings.sellingTransByUserId(page = page, userid = id)
-    val messagesPage = Conversations.convsForUser(page = page, userid = id)
-    Ok(Json.obj(
-      "status" -> "OK",
-      "messages_records" -> Json.toJson(messagesPage),
-      "buying_records" -> Json.toJson(buyingTransPage),
-      "selling_records" -> Json.toJson(sellingTransPage)
-    ))
+  def returnUsersRecords(page: Int) = SecuredAction { implicit request =>
+    request.user.main match {
+      case user =>
+        DB.withSession { implicit s =>
+          val id = user.id.get
+          val buyingTransPage = Buyings.buyingTransByUserId(page = page, userid = id)
+          val sellingTransPage = Sellings.sellingTransByUserId(page = page, userid = id)
+          val messagesPage = Conversations.convsForUser(page = page, userid = id)
+          val billingPage = Billings.billingsByUserId(userid = id)
+          Ok(Json.obj(
+            "status" -> "OK",
+            "messages_records" -> Json.toJson(messagesPage),
+            "buying_records" -> Json.toJson(buyingTransPage),
+            "selling_records" -> Json.toJson(sellingTransPage),
+            "billing_records" -> Json.toJson(billingPage)
+          ))
+        }
+    }
   }
 
   /**

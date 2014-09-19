@@ -2,6 +2,16 @@
 
 # Services
 angular.module "ZapOrbit.services", []
+.factory "StorageSupport", ["localStorageService", (localStorageService) ->
+    hasStorage = ->
+      try
+        localStorageService.set "test", "test"
+        localStorageService.remove "test"
+        true
+      catch exception
+        false
+    hasStorage: hasStorage
+]
 .factory "LocationService", ["$timeout", ($timeout) ->
 
     that = {}
@@ -141,42 +151,115 @@ angular.module "ZapOrbit.services", []
 .factory "hackedFB", [ ->
 
 ]
-.factory "sessionInjector", ['$q', "$log", "SocialService", ($q, $log, SocialService) ->
+.factory "SessionInjector", ["$injector", ($injector) ->
 
-    sessionInjector = request: (config) ->
-      #deferred = $q.defer()
+    request: (config) ->
+      SocialService = $injector.get('SocialService')
       if SocialService.social()?
         config.headers["X-Auth-Token"] = SocialService.social().token
       config
-
-    sessionInjector
 ]
-.factory "SocialService", ["$q", "$location", "$injector", ($q, $location, $injector) ->
+.factory "SocialService", ["$injector", "localStorageService", "$timeout", ($injector, localStorageService, $timeout) ->
 
     that = {}
 
+    localStorageService.remove 'tokenData'
+    localStorageService.remove 'loggedIn'
+
+    inProgress = false
+
     logout = ->
-      that.social = undefined
+      localStorageService.remove 'tokenData'
+      localStorageService.remove 'loggedIn'
+
+    login = (tokenData) ->
+      localStorageService.set 'tokenData', tokenData
+      localStorageService.set 'loggedIn', true
+
+    isLoggedIn = ->
+      localStorageService.get 'loggedIn'
 
     social = ->
-      that.social
+      localStorageService.get 'tokenData'
 
-    getSocial = (body, setupUI) ->
-      if !that.social
+    requestSocialAuth = (body, setupUI) ->
+      if !isLoggedIn()
         $http = $injector.get '$http'
+        inProgress = true
         $http
           method: "POST"
           data: body
           url: 'auth/api/authenticate/facebook'
-          context: this
         .success (data, status) ->
+          inProgress = false
+          if data? && data.token? then login(data)
+          else logout()
           setupUI(data?)
-          if data? && data.token?
-            that.social = data
-          else
-            logout()
+
+    getSocial = (body, setupUI) ->
+      $timeout ->
+        if inProgress then getSocial(body, setupUI)
+        else requestSocialAuth(body, setupUI)
+      , 50
+
 
     getSocial: getSocial
     social: social
     logout: logout
+    isLoggedIn: isLoggedIn
+]
+.factory "FacebookLogin", ["$window", "SocialService", "$log", "$timeout", ($window, SocialService, $log, $timeout) ->
+
+    FB = $window.FB
+
+    UICallback = undefined
+
+    fbId = undefined
+
+    setUICallback = (callback)->
+      UICallback = callback
+
+    setFacebookId = (id) ->
+      fbId = id
+
+    getFbId = ->
+      fbId
+
+    statusCallback = (response) ->
+      if response.status is "connected"
+        uid = response.authResponse.userID
+        accessToken = response.authResponse.accessToken
+        expiresIn = response.authResponse.expiresIn
+        if SocialService.social()? then UICallback(true)
+        else
+          FB.api "/me", (response) ->
+            if response.email?
+              setFacebookId response.id
+              SocialService.getSocial
+                email: response.email
+                info:
+                  accessToken: accessToken
+                  expiresIn: expiresIn
+              , UICallback
+      else if response.status is "not_authorized"
+        $log.warn "not_authorized"
+        SocialService.logout()
+        fbId = undefined
+        UICallback(false)
+      else
+        $log.warn "donno"
+        SocialService.logout()
+        fbId = undefined
+        UICallback(false)
+
+    getLoginStatus = (caching, callback) ->
+      setUICallback(callback)
+      $timeout ->
+        if FB? then FB.getLoginStatus statusCallback, caching
+        else getLoginStatus(caching, callback)
+      , 250
+
+    getLoginStatus: getLoginStatus
+    getFbId: getFbId
+
 ]

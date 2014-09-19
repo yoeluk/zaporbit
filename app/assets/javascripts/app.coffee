@@ -19,7 +19,7 @@ angular.module "ZapOrbit", [
     .html5Mode false
     .hashPrefix "!"
   $httpProvider
-    .interceptors.push "sessionInjector"
+    .interceptors.push "SessionInjector"
   $routeProvider
     .when "/",
       templateUrl: "/partials/home"
@@ -33,6 +33,9 @@ angular.module "ZapOrbit", [
     .when "/listing_item/:itemid",
       templateUrl: (params) -> "listing_item/" + params.itemid
       controller: "ListingCtrl"
+    .when "/userhome",
+      templateUrl: "/partials/userhome"
+      controller: "UserHomeCtrl"
 ]
 
 angular.module 'infinite-scroll', []

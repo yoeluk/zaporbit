@@ -1,4 +1,4 @@
-@(token: String, offer: Offer, thumbnail: String)
+@(token: String, offer: Offer, thumbnail: String, formattedPrice: String)
 
 @walletMain(token, "Buy Item") {
 
@@ -22,7 +22,7 @@
                 <tr>
                     <td> 1 </td>
                     <td class="buy-item">@offer.title</td>
-                    <td>@Wallet.displayCurrency(offer.locale,offer.price)</td>
+                    <td>@formattedPrice</td>
                 </tr>
             </tbody>
         </table>

@@ -11,6 +11,9 @@ import com.google.wallettools._
 import models._
 import play.api.db.slick._
 
+import securesocial.core._
+import service.SocialUser
+
 /**
  * Created by yoelusa on 17/03/2014.
  */
@@ -21,9 +24,7 @@ object Wallet extends Controller {
   val ISSUER = seller.ISSUER
   val SIGNING_KEY = seller.SIGNING_KEY
 
-  import API.transactionFormat
-  import API.buyingFormat
-  import API.sellingFormat
+  import writers._
   import models.Transactions.billingFormat
 
   def displayCurrency(localeIdentifier: String, price: Double): String = {

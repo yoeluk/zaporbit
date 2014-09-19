@@ -15,7 +15,6 @@ import securesocial.core._
 
 import play.api.Play.current
 
-import Wallet._
 import models._
 import service.SocialUser
 
@@ -34,7 +33,7 @@ class Cart(override implicit val env: RuntimeEnvironment[SocialUser]) extends Co
           Offers.findById(offerid) match {
             case Some(offer) =>
               if (offer.waggle != waggle || offer.highlight != highlight) {
-                val token = generateToken(offer, waggle, highlight)
+                val token = Wallet.generateToken(offer, waggle, highlight)
                 Ok(views.html.upgrade(token, offer, thumbnail, waggle, highlight))
               } else BadGateway(Json.obj(
                 "status" -> "KO",
@@ -64,8 +63,9 @@ class Cart(override implicit val env: RuntimeEnvironment[SocialUser]) extends Co
             case Some(offer) =>
               Merchants.findByUserId(offer.userid) match {
                 case Some(merchant) =>
-                  val token = generateToken(offer,merchant.identifier, merchant.secret, user.id.get)
-                  Ok(views.html.buy(token, offer, thumbnail))
+                  val token = Wallet.generateToken(offer,merchant.identifier, merchant.secret, user.id.get)
+                  val formattedPrice = Wallet.displayCurrency(offer.locale,offer.price)
+                  Ok(views.html.buy(token, offer, thumbnail, formattedPrice))
                 case None =>
                   BadRequest("")
               }
@@ -121,7 +121,7 @@ class Cart(override implicit val env: RuntimeEnvironment[SocialUser]) extends Co
                       }).flatten
                       val userData = (for((b,f)<- billsWithFees)yield b.id.get).mkString("~")
                       val fees = (for((b,f)<- billsWithFees)yield f).sum.toString()
-                      val token = generateToken("data:"+userData, fees)
+                      val token = Wallet.generateToken("data:"+userData, fees)
                       Ok(views.html.pay(token, billsWithFees))
                     }.recover {
                       case t: TimeoutException =>

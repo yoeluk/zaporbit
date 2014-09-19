@@ -64,7 +64,7 @@ object Sellings extends DAO {
    * @return
    */
   def sellingTransByUserId(page: Int = 0,
-                          pageSize: Int = 20,
+                          pageSize: Int = 25,
                           userid: Long)(implicit session: Session): Page[SellingTrans] = {
     val offset = pageSize * page
     val query = (for {

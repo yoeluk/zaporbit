@@ -2,9 +2,196 @@
 
 # Controllers
 angular.module "ZapOrbit.controllers", ["ngResource"]
-.controller "AppCtrl", ["$scope", "$location", ($scope, $location) ->
-    $scope.go = (path) ->
-      $location.path path
+.controller "AppCtrl", ["$scope", "$location", "StorageSupport", "$log", ($scope, $location, StorageSupport, $log) ->
+  $scope.go = (path) ->
+    $location.path path
+
+  $scope.$watch ($scope) ->
+    StorageSupport.hasStorage()
+  , (newValue) ->
+    if !newValue then $log.warn "localStorage access failed"
+]
+.controller "HeaderCtrl", ["$scope", "$location", "SocialService", "FacebookLogin", "$timeout", ($scope, $location, SocialService, FacebookLogin, $timeout) ->
+
+  $scope.isLoggedIn = false
+
+  $scope.$watch ($scope) ->
+    SocialService.isLoggedIn()
+  , (newValue) ->
+    $scope.isLoggedIn = if newValue? then newValue else false
+
+  $scope.loginStatus = (caching) ->
+    FacebookLogin.getLoginStatus(caching, setupUI)
+
+  setupUI = (auth) ->
+    $timeout ->
+      $scope.isLoggedIn = if auth? then auth else false
+
+  $scope.loginStatus(true)
+
+  $scope.isActive = (viewLocation) ->
+    return viewLocation == $location.path()
+]
+.controller "UserHomeCtrl", ["$scope", "$timeout", "FacebookLogin", ($scope, $timeout, FacebookLogin) ->
+
+  $scope.loadingMessage = "Loading..."
+
+  $scope.title = "Profile Summary"
+
+  $scope.loadingProg = true
+
+  $scope.userTemplates = [
+    {
+      url: "login-template.html"
+    }
+    {
+      url: "userhome-template.html"
+    }
+  ]
+
+  $scope.profileTemplates = [
+    {
+      url: "/loggedoutTemplate"
+    }
+    {
+      url: "/partials/profile"
+    }
+  ]
+
+  $scope.userTemplate = $scope.profileTemplate = undefined
+
+  $scope.loginStatus = (caching) ->
+    FacebookLogin.getLoginStatus(caching, setupUI)
+
+  setupUI = (auth) ->
+    $timeout ->
+      $scope.loadingProg = false
+      if auth == true
+        $scope.userTemplate = $scope.userTemplates[1]
+        $scope.profileTemplate = $scope.profileTemplates[1]
+      else
+        $scope.userTemplate = $scope.userTemplates[0]
+        $scope.profileTemplate = $scope.profileTemplates[0]
+
+  $scope.loginStatus(true)
+
+]
+.controller "SecuredHomeCtrl", ["$scope", "$http", "FacebookLogin", "$timeout", ($scope, $http, FacebookLogin, $timeout) ->
+
+  $scope.tabs = [
+    {
+      name: "Message"
+      icon: "glyphicon-envelope"
+    }
+    {
+      name: "Purchases"
+      icon: "glyphicon-credit-card"
+    }
+    {
+      name: "Sales"
+      icon: "glyphicon-transfer"
+    }
+    {
+      name: "Billing"
+      icon: "glyphicon-briefcase"
+    }
+  ]
+
+  $scope.recordTemplates = [
+    {
+      url: "message-template.html"
+    }
+    {
+      url: "purchase-template.html"
+    }
+    {
+      url: "sale-template.html"
+    }
+    {
+      url: "billing-template.html"
+    }
+  ]
+
+  $scope.myFbId = FacebookLogin.getFbId()
+
+  getRecords = ->
+    $http
+      method: "GET"
+      url: "/api/getrecords/0"
+    .success (data, status) ->
+      if data?
+        $scope.records = data
+        $scope.conversations = $scope.records.messages_records
+        _.each $scope.conversations, (convo) ->
+          _.each convo.conversation.messages, (msg) ->
+            t = msg.created_on.split /[- :]/
+            d = new Date t[0], t[1]-1, t[2], t[3], t[4], t[5]
+            msg.date = d
+        console.log data
+        setReplies()
+
+  getRecords()
+
+  $scope.meOrUsername = (user) ->
+    if user.fbuserid == $scope.myFbId then "me"
+    else user.name
+
+  $scope.activeTab = 0
+
+  $scope.activePill = {}
+
+  $scope.replies = {}
+
+  $scope.tempReply = if $scope.replies[$scope.activePill[$scope.activeTab]] is not undefined then $scope.replies[$scope.activePill[$scope.activeTab]] else ""
+
+  _.each $scope.tabs, (tab, i) ->
+    $scope.activePill[i] = 0
+
+  setReplies = ->
+    _.each $scope.conversations, (convo, i) ->
+      $scope.replies[i] = ""
+    console.log $scope.replies
+
+  sendReply = ->
+    console.log $scope.reply
+
+  $scope.recordTemplate = $scope.recordTemplates[0]
+
+  $scope.msgPulledRight = (index) ->
+    userIds = {}
+    user1id = $scope.conversations[$scope.activePill[$scope.activeTab]].user1.id
+    user2id = $scope.conversations[$scope.activePill[$scope.activeTab]].user2.id
+    userIds[user1id] = $scope.conversations[$scope.activePill[$scope.activeTab]].user1.fbuserid
+    userIds[user2id] = $scope.conversations[$scope.activePill[$scope.activeTab]].user2.fbuserid
+    senderid = $scope.conversations[$scope.activePill[$scope.activeTab]].conversation.messages[index].senderid
+    userIds[senderid] == $scope.conversations[$scope.activePill[$scope.activeTab]].user2.fbuserid
+
+  $scope.tabIcon = (index) ->
+    classes = {}
+    classes.glyphicon = true
+    classes[$scope.tabs[index].icon] = true
+    classes
+
+  $scope.setActiveTab = (index) ->
+    $scope.recordTemplate = $scope.recordTemplates[index]
+    $scope.activeTab = index
+
+  $scope.isActiveTab = (index) ->
+    index == $scope.activeTab
+
+  $scope.setActivePill = (index) ->
+    $scope.activePill[$scope.activeTab] = index
+    $scope.tempReply = $scope.replies[index]
+    console.log "temp reply: " + $scope.tempReply
+
+
+  $scope.isActivePill = (index) ->
+    $scope.activePill[$scope.activeTab] == index
+
+#  $timeout ->
+#    if $scope.replies[$scope.activePill[$scope.activeTab]] is not undefined
+#      $scope.replies[$scope.activePill[$scope.activeTab]] = $scope.tempReply
+#  , 500
 ]
 .controller "HomeCtr", ["$scope", ($scope) ->
     $scope.message = "Entice with higher confidence!"
@@ -42,8 +229,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       $scope.closeAlert = (index) ->
         $scope.alerts.splice index, 1
 
-      browserLoc = undefined
-      if localStorageService.get('loc')? then browserLoc = localStorageService.get 'loc'
+      browserLoc = localStorageService.get('loc')
 
       setLocation = (latlng) ->
         if $scope.map.control.getGMap? && $scope.map.control.getGMap()?
@@ -231,177 +417,172 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 ]
 .controller "SearchCtrl", ["$scope", "ListingService", ($scope, ListingService) ->
 
-    if ListingService.filter()?
-      $scope.filterString = ListingService.filter()
+  if ListingService.filter()?
+    $scope.filterString = ListingService.filter()
 
-    $scope.filter = (form) ->
-      if $scope.filterString? && $scope.filterString.replace(/(^\s+|\s+$)/g, '') != ""
-        $scope.$parent.listingsForLocation(true, $scope.filterString.replace(/(^\s+|\s+$)/g, ''))
-      else
-        $scope.$parent.listingsForLocation(true)
+  $scope.filter = (form) ->
+    if $scope.filterString? && $scope.filterString.replace(/(^\s+|\s+$)/g, '') != ""
+      $scope.$parent.listingsForLocation(true, $scope.filterString.replace(/(^\s+|\s+$)/g, ''))
+    else
+      $scope.$parent.listingsForLocation(true)
 ]
 .controller "SupportCtrl", ["$scope", "$http", ($scope, $http) ->
 
-    $scope.allIssues = []
-    $scope.oneAtATime = false
-    $scope.isopen = []
+  $scope.allIssues = []
+  $scope.oneAtATime = false
+  $scope.isopen = []
 
-    $scope.bugs = 0
-    $scope.tasks = 0
-    $scope.features = 0
-    $scope.ioss = 0
-    $scope.webs = 0
+  $scope.bugs = 0
+  $scope.tasks = 0
+  $scope.features = 0
+  $scope.ioss = 0
+  $scope.webs = 0
 
-    getStats = ->
-      $http
-        method: "GET"
-        url: "api/youtrack/getstats"
-        context: this
-      .success (data, status) ->
-        if status == 200
-          count = data["count"]
-          $scope.bugs = count[0]
-          $scope.tasks = count[1]
-          $scope.features = count[2]
-          $scope.ioss = count[3]
-          $scope.webs = count[4]
-          $scope.pipeline = true
+  getStats = ->
+    $http
+      method: "GET"
+      url: "api/youtrack/getstats"
+      context: this
+    .success (data, status) ->
+      if status == 200
+        count = data["count"]
+        $scope.bugs = count[0]
+        $scope.tasks = count[1]
+        $scope.features = count[2]
+        $scope.ioss = count[3]
+        $scope.webs = count[4]
+        $scope.pipeline = true
 
-    $scope.getIssues = getIssues = ->
-      $http
-        method: "GET"
-        url: "api/youtrack/allissues"
-        context: this
-      .success (data, status) ->
-        if status == 200
-          $scope.allIssues = data["issues"]
-          i = $scope.allIssues.length - 1
-          while i > -1
-            issue = $scope.allIssues[i]
-            issue.props = {}
-            ii = 0
-            ll = issue["field"].length
-            while ii < ll
-              prop =  issue["field"][ii]["name"]
-              val = issue["field"][ii]["value"]
-              issue.props[prop] = val
-              ++ii
-            $scope.isopen.push (issue.props.State[0] != 'Completed' && issue.props.State[0] != "Fixed")
-            i--
-          getStats()
-      .error (data, status, headers, config) ->
+  $scope.getIssues = getIssues = ->
+    $http
+      method: "GET"
+      url: "api/youtrack/allissues"
+      context: this
+    .success (data, status) ->
+      if status == 200
+        $scope.allIssues = data["issues"]
+        i = $scope.allIssues.length - 1
+        while i > -1
+          issue = $scope.allIssues[i]
+          issue.props = {}
+          ii = 0
+          ll = issue["field"].length
+          while ii < ll
+            prop =  issue["field"][ii]["name"]
+            val = issue["field"][ii]["value"]
+            issue.props[prop] = val
+            ++ii
+          $scope.isopen.push (issue.props.State[0] != 'Completed' && issue.props.State[0] != "Fixed")
+          i--
+        getStats()
+    .error (data, status, headers, config) ->
 
-    getIssues()
-]
-.controller "HeaderController", ["$scope", "$location", ($scope, $location) ->
-
-    $scope.isActive = (viewLocation) ->
-      return viewLocation == $location.path()
+  getIssues()
 ]
 .controller "ModalIssueCtrl", ["$scope", "$modal", ($scope, $modal) ->
 
-    $scope.open = (size) ->
-      modalInstance = $modal.open(
-        templateUrl: "myModalIssueContent.html"
-        controller: "IssueModalInstCtrl"
-        size: size
-      )
-      modalInstance.result.then ( ->
-      ), ->
+  $scope.open = (size) ->
+    modalInstance = $modal.open(
+      templateUrl: "myModalIssueContent.html"
+      controller: "IssueModalInstCtrl"
+      size: size
+    )
+    modalInstance.result.then ( ->
+    ), ->
 ]
 .controller "IssueModalInstCtrl", ["$scope", "$http", "$modalInstance", "$timeout", "$log", ($scope, $http, $modalInstance, $timeout, $log) ->
 
-    $scope.cancelTitle = "Cancel"
+  $scope.cancelTitle = "Cancel"
 
-    $scope.cancel = ->
-      $modalInstance.dismiss "cancel"
+  $scope.cancel = ->
+    $modalInstance.dismiss "cancel"
 
-    $scope.submit = (form) ->
-      $scope.submitted = true
-      return if form.$invalid
-      $scope.inProgress = true
-      $scope.disableCancel = true
-      $http
-        method: "POST"
-        data:
-          "summary": form.summary.$viewValue
-          "description": form.description.$viewValue
-          "email": form.email.$viewValue
-        url: "api/youtrack/createissue"
-      .success (data, status) ->
-        if status == 200
-          $scope.posted = true
-          $scope.inProgress = false
-          $scope.disableCancel = false
-          $scope.cancelTitle = "Dismiss"
-          $scope.successMsg = "Your issue has been successfully submitted. It will be listed here after it is reviewed by an engineer!";
-        else
-          $scope.errorMsg = "Oops, we received your request, but there was an error."
-          $log.error data
-          $scope.disableCancel = false
-        $timeout (->
-          $scope.successMsg = null
-          $scope.errorMsg = null
-          $scope.submitted = false;
-          $modalInstance.close "close"
-        ), 4000
-      .error (data, status, headers, config) ->
-        $scope.progress = data
-        $scope.errorMsg = "There was a network error. Please try again later."
+  $scope.submit = (form) ->
+    $scope.submitted = true
+    return if form.$invalid
+    $scope.inProgress = true
+    $scope.disableCancel = true
+    $http
+      method: "POST"
+      data:
+        "summary": form.summary.$viewValue
+        "description": form.description.$viewValue
+        "email": form.email.$viewValue
+      url: "api/youtrack/createissue"
+    .success (data, status) ->
+      if status == 200
+        $scope.posted = true
+        $scope.inProgress = false
+        $scope.disableCancel = false
+        $scope.cancelTitle = "Dismiss"
+        $scope.successMsg = "Your issue has been successfully submitted. It will be listed here after it is reviewed by an engineer!";
+      else
+        $scope.errorMsg = "Oops, we received your request, but there was an error."
         $log.error data
-        $timeout (->
-          $scope.errorMsg = null
-          $scope.submitted = false;
-          $modalInstance.close "close"
-        ), 5000
+        $scope.disableCancel = false
+      $timeout (->
+        $scope.successMsg = null
+        $scope.errorMsg = null
+        $scope.submitted = false;
+        $modalInstance.close "close"
+      ), 4000
+    .error (data, status, headers, config) ->
+      $scope.progress = data
+      $scope.errorMsg = "There was a network error. Please try again later."
+      $log.error data
+      $timeout (->
+        $scope.errorMsg = null
+        $scope.submitted = false;
+        $modalInstance.close "close"
+      ), 5000
 ]
 .controller "ModalListingCtrl", ["$rootScope", "$scope", "$modal", "$timeout", ($rootScope, $scope, $modal, $timeout) ->
-    $scope.lst = $scope.$parent.allListings[$scope.$index]
-    scope = $rootScope.$new()
-    scope.lst = $scope.lst
-    $scope.open = (size) ->
-      modalInstance = $modal.open(
-        scope: scope
-        templateUrl: "modal-template.html"
-        controller: "ListingModalInstCtrl"
-        size: size
-      )
-      modalInstance.result.then ( ->
-      ), ->
+  $scope.lst = $scope.$parent.allListings[$scope.$index]
+  scope = $rootScope.$new()
+  scope.lst = $scope.lst
+  $scope.open = (size) ->
+    modalInstance = $modal.open(
+      scope: scope
+      templateUrl: "modal-template.html"
+      controller: "ListingModalInstCtrl"
+      size: size
+    )
+    modalInstance.result.then ( ->
+    ), ->
 
-    timeInMs = 250
+  timeInMs = 250
 
-    $rootScope.$on "openListing", (e, index) ->
-      if !$rootScope.recentOpen && $scope.$index == index
-        $rootScope.recentOpen = true
-        $scope.open('lg')
-        $timeout ->
-          $rootScope.recentOpen = false
-        , timeInMs
+  $rootScope.$on "openListing", (e, index) ->
+    if !$rootScope.recentOpen && $scope.$index == index
+      $rootScope.recentOpen = true
+      $scope.open('lg')
+      $timeout ->
+        $rootScope.recentOpen = false
+      , timeInMs
 ]
 .controller "ListingModalInstCtrl", ["$scope", "$modalInstance", ($scope, $modalInstance) ->
 
-    $scope.cancel = ->
-      $modalInstance.dismiss "cancel"
+  $scope.cancel = ->
+    $modalInstance.dismiss "cancel"
 
-    $scope.close = ->
-      $modalInstance.dismiss "close"
+  $scope.close = ->
+    $modalInstance.dismiss "close"
 ]
 .controller "ModalItemCarouselCtrl", ["$scope", ($scope) ->
 
-    $scope.myInterval = 5000
-    slides = $scope.slides = []
-    $scope.addSlide = (i) ->
-      slides.push
-        image: "/pictures/" + $scope.$parent.lst.listing.pictures[i] + ".jpg"
-        text: []
+  $scope.myInterval = 5000
+  slides = $scope.slides = []
+  $scope.addSlide = (i) ->
+    slides.push
+      image: "/pictures/" + $scope.$parent.lst.listing.pictures[i] + ".jpg"
+      text: []
 
-    if $scope.$parent.lst?
-      i = 0
-      l = $scope.$parent.lst.listing.pictures.length
-      while i < l
-        $scope.addSlide(i)
-        i++
+  if $scope.$parent.lst?
+    i = 0
+    l = $scope.$parent.lst.listing.pictures.length
+    while i < l
+      $scope.addSlide(i)
+      i++
 ]
 .controller "ItemCarouselCtrl", ["$scope", ($scope) ->
 
@@ -413,7 +594,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       active: false
 
   i = 0
-  l = 20
+  l = 15
   while i < l
     $scope.addSlide(i)
     i++
@@ -421,60 +602,32 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 .controller "ListingCtrl", ["$scope", ($scope) ->
 
 ]
-.controller "ProfileCtrl", ["$scope", "$timeout", "SocialService", "$log", '$window', ($scope, $timeout, SocialService, $log, $window) ->
-    $scope.FB = $window.FB
-    $scope.title = "Profile"
-    $scope.showTplt = false
-    $scope.profileTemplates = [
-      {
-        url: "/loggedoutTemplate"
-      }
-      {
-        url: "/partials/profile"
-      }
-    ]
+.controller "ProfileCtrl", ["$scope", "$timeout", "FacebookLogin", "$log", "SocialService", ($scope, $timeout, FacebookLogin, $log, SocialService) ->
 
-    $scope.profileTemplate = $scope.profileTemplates[0]
+  $scope.title = "Profile Summary"
+  $scope.showTplt = false
+  $scope.profileTemplates = [
+    {
+      url: "/loggedoutTemplate"
+    }
+    {
+      url: "/partials/profile"
+    }
+  ]
 
-    statusCallback = (response) ->
-      $log.debug response
-      if response.status is "connected"
-        uid = response.authResponse.userID
-        accessToken = response.authResponse.accessToken
-        expiresIn = response.authResponse.expiresIn
-        if SocialService.social()? then setupUI(true)
-        else
-          $scope.FB.api "/me", (response) ->
-            if response.email?
-              SocialService.getSocial
-                email: response.email
-                info:
-                  accessToken: accessToken
-                  expiresIn: expiresIn
-              , setupUI
-      else if response.status is "not_authorized"
-        $log.warn "not_authorized"
-        SocialService.logout()
-        setupUI(false)
-      else
-        $log.warn "donno"
-        SocialService.logout()
-        setupUI(false)
+  $scope.profileTemplate = $scope.profileTemplates[0]
 
-    $scope.loginStatus = (caching) ->
-      $log.info "getting logging status"
-      $scope.FB.getLoginStatus statusCallback, caching
+  $scope.loginStatus = (caching) ->
+    FacebookLogin.getLoginStatus(caching, setupUI)
 
-    setupUI = (auth) ->
-      $timeout ->
-        $scope.showTplt = true
-        $scope.profileTemplate = $scope.profileTemplates[1] if auth
-
+  setupUI = (auth) ->
     $timeout ->
-      $scope.loginStatus(true)
+      $scope.showTplt = true
+      if auth == true then $scope.profileTemplate = $scope.profileTemplates[1]
+      else $scope.profileTemplate = $scope.profileTemplates[0]
 
-#    $window.FB.Event.subscribe 'auth.logout', (response) ->
-#      alert 'logged out!'
+  $timeout ->
+    $scope.loginStatus(true)
 ]
 .controller "AlertCtrl", ["$scope", "$timeout", "ListingService", ($scope, $timeout, ListingService) ->
 
