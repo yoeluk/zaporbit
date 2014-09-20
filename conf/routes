@@ -45,7 +45,9 @@ POST        /api/updatelisting/:id/:tick                            @controllers
 POST        /api/listingsbylocation/:page/:radius                   @controllers.API.listingsByLoc(page: Int, radius: Int)
 POST        /api/createtransaction                                  @controllers.API.receiveTransaction
 POST        /api/startconversation                                  @controllers.API.startConversation
+
 POST        /api/replytoconvo                                       @controllers.API.replyToConvo
+
 POST        /api/getratingsfortrans/:by_userid                      @controllers.API.returnRatingForTransactions(by_userid: Long)
 POST        /api/getbillingforuser                                  @controllers.API.returnBillingForUser
 POST        /api/addmerchant                                        @controllers.API.merchantData

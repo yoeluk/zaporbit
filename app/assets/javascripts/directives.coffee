@@ -233,17 +233,18 @@ angular.module "ZapOrbit.directives", []
         scope.fixedToTop = false
       scope.$apply()
 ]
-.directive "contenteditable", [ ->
+.directive "replyAttr", [ ->
   restrict: "A"
-  require: "ngModel"
+  require: "?ngModel"
   link: (scope, element, attrs, ngModel) ->
+    if !ngModel then return
     read = ->
-      ngModel.$setViewValue element.html()
+      ngModel.$setViewValue element.text()
       if scope.replies[scope.activePill[scope.activeTab]]?
-        scope.replies[scope.activePill[scope.activeTab]] = element.html()
+        scope.replies[scope.activePill[scope.activeTab]] = element.text()
 
     ngModel.$render = ->
-      element.html ngModel.$viewValue or ""
+      element.text ngModel.$viewValue or ""
 
     element.bind "blur keyup change", ->
       scope.$apply read

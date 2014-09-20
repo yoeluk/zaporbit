@@ -1,13 +1,3 @@
-body {
-    /*padding-top: 80px !important;*/
-    padding-bottom: 30px;
-    background-color: #ffffff;
-    color: #333333;
-    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-    font-size: 13px;
-    line-height: 18px;
-    margin: 0 0 9px;
-}
 .theme-dropdown .dropdown-menu {
     position: static;
     display: block;

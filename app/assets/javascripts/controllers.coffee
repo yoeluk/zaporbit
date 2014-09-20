@@ -15,10 +15,23 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
   $scope.isLoggedIn = false
 
+  $scope.userIcon = ->
+    glyphicon : true
+    'glyphicon-user' : true
+
+  $scope.iconStyle = ->
+    if $scope.isLoggedIn
+      ""
+
+  $scope.userName = "Offline"
+
   $scope.$watch ($scope) ->
     SocialService.isLoggedIn()
   , (newValue) ->
     $scope.isLoggedIn = if newValue? then newValue else false
+    if newValue?
+      $scope.userName = FacebookLogin.getFbUser().first_name
+    else $scope.userName = "Offline"
 
   $scope.loginStatus = (caching) ->
     FacebookLogin.getLoginStatus(caching, setupUI)
@@ -80,7 +93,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
   $scope.tabs = [
     {
-      name: "Message"
+      name: "Messages"
       icon: "glyphicon-envelope"
     }
     {
@@ -112,7 +125,35 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     }
   ]
 
-  $scope.myFbId = FacebookLogin.getFbId()
+  $scope.transactionPills = [
+    {
+      name: "Requested"
+    }
+    {
+      name: "Commited"
+    }
+    {
+      name: "Completed"
+    }
+    {
+      name: "Failed"
+    }
+  ]
+  $scope.billingPills = [
+    {
+      name: "Unpaid Bills"
+    }
+    {
+      name: "Paid Bills"
+    }
+  ]
+
+  $scope.myFbId = FacebookLogin.getFbUser().id
+
+  $scope.replying = false
+
+  myTrim = (x) ->
+    x.replace(/^\s+|\s+$/gm,'')
 
   getRecords = ->
     $http
@@ -130,7 +171,53 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
         console.log data
         setReplies()
 
+  $scope.sendReply = ->
+    message = $scope.replies[$scope.activePill[$scope.activeTab]].trim()
+    if message? and message.length > 0
+      convo = $scope.conversations[$scope.activePill[$scope.activeTab]]
+      reply =
+        convid: convo.conversation.id
+        recipientid: if convo.user1.fbuserid != $scope.myFbId then convo.user1.id else convo.user2.id
+        message: message
+      $scope.replying = true
+      $http
+        method: "POST"
+        data: reply
+        url: "/api/replytoconvo"
+        'Content-Type': "application/json"
+      .success (data, status) ->
+        if data? and data['withId']?
+          data.message.id = data['withId']
+          data.message.date = Date.now()
+          convo.conversation.messages.push data.message
+        $scope.replying = false
+        $scope.replies[$scope.activePill[$scope.activeTab]] = ""
+        $scope.tempReply = ""
+        if status.code == 200
+          console.log data
+      .error (error) ->
+        $scope.replying = false
+        console.log error
+
   getRecords()
+
+  $scope.isThisMe = (index) ->
+    convo = $scope.conversations[$scope.activePill[$scope.activeTab]]
+    userIds = {}
+    userIds[convo.user1.id] = convo.user1.fbuserid
+    userIds[convo.user2.id] = convo.user2.fbuserid
+    senderid = convo.conversation.messages[index].senderid
+    userIds[senderid] == $scope.myFbId
+
+  $scope.sellerOrBuyer = ->
+    if $scope.conversations? && $scope.conversations[$scope.activePill[$scope.activeTab]]?
+      if $scope.conversations[$scope.activePill[$scope.activeTab]].user1.fbuserid != $scope.myFbId then "Buyer" else "Seller"
+
+  $scope.withWho = ->
+    if $scope.conversations? && $scope.conversations[$scope.activePill[$scope.activeTab]]?
+      if $scope.conversations[$scope.activePill[$scope.activeTab]].user1.fbuserid != $scope.myFbId
+        $scope.conversations[$scope.activePill[$scope.activeTab]].user1.name + " " + $scope.conversations[$scope.activePill[$scope.activeTab]].user1.surname
+      else $scope.conversations[$scope.activePill[$scope.activeTab]].user2.name + " " + $scope.conversations[$scope.activePill[$scope.activeTab]].user2.surname
 
   $scope.meOrUsername = (user) ->
     if user.fbuserid == $scope.myFbId then "me"
@@ -142,7 +229,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
   $scope.replies = {}
 
-  $scope.tempReply = if $scope.replies[$scope.activePill[$scope.activeTab]] is not undefined then $scope.replies[$scope.activePill[$scope.activeTab]] else ""
+  $scope.tempReply = if $scope.replies[$scope.activePill[$scope.activeTab]]? then $scope.replies[$scope.activePill[$scope.activeTab]] else ""
 
   _.each $scope.tabs, (tab, i) ->
     $scope.activePill[i] = 0
@@ -150,10 +237,6 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
   setReplies = ->
     _.each $scope.conversations, (convo, i) ->
       $scope.replies[i] = ""
-    console.log $scope.replies
-
-  sendReply = ->
-    console.log $scope.reply
 
   $scope.recordTemplate = $scope.recordTemplates[0]
 
@@ -182,8 +265,6 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
   $scope.setActivePill = (index) ->
     $scope.activePill[$scope.activeTab] = index
     $scope.tempReply = $scope.replies[index]
-    console.log "temp reply: " + $scope.tempReply
-
 
   $scope.isActivePill = (index) ->
     $scope.activePill[$scope.activeTab] == index

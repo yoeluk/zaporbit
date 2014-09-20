@@ -20,37 +20,13 @@
                 </div>
             </script>
 
-            <script type="text/ng-template" id="billing-template.html">
-                <ul class="nav nav-pills nav-stacked">
-                    <li data-ng-class="{ active: isActivePill('Paid') }"><a href="javascript:;" data-ng-click="setActivePill('Paid')"> Paid <span class="badge">12</span></a></li>
-                    <li data-ng-class="{ active: isActivePill('Unpaid') }"><a href="javascript:;" data-ng-click="setActivePill('Unpaid')"> Unpaid </a></li>
-                </ul>
-            </script>
-
-            <script type="text/ng-template" id="purchase-template.html">
-                <ul class="nav nav-pills nav-stacked">
-                    <li data-ng-class="{ active: isActivePill('Paid') }"><a href="javascript:;" data-ng-click="setActivePill('Paid')"> Paid <span class="badge">12</span></a></li>
-                    <li data-ng-class="{ active: isActivePill('Unpaid') }"><a href="javascript:;" data-ng-click="setActivePill('Unpaid')"> Unpaid </a></li>
-                </ul>
-            </script>
-
-            <script type="text/ng-template" id="sale-template.html">
-                <ul class="nav nav-pills nav-stacked">
-                    <li data-ng-class="{ active: isActivePill('Paid') }">
-                        <a href="javascript:;" data-ng-click="setActivePill('Paid')"> Paid
-                            <span class="badge pull-right">12</span>
-                        </a></li>
-                    <li data-ng-class="{ active: isActivePill('Unpaid') }"><a href="javascript:;" data-ng-click="setActivePill('Unpaid')"> Unpaid </a></li>
-                </ul>
-            </script>
-
             <script type="text/ng-template" id="message-template.html">
-                <div class="row">
+                <div class="row-fluid">
                     <div class="col-sm-4 col-md-4 convo">
                         <ul class="nav nav-pills nav-stacked">
                             <li data-ng-class="{ active: isActivePill($index) }" data-ng-repeat="conv in conversations track by $index">
-                                <a href="javascript:;" data-ng-click="setActivePill($index)">
-                                {{ meOrUsername(conv.user1) }} \u00BB {{ meOrUsername(conv.user2) }}
+                                <a href="javascript:;" data-ng-click="setActivePill($index)" data-ng-disable="replying">
+                                    {{ meOrUsername(conv.user1) }} \u00BB {{ meOrUsername(conv.user2) }}
                                     <span class="badge pull-right" data-ng-if="conv.conversation.messages.length>1"> {{ conv.conversation.messages.length }} </span>
                                 </a>
                             </li>
@@ -58,26 +34,80 @@
                     </div>
                     <div class="col-sm-8 col-md-8">
                         <div class="message-title">
-                            <b>{{ conversations[activePill[activeTab]].conversation.title }}</b>
+                            <h5><a href="#!/listing_item/{{conversations[activePill[activeTab]].conversation.listingid}}">{{ conversations[activePill[activeTab]].conversation.title }}</a>
+                            </h5>
                         </div>
                         <div class="message-from" data-ng-show="conversations.length">
-                            With:
+                            <i>{{ sellerOrBuyer() }}:</i>
                             <a href="javascript:;">
-                                {{ conversations[activePill[activeTab]].user1.name }} {{ conversations[activePill[activeTab]].user1.surname }}
+                                {{ withWho() }}
                             </a>
                         </div>
                         <div class="convos" data-ng-repeat="(cIndex, conv) in conversations" data-ng-show="isActivePill(cIndex)">
                             <div class="messages-wrapper">
                                 <div class="row-fluid message" data-ng-class="{ 'pull-right': msgPulledRight($index) }"
                                 data-ng-repeat="msg in conversations[activePill[activeTab]].conversation.messages track by $index">
-                                    <div class="string"><span> {{ msg.message }} </span></div>
+                                    <div class="string" data-ng-class="{ 'me': isThisMe($index) }"><span> {{ msg.message }} </span></div>
                                     <div class="message-date"> {{ msg.date | amCalendar }} </div>
                                 </div>
                             </div>
-                            <div class="message-reply pull-left" data-ng-model="tempReply" contentEditable="true">
-                                {{ tempReply }}
+                            <div class="clearfix" style="padding: 0 10px 0 0;">
+                                <div class="message-reply pull-left" data-reply-attr data-ng-model="tempReply" contentEditable="true">
+                                    {{ tempReply }}
+                                </div>
+                            </div>
+                            <div class="clearfix" style="padding-right: 10px;">
+                                <button class="btn btn-default btn-sm pull-right" style="margin-bottom: 10px;" data-ng-click="sendReply()">
+                                        <!--<span class="glyphicon glyphicon-send" style="margin-right: 5px"></span>-->
+                                        Reply
+                                </button>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </script>
+
+            <script type="text/ng-template" id="purchase-template.html">
+                <div class="row-fluid">
+                        <ul class="nav nav-pills nav-justified purchase-pills">
+                            <li data-ng-class="{ active: isActivePill($index) }" data-ng-repeat="tran in transactionPills track by $index">
+                                <a href="javascript:;" data-ng-click="setActivePill($index)">
+                                    {{ tran.name }}
+                                    <!--<span class="badge pull-right" data-ng-if="conv.conversation.messages.length>1"> {{ conv.conversation.messages.length }} </span>-->
+                                </a>
+                            </li>
+                        </ul>
+                </div>
+            </script>
+
+            <script type="text/ng-template" id="sale-template.html">
+                <div class="row-fluid">
+                    <ul class="nav nav-pills nav-justified purchase-pills">
+                        <li data-ng-class="{ active: isActivePill($index) }" data-ng-repeat="tran in transactionPills track by $index">
+                            <a href="javascript:;" data-ng-click="setActivePill($index)">
+                                {{ tran.name }}
+                                <!--<span class="badge pull-right" data-ng-if="conv.conversation.messages.length>1"> {{ conv.conversation.messages.length }} </span>-->
+                            </a>
+                        </li>
+                    </ul>
+
+                </div>
+            </script>
+
+            <script type="text/ng-template" id="billing-template.html">
+                <div class="row-fluid">
+                    <div class="col-sm-4 col-md-4 convo">
+                        <ul class="nav nav-pills nav-stacked">
+                            <li data-ng-class="{ active: isActivePill($index) }" data-ng-repeat="pill in billingPills track by $index">
+                                <a href="javascript:;" data-ng-click="setActivePill($index)">
+                                    {{ pill.name }}
+                                    <!--<span class="badge pull-right" data-ng-if="conv.conversation.messages.length>1"> {{ conv.conversation.messages.length }} </span>-->
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-sm-8 col-md-8">
+
                     </div>
                 </div>
             </script>
@@ -91,19 +121,19 @@
                             </a>
                         </li>
                     </ul>
-                    <div style="height: 20px"></div>
-                    <div data-ng-include="recordTemplate.url"></div>
+                    <div class="tabs-separator"></div>
+                    <div data-ng-include="recordTemplate.url" class="records-wrapper"></div>
                 </div>
             </script>
 
-            <div class="col-xs-12 col-md-8">
+            <div class="col-xs-12 col-md-9">
 
                 <progressbar ng-if="loadingProg" class="progress-striped active progress" animate="true" value="100" type="info"> {{ loadingMessage }} </progressbar>
 
                 <div data-ng-include="userTemplate.url"></div>
 
             </div>
-            <div class="col-xs-6 col-md-4">
+            <div class="col-xs-6 col-md-3">
 
                 <div data-ng-include="profileTemplate.url"></div>
 

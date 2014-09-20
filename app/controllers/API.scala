@@ -101,6 +101,7 @@ object writers {
                 "senderid" -> m.senderid,
                 "recipientid" -> m.recipientid,
                 "created_on" -> m.created_on.orNull.toString)),
+            "listingid" -> item._1.offerid.get,
             "updated_on" -> item._1.updated_on.orNull.toString
           ),
           "user1" -> Json.obj(
@@ -1113,18 +1114,36 @@ class API(override implicit val env: RuntimeEnvironment[SocialUser]) extends sec
     ))
   }
 
-  def replyToConvo = DBAction(parse.json(maxLength = 1024)) { implicit rs =>
-    rs.request.body.validate[Message].map {
-      message =>
-        Messages.insert(message)
-        Ok(Json.obj(
-          "status" -> "OK",
-          "message" -> Json.toJson(message)
-        ))
-    }.getOrElse(BadRequest(Json.obj(
-      "status" -> "KO",
-      "message" -> "bad message"
-    )))
+  def replyToConvo = SecuredAction(parse.json) { implicit request =>
+    request.user.main match {
+      case user =>
+        Json.obj(
+          "senderid" -> user.id.get,
+          "received_status" -> "unread",
+          "convid" -> (request.body \ "convid").as[Long],
+          "message" -> (request.body \ "message").as[String],
+          "recipientid" -> (request.body \ "recipientid").as[Long]
+        ).validate[Message].map { message =>
+          DB.withSession { implicit s =>
+            Messages.insertReturningId(message) match {
+              case None =>
+                Ok(Json.obj(
+                  "status" -> "OK",
+                  "message" -> Json.toJson(message)
+                ))
+              case Some(id) =>
+                Ok(Json.obj(
+                  "status" -> "OK",
+                  "withId" -> id,
+                  "message" -> Json.toJson(message)
+                ))
+            }
+          }
+        }.getOrElse(BadRequest(Json.obj(
+          "status" -> "KO",
+          "message" -> "bad message"
+        )))
+    }
   }
 
   /**

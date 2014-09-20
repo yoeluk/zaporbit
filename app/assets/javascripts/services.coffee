@@ -148,9 +148,6 @@ angular.module "ZapOrbit.services", []
     paging: getPaging
     filter: getFilterStr
 ]
-.factory "hackedFB", [ ->
-
-]
 .factory "SessionInjector", ["$injector", ($injector) ->
 
     request: (config) ->
@@ -214,16 +211,16 @@ angular.module "ZapOrbit.services", []
 
     UICallback = undefined
 
-    fbId = undefined
+    fbUser = undefined
 
     setUICallback = (callback)->
       UICallback = callback
 
-    setFacebookId = (id) ->
-      fbId = id
+    setFacebookId = (user) ->
+      fbUser = user
 
-    getFbId = ->
-      fbId
+    getFbUser = ->
+      fbUser
 
     statusCallback = (response) ->
       if response.status is "connected"
@@ -232,11 +229,11 @@ angular.module "ZapOrbit.services", []
         expiresIn = response.authResponse.expiresIn
         if SocialService.social()? then UICallback(true)
         else
-          FB.api "/me", (response) ->
-            if response.email?
-              setFacebookId response.id
+          FB.api "/me", (user) ->
+            if user.email?
+              setFacebookId user
               SocialService.getSocial
-                email: response.email
+                email: user.email
                 info:
                   accessToken: accessToken
                   expiresIn: expiresIn
@@ -244,12 +241,12 @@ angular.module "ZapOrbit.services", []
       else if response.status is "not_authorized"
         $log.warn "not_authorized"
         SocialService.logout()
-        fbId = undefined
+        fbUser = undefined
         UICallback(false)
       else
         $log.warn "donno"
         SocialService.logout()
-        fbId = undefined
+        fbUser = undefined
         UICallback(false)
 
     getLoginStatus = (caching, callback) ->
@@ -260,6 +257,6 @@ angular.module "ZapOrbit.services", []
       , 250
 
     getLoginStatus: getLoginStatus
-    getFbId: getFbId
+    getFbUser: getFbUser
 
 ]
