@@ -2,7 +2,7 @@
 body {
     /*padding-top: 80px !important;*/
     padding-bottom: 30px;
-    background-color: #ffffff;
+    background-color: #f9f9f9;
     color: #333333;
     font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
     font-size: 13px;
@@ -433,12 +433,12 @@ img.resize{
     color: #ffffff;
 }
 .nav-tabs > li > a:hover, .nav-tabs > li > a:focus {
-    background-color: #f5f5f5;
+    background-color: #f0f0f0;
     background-image: none;
     color: #548b0c;
-    border-top-color: #ffffff;
-    border-left-color: #ffffff;
-    border-right-color: #ffffff;
+    border-top-color: #ddd;
+    border-left-color: #ddd;
+    border-right-color: #ddd;
 }
 .nav-tabs > li.active > a {
     background-color: #ffffff;
@@ -525,8 +525,8 @@ img.resize{
 .message-title {
     padding: 10px;
     border-radius: 3px;
-    background-color: #f0f0f0;
-    margin-right: 10px;
+    background-color: #f1f1f1;
+    margin-right: 0;
     margin-bottom: 15px;
     text-align: center;
 }
@@ -535,12 +535,14 @@ img.resize{
     border: 1px solid #ddd;
     border-top: none;
     border-bottom: none;
+    background-color: #ffffff;
 }
-.records-wrapper {
+.records-wrapper  {
     border: 1px solid #ddd;
     border-top: none;
     height: auto;
     min-height: 710px!important;
+    background-color: #ffffff;
 }
 .records-wrapper.sample {
     min-height: 780px!important;
