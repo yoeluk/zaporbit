@@ -539,7 +539,7 @@ img.resize{
 .records-wrapper {
     border: 1px solid #ddd;
     border-top: none;
-    height: 100%;
+    height: auto;
     min-height: 710px!important;
 }
 .records-wrapper.sample {

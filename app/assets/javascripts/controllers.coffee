@@ -41,7 +41,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
   $scope.isActive = (viewLocation) ->
     return viewLocation == $location.path()
 ]
-.controller "UserHomeCtrl", ["$scope", "$timeout", "FacebookLogin", "$log", ($scope, $timeout, FacebookLogin, $log) ->
+.controller "UserHomeCtrl", ["$scope", "$timeout", "FacebookLogin", "$log", "$window", ($scope, $timeout, FacebookLogin, $log, $window) ->
 
   $scope.loadingMessage = "Loading..."
 
@@ -72,14 +72,19 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
   $scope.loginStatus = (caching) ->
     FacebookLogin.getLoginStatus(caching, setupUI)
 
+  catchedUrl = $scope.profileTemplates[1].url
+
   setupUI = (auth) ->
     $timeout ->
       $scope.loadingProg = false
       if auth == true
-        rand = Math.floor((Math.random() * 1000) + 1)
-        $scope.profileTemplates[1].url = $scope.profileTemplates[1].url + "?r=" + rand
-        $scope.profileTemplate = $scope.profileTemplates[1]
-        $scope.userTemplate = $scope.userTemplates[1]
+        if FacebookLogin.getFbUser().id == $window.FB.getUserID()
+          rand = Math.floor((Math.random() * 1000) + 1)
+          $scope.profileTemplates[1].url = $scope.profileTemplates[1].url + "?r=" + rand
+          $scope.profileTemplate = $scope.profileTemplates[1]
+          $scope.userTemplate = $scope.userTemplates[1]
+          catchedUrl = $scope.profileTemplates[1].url
+        else $scope.profileTemplates[1].url = catchedUrl
       else
         $scope.userTemplate = $scope.userTemplates[0]
         $scope.profileTemplate = $scope.profileTemplates[0]
@@ -689,7 +694,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 .controller "ListingCtrl", ["$scope", ($scope) ->
 
 ]
-.controller "ProfileCtrl", ["$scope", "$timeout", "FacebookLogin", "$log", "SocialService", ($scope, $timeout, FacebookLogin, $log, SocialService) ->
+.controller "ProfileCtrl", ["$scope", "$timeout", "FacebookLogin", "$log", "SocialService", "$window", ($scope, $timeout, FacebookLogin, $log, SocialService, $window) ->
 
   $scope.title = "Profile Summary"
   $scope.showTplt = false
@@ -707,13 +712,18 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
   $scope.loginStatus = (caching) ->
     FacebookLogin.getLoginStatus(caching, setupUI)
 
+  catchedUrl = $scope.profileTemplates[1].url
+
   setupUI = (auth) ->
     $timeout ->
       $scope.showTplt = true
       if auth == true
-        rand = Math.floor((Math.random() * 1000) + 1)
-        $scope.profileTemplates[1].url = $scope.profileTemplates[1].url + "?r=" + rand
-        $scope.profileTemplate = $scope.profileTemplates[1]
+        if FacebookLogin.getFbUser().id == $window.FB.getUserID()
+          rand = Math.floor((Math.random() * 1000) + 1)
+          $scope.profileTemplates[1].url = $scope.profileTemplates[1].url + "?r=" + rand
+          $scope.profileTemplate = $scope.profileTemplates[1]
+          catchedUrl = $scope.profileTemplates[1].url
+        else $scope.profileTemplates[1].url = catchedUrl
       else $scope.profileTemplate = $scope.profileTemplates[0]
 
   $timeout ->

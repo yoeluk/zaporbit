@@ -21,7 +21,7 @@
             </script>
 
             <script type="text/ng-template" id="messages-example-template.html">
-                <div class="row-fluid" data-ng-controller="MessagesExampleCtrl">
+                <div class="row-fluid clearfix" data-ng-controller="MessagesExampleCtrl">
                     <div class="col-sm-12 col-md-12" data-ng-if="showAlert" style="padding-right: 25px;">
                         <div class="alert alert-warning" role="alert">This is an alert</div>
                     </div>
@@ -36,7 +36,7 @@
                         </ul>
                     </div>
 
-                    <div class="col-sm-8 col-md-8">
+                    <div class="col-sm-8 col-md-8 clearfix">
                         <div class="message-title" data-ng-show="sampleConversations.length">
                             <h5><a href="#">{{ sampleConversations[activeConvo].title }}</a>
                             </h5>
@@ -73,7 +73,7 @@
 
             <script type="text/ng-template" id="message-template.html">
 
-                <div class="row-fluid" data-ng-if="conversations.length">
+                <div class="row-fluid clearfix" data-ng-if="conversations.length">
                     <div class="col-sm-4 col-md-4 convo">
                         <ul class="nav nav-pills nav-stacked">
                             <li data-ng-class="{ active: isActivePill($index) }" data-ng-repeat="conv in conversations track by $index">
