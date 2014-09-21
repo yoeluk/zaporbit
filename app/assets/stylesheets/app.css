@@ -447,9 +447,12 @@ img.resize{
 .tab-icon {
     margin-right: 5px
 }
+.convo::-webkit-scrollbar { width: 0 !important }
 .convo {
-    max-height: 300px;
-    overflow: scroll;
+    max-height: 600px;
+    overflow-y: scroll;
+    overflow: -moz-scrollbars-none;
+    -ms-overflow-style: none;
 }
 .message {
     width: 100%;
@@ -465,7 +468,7 @@ img.resize{
     border-radius: 10px;
 }
 .message > div.me {
-    background-color: #F5F9F3;
+    background-color: #E3F2DB;
     /*color: #3F6F01;*/
 }
 .message-date {
@@ -477,10 +480,13 @@ img.resize{
 .message:focus > .message-date, .message:hover > .message-date {
     color: lightgray;
 }
+.messages-wrapper::-webkit-scrollbar { width: 0 !important }
 .messages-wrapper {
     padding-top: 10px;
     max-height: 500px;
-    overflow: scroll;
+    overflow-y: scroll;
+    overflow: -moz-scrollbars-none;
+    -ms-overflow-style: none;
     padding-right: 10px;
     height: 500px!important;
     min-height: 100%;
@@ -497,6 +503,7 @@ img.resize{
     position: relative;
     height: 30px;
 }
+.message-reply::-webkit-scrollbar { width: 0 !important }
 .message-reply {
     width: 100%;
     max-width: 100%;
@@ -507,7 +514,9 @@ img.resize{
     padding: 15px;
     border: 1px solid #ddd;
     outline: none;
-    overflow: scroll;
+    overflow-y: scroll;
+    overflow: -moz-scrollbars-none;
+    -ms-overflow-style: none;
 }
 .message-reply:focus {
     border-color: #92d13d!important;
@@ -530,8 +539,11 @@ img.resize{
 .records-wrapper {
     border: 1px solid #ddd;
     border-top: none;
-    height: auto;
+    height: 100%;
     min-height: 710px!important;
+}
+.records-wrapper.sample {
+    min-height: 780px!important;
 }
 .purchase-pills {
     padding: 0 15px;

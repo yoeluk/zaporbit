@@ -156,9 +156,7 @@ angular.module "ZapOrbit.services", []
         config.headers["X-Auth-Token"] = SocialService.social().token
       config
 ]
-.factory "SocialService", ["$injector", "localStorageService", "$timeout", ($injector, localStorageService, $timeout) ->
-
-    that = {}
+.factory "SocialService", ["$injector", "localStorageService", "$timeout", "$log", ($injector, localStorageService, $timeout, $log) ->
 
     localStorageService.remove 'tokenData'
     localStorageService.remove 'loggedIn'
@@ -179,6 +177,8 @@ angular.module "ZapOrbit.services", []
     social = ->
       localStorageService.get 'tokenData'
 
+    setupUIs = []
+
     requestSocialAuth = (body, setupUI) ->
       if !isLoggedIn()
         $http = $injector.get '$http'
@@ -186,14 +186,26 @@ angular.module "ZapOrbit.services", []
         $http
           method: "POST"
           data: body
-          url: 'auth/api/authenticate/facebook'
+          url: '/auth/api/authenticate/facebook'
         .success (data, status) ->
           inProgress = false
-          if data? && data.token? then login(data)
-          else logout()
-          setupUI(data?)
+          if data? && data.token?
+            login(data)
+            _.each setupUIs, (cb) ->
+              cb(true)
+            setupUIs = []
+          else
+            logout()
+            _.each setupUIs, (cb) ->
+              cb(false)
+            setupUIs = []
+        .error (error) ->
+          $log.warn "There was an error getting the social user with error message: " + error
+          inProgress = false
 
     getSocial = (body, setupUI) ->
+      _.each setupUI, (stUI) ->
+        if setupUIs.indexOf(stUI) == -1 then setupUIs.push stUI
       $timeout ->
         if inProgress then getSocial(body, setupUI)
         else requestSocialAuth(body, setupUI)
@@ -207,14 +219,13 @@ angular.module "ZapOrbit.services", []
 ]
 .factory "FacebookLogin", ["$window", "SocialService", "$log", "$timeout", ($window, SocialService, $log, $timeout) ->
 
-    FB = $window.FB
-
-    UICallback = undefined
+    callbacks = []
 
     fbUser = undefined
 
     setUICallback = (callback)->
-      UICallback = callback
+      if callbacks.indexOf(callback) == -1 then callbacks.push callback
+
 
     setFacebookId = (user) ->
       fbUser = user
@@ -222,37 +233,51 @@ angular.module "ZapOrbit.services", []
     getFbUser = ->
       fbUser
 
+    getFbMe = (accessToken, expiresIn) ->
+      $window.FB.api "/me", (user) ->
+        if user.email?
+          setFacebookId user
+          SocialService.getSocial
+            email: user.email
+            info:
+              accessToken: accessToken
+              expiresIn: expiresIn
+          , callbacks
+
     statusCallback = (response) ->
       if response.status is "connected"
         uid = response.authResponse.userID
         accessToken = response.authResponse.accessToken
         expiresIn = response.authResponse.expiresIn
-        if SocialService.social()? then UICallback(true)
+        if getFbUser()?&& getFbUser().id != uid
+          SocialService.logout()
+          fbUser = undefined
+          getFbMe(accessToken, expiresIn)
+          return
+        if SocialService.social()?
+          _.each callbacks, (cb) ->
+            cb(true)
         else
-          FB.api "/me", (user) ->
-            if user.email?
-              setFacebookId user
-              SocialService.getSocial
-                email: user.email
-                info:
-                  accessToken: accessToken
-                  expiresIn: expiresIn
-              , UICallback
+          getFbMe(accessToken, expiresIn)
       else if response.status is "not_authorized"
         $log.warn "not_authorized"
         SocialService.logout()
         fbUser = undefined
-        UICallback(false)
+        _.each callbacks, (cb) ->
+          cb(false)
+        callbacks = []
       else
         $log.warn "donno"
         SocialService.logout()
         fbUser = undefined
-        UICallback(false)
+        _.each callbacks, (cb) ->
+          cb(false)
+        callbacks = []
 
     getLoginStatus = (caching, callback) ->
       setUICallback(callback)
       $timeout ->
-        if FB? then FB.getLoginStatus statusCallback, caching
+        if $window.FB? then $window.FB.getLoginStatus statusCallback, caching
         else getLoginStatus(caching, callback)
       , 250
 

@@ -6,12 +6,12 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
   $scope.go = (path) ->
     $location.path path
 
-  $scope.$watch ($scope) ->
-    StorageSupport.hasStorage()
-  , (newValue) ->
-    if !newValue then $log.warn "localStorage access failed"
+  testSupportLocalStorage = ($scope) ->
+    if !StorageSupport.hasStorage() then $log.warn "localStorage access failed"
+    else $log.info "localStorage is supported"
+  testSupportLocalStorage()
 ]
-.controller "HeaderCtrl", ["$scope", "$location", "SocialService", "FacebookLogin", "$timeout", ($scope, $location, SocialService, FacebookLogin, $timeout) ->
+.controller "HeaderCtrl", ["$scope", "$location", "SocialService", "FacebookLogin", "$timeout", "$log", ($scope, $location, SocialService, FacebookLogin, $timeout, $log) ->
 
   $scope.isLoggedIn = false
 
@@ -19,17 +19,13 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     glyphicon : true
     'glyphicon-user' : true
 
-  $scope.iconStyle = ->
-    if $scope.isLoggedIn
-      ""
-
   $scope.userName = "Offline"
 
   $scope.$watch ($scope) ->
     SocialService.isLoggedIn()
   , (newValue) ->
     $scope.isLoggedIn = if newValue? then newValue else false
-    if newValue?
+    if newValue? && FacebookLogin.getFbUser()?
       $scope.userName = FacebookLogin.getFbUser().first_name
     else $scope.userName = "Offline"
 
@@ -45,7 +41,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
   $scope.isActive = (viewLocation) ->
     return viewLocation == $location.path()
 ]
-.controller "UserHomeCtrl", ["$scope", "$timeout", "FacebookLogin", ($scope, $timeout, FacebookLogin) ->
+.controller "UserHomeCtrl", ["$scope", "$timeout", "FacebookLogin", "$log", ($scope, $timeout, FacebookLogin, $log) ->
 
   $scope.loadingMessage = "Loading..."
 
@@ -80,8 +76,10 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     $timeout ->
       $scope.loadingProg = false
       if auth == true
-        $scope.userTemplate = $scope.userTemplates[1]
+        rand = Math.floor((Math.random() * 1000) + 1)
+        $scope.profileTemplates[1].url = $scope.profileTemplates[1].url + "?r=" + rand
         $scope.profileTemplate = $scope.profileTemplates[1]
+        $scope.userTemplate = $scope.userTemplates[1]
       else
         $scope.userTemplate = $scope.userTemplates[0]
         $scope.profileTemplate = $scope.profileTemplates[0]
@@ -89,7 +87,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
   $scope.loginStatus(true)
 
 ]
-.controller "SecuredHomeCtrl", ["$scope", "$http", "FacebookLogin", "$timeout", ($scope, $http, FacebookLogin, $timeout) ->
+.controller "SecuredHomeCtrl", ["$scope", "$http", "FacebookLogin", "$log", ($scope, $http, FacebookLogin, $log) ->
 
   $scope.tabs = [
     {
@@ -124,6 +122,9 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       url: "billing-template.html"
     }
   ]
+
+  $scope.messagesExampleTemplate =
+    url: "messages-example-template.html"
 
   $scope.transactionPills = [
     {
@@ -168,7 +169,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
             t = msg.created_on.split /[- :]/
             d = new Date t[0], t[1]-1, t[2], t[3], t[4], t[5]
             msg.date = d
-        console.log data
+        $log.debug data
         setReplies()
 
   $scope.sendReply = ->
@@ -248,6 +249,11 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     userIds[user2id] = $scope.conversations[$scope.activePill[$scope.activeTab]].user2.fbuserid
     senderid = $scope.conversations[$scope.activePill[$scope.activeTab]].conversation.messages[index].senderid
     userIds[senderid] == $scope.conversations[$scope.activePill[$scope.activeTab]].user2.fbuserid
+
+  $scope.isSample = ->
+    if $scope.activeTab == 0 && $scope.conversations?
+      $scope.conversations.length == 0
+    else false
 
   $scope.tabIcon = (index) ->
     classes = {}
@@ -704,7 +710,10 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
   setupUI = (auth) ->
     $timeout ->
       $scope.showTplt = true
-      if auth == true then $scope.profileTemplate = $scope.profileTemplates[1]
+      if auth == true
+        rand = Math.floor((Math.random() * 1000) + 1)
+        $scope.profileTemplates[1].url = $scope.profileTemplates[1].url + "?r=" + rand
+        $scope.profileTemplate = $scope.profileTemplates[1]
       else $scope.profileTemplate = $scope.profileTemplates[0]
 
   $timeout ->
@@ -712,4 +721,115 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 ]
 .controller "AlertCtrl", ["$scope", "$timeout", "ListingService", ($scope, $timeout, ListingService) ->
 
+]
+.controller "MessagesExampleCtrl", ["$scope", "$timeout", ($scope, $timeout) ->
+
+  $scope.showAlert = false
+
+  $timeout ->
+    $scope.showAlert = true
+  , 200
+
+  $scope.myFbId = 1234
+  $scope.sampleConversations = [
+    {
+      title: 'First edition of the "On the origin of species" - Great conditions!'
+      user1:
+        name: "John"
+        surname: "Smith"
+        id: 1
+        fbuserid: 1234
+      user2:
+        name: "Diana"
+        surname: "Windsor"
+        id: 2
+        fbuserid: 2345
+      messages: [
+        {
+          message: "These messages are generated in place of real messages that you might receive when selling or buying an item on ZapOrbit. These examples demonstrate the simplicity of the site."
+          senderid: 1
+          recipientid: 2
+          date: Date.now()
+        }
+        {
+          message: 'In this hypothetical case you are interested in Diana\'s item "On the origin of species". Your messages to Diana will appear here with a light green background.'
+          senderid: 1
+          recipientid: 2
+          date: Date.now()
+        }
+        {
+          message: 'Diana\'s replies will appear on this side. This order reflects the buyer and seller relationship.'
+          senderid: 2
+          recipientid: 1
+          date: Date.now()
+        }
+      ]
+    }
+    {
+      title: "Mountain bike in good conditions - large frame"
+      user1:
+        name: "Diana"
+        surname: "Windsor"
+        id: 1
+        fbuserid: 2345
+      user2:
+        name: "John"
+        surname: "Smith"
+        id: 2
+        fbuserid: 1234
+      messages: [
+        {
+          message: 'In this other hypothetical case Diana is interested in your item and she contacted you asking you how old is the bike and if it comes with front lights, for example. Her message will appear here.'
+          senderid: 1
+          recipientid: 2
+          date: Date.now()
+        }
+        {
+          message: 'Diana is the buyer and you are the seller then your replies to Diana\'s questions appears on this side.'
+          senderid: 2
+          recipientid: 1
+          date: Date.now()
+        }
+      ]
+    }
+  ]
+
+  $scope.activeConvo = 0
+
+  $scope.isThisMe = (index) ->
+    convo = $scope.sampleConversations[$scope.activeConvo]
+    userIds = {}
+    userIds[convo.user1.id] = convo.user1.fbuserid
+    userIds[convo.user2.id] = convo.user2.fbuserid
+    senderid = convo.messages[index].senderid
+    userIds[senderid] == $scope.myFbId
+
+  $scope.sellerOrBuyer = ->
+    if $scope.sampleConversations? && $scope.sampleConversations[$scope.activeConvo]?
+      if $scope.sampleConversations[$scope.activeConvo].user1.fbuserid != $scope.myFbId then "Buyer" else "Seller"
+
+  $scope.withWho = ->
+    if $scope.sampleConversations? && $scope.sampleConversations[$scope.activeConvo]?
+      if $scope.sampleConversations[$scope.activeConvo].user1.fbuserid != $scope.myFbId
+        $scope.sampleConversations[$scope.activeConvo].user1.name + " " + $scope.sampleConversations[$scope.activeConvo].user1.surname
+      else $scope.sampleConversations[$scope.activeConvo].user2.name + " " + $scope.sampleConversations[$scope.activeConvo].user2.surname
+
+  $scope.meOrUsername = (user) ->
+    if user.fbuserid == $scope.myFbId then "me"
+    else user.name
+
+  $scope.setActivePill = (index) ->
+    $scope.activeConvo = index
+
+  $scope.isActivePill = (index) ->
+    $scope.activeConvo == index
+
+  $scope.msgPulledRight = (index) ->
+    userIds = {}
+    user1id = $scope.sampleConversations[$scope.activeConvo].user1.id
+    user2id = $scope.sampleConversations[$scope.activeConvo].user2.id
+    userIds[user1id] = $scope.sampleConversations[$scope.activeConvo].user1.fbuserid
+    userIds[user2id] = $scope.sampleConversations[$scope.activeConvo].user2.fbuserid
+    senderid = $scope.sampleConversations[$scope.activeConvo].messages[index].senderid
+    userIds[senderid] == $scope.sampleConversations[$scope.activeConvo].user2.fbuserid
 ]
