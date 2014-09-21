@@ -128,8 +128,7 @@ a.issue-title:hover,a.issue-title:focus {
     padding-left: 65px
 }
 .listing {
-    padding-bottom: 5px;
-    padding-top: 10px;
+
     overflow: hidden;
     margin-top: 10px;
     margin-bottom: 10px;
@@ -141,6 +140,10 @@ a.issue-title:hover,a.issue-title:focus {
 .container-with-shadow {
     border: 10px solid #fff;
     box-shadow: 0 0 5px #ccc;
+}
+.listing > .listing-item {
+    padding: 10px 5px 0 5px;
+    border: 1px solid #f1f1f1;
 }
 .center-cropped {
     width: 48%;
@@ -393,7 +396,7 @@ img.resize{
 .nav-pills > li > a {
     color: #548b0c;
     font-weight: 500;
-    border-radius: 2px;
+    border-radius: 3px;
     background-color: #f5f5f5;
     margin: 3px 0;
     font-size: 13px!important;
@@ -526,8 +529,7 @@ img.resize{
     padding: 10px;
     border-radius: 3px;
     background-color: #f1f1f1;
-    margin-right: 0;
-    margin-bottom: 15px;
+    margin: 3px 0 15px 0;
     text-align: center;
 }
 .tabs-separator {
