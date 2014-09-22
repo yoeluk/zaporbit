@@ -361,6 +361,9 @@ textarea:focus {
 .posFixed {
     position: relative;
 }
+.profile-template {
+    margin-bottom: 20px;
+}
 .user-home-summary .merchant {
     display: block;
 }

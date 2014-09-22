@@ -186,7 +186,7 @@
 
         <div class="col-xs-6 col-md-4" data-ng-controller="ProfileCtrl">
             <div data-scroll-top data-ng-class="{posFixed: fixedToTop}" class="btn-block">
-                <div data-ng-include="profileTemplate.url" data-ng-if="showTplt"></div>
+                <div class="clearfix profile-template" data-ng-include="profileTemplate.url" data-ng-if="showTplt"></div>
                 <div id="fbId" data-fb-login>
                     <div class="fb-login-button"
                     data-scope="public_profile,email,user_friends"
