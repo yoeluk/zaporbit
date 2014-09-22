@@ -610,6 +610,9 @@ img.resize{
     background-color: #ffffff;
     color: rgb(66, 139, 202);
 }
+.outer-convo {
+    overflow: hidden;
+}
 .scroll {
     margin-right: -18px !important;
     overflow-y: scroll;
