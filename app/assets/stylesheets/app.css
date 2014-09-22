@@ -583,7 +583,7 @@ img.resize{
 .list-group-item.active,
 .list-group-item.active:hover,
 .list-group-item.active:focus {
-    background-image: linear-gradient(to bottom, #95DD34 0%, #72BB10 100%);
+    background-image: linear-gradient(to bottom, #95DD34 0%, #69AE0E 100%);
     background-repeat: repeat-x;
     border-color: #72BB10;
     text-shadow:
@@ -598,7 +598,8 @@ img.resize{
 .list-group-item-text,
 .list-group-item.active:focus
 .list-group-item-text {
-    color: #ffffff;
+    text-shadow: none;
+    color: #307100;
 }
 .list-group-item .badge {
     background-color: #AAAAAA;
