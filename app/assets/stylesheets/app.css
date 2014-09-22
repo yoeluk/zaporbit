@@ -564,7 +564,7 @@ img.resize{
     padding: 10px;
     border-radius: 3px;
     background-color: #f1f1f1;
-    margin: 3px 0 15px 0;
+    margin-bottom: 15px;
     text-align: center;
 }
 .message-counter {
