@@ -113,9 +113,7 @@ a.issue-title:hover,a.issue-title:focus {
     min-height: 150px;
 }
 .profile {
-    padding-left: 20px;
-    margin-bottom: 20px;
-    max-height: 50px;
+    padding-left: 5px;
 }
 .profile-img {
     max-height:50px;
@@ -127,11 +125,25 @@ a.issue-title:hover,a.issue-title:focus {
 .profile-crd {
     padding-left: 65px
 }
+.price-wrapper {
+    font-size: 15px;
+    font-weight: 100;
+    letter-spacing: 1px;
+    margin-top: 5px;
+}
+.price-wrapper > label {
+}
+.item-time {
+    margin-right: 5px;
+}
 .listing {
-
     overflow: hidden;
     margin-top: 10px;
     margin-bottom: 10px;
+}
+.listing-title {
+    padding-left: 5px;
+    margin: 10px 0;
 }
 .outer-container {
     padding-left: 5px;
@@ -420,8 +432,17 @@ img.resize{
     background-color: #ffffff;
 }
 .nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
-    background-image: linear-gradient(to bottom, #A0EC39 0px, #72BB10 100%);
+    background-image: linear-gradient(to bottom, #95DD34 0px, #7CCB12 100%);
     background-repeat: repeat-x;
+    border: 1px solid #72BB10;
+    text-shadow:
+    -1px -1px 0 #5ca402,
+    1px -1px 0 #5ca402,
+    -1px 1px 0 #5ca402,
+    1px 1px 0 #5ca402 !important;
+}
+.nav-pills > li.active > a > .badge, .nav-pills > li.active > a:hover > .badge, .nav-pills > li.active > a:focus > .badge {
+    text-shadow:none;
 }
 .nav-tabs > li > a > .badge {
     background-color: darkgrey;
@@ -450,12 +471,11 @@ img.resize{
 .tab-icon {
     margin-right: 5px
 }
-.convo::-webkit-scrollbar { width: 0 !important }
 .convo {
     max-height: 600px;
-    overflow-y: scroll;
-    overflow: -moz-scrollbars-none;
-    -ms-overflow-style: none;
+    margin-bottom: 0;
+    /*overflow: -moz-scrollbars-none;
+    -ms-overflow-style: none;*/
 }
 .message {
     width: 100%;
@@ -483,13 +503,12 @@ img.resize{
 .message:focus > .message-date, .message:hover > .message-date {
     color: lightgray;
 }
-.messages-wrapper::-webkit-scrollbar { width: 0 !important }
 .messages-wrapper {
     padding-top: 10px;
     max-height: 500px;
-    overflow-y: scroll;
+    /*overflow-y: scroll;
     overflow: -moz-scrollbars-none;
-    -ms-overflow-style: none;
+    ms-overflow-style: none;*/
     padding-right: 10px;
     height: 500px!important;
     min-height: 100%;
@@ -506,7 +525,6 @@ img.resize{
     position: relative;
     height: 30px;
 }
-.message-reply::-webkit-scrollbar { width: 0 !important }
 .message-reply {
     width: 100%;
     max-width: 100%;
@@ -517,9 +535,9 @@ img.resize{
     padding: 15px;
     border: 1px solid #ddd;
     outline: none;
-    overflow-y: scroll;
+    /*overflow-y: scroll;
     overflow: -moz-scrollbars-none;
-    -ms-overflow-style: none;
+    -ms-overflow-style: none;*/
 }
 .message-reply:focus {
     border-color: #92d13d!important;
@@ -551,4 +569,50 @@ img.resize{
 }
 .purchase-pills {
     padding: 0 15px;
+}
+.list-group-item {
+    background-color: #f5f5f5;
+}
+.list-group-item > p {
+    overflow: hidden;
+    height: 35px;
+}
+.list-group-item:hover, .list-group-item:focus {
+    background-color: #f0f0f0;
+}
+.list-group-item.active,
+.list-group-item.active:hover,
+.list-group-item.active:focus {
+    background-image: linear-gradient(to bottom, #95DD34 0%, #72BB10 100%);
+    background-repeat: repeat-x;
+    border-color: #72BB10;
+    text-shadow:
+    -1px -1px 0 #5ca402,
+    1px -1px 0 #5ca402,
+    -1px 1px 0 #5ca402,
+    1px 1px 0 #5ca402 !important;
+}
+.list-group-item.active
+.list-group-item-text,
+.list-group-item.active:hover
+.list-group-item-text,
+.list-group-item.active:focus
+.list-group-item-text {
+    color: #ffffff;
+}
+.list-group-item .badge {
+    background-color: #AAAAAA;
+}
+.list-group-item.active .badge,
+.list-group-item.active:hover .badge,
+.list-group-item.active:focus .badge {
+    text-shadow: none;
+    background-color: #ffffff;
+    color: rgb(66, 139, 202);
+}
+.scroll {
+    margin-right: -18px !important;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    padding-right: 18px;
 }

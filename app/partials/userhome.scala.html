@@ -25,17 +25,19 @@
                     <div class="col-sm-12 col-md-12" data-ng-if="showAlert" style="padding-right: 15px;">
                         <div class="alert alert-warning" role="alert"> Alert message! The messages shown below are sample messages that describe the messaging services. They will automatically remove themselves as soon as you receive or send a message.</div>
                     </div>
-                    <div class="col-sm-4 col-md-4 convo">
-                        <ul class="nav nav-pills nav-stacked">
-                            <li data-ng-class="{ active: isActivePill($index) }" data-ng-repeat="samp in sampleConversations track by $index">
-                                <a href="javascript:;" data-ng-click="setActivePill($index)" data-ng-disable="replying">
-                                    {{ meOrUsername(samp.user1) }} \u00BB {{ meOrUsername(samp.user2) }}
-                                    <span class="badge pull-right" data-ng-if="samp.messages.length>1"> {{ samp.messages.length }} </span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-
+                        <div class="col-sm-4 col-md-4">
+                            <div class="outer-convo">
+                                <div class="list-group convo scroll">
+                                    <a href="#" class="list-group-item" data-ng-class="{ active: isActivePill($index) }"
+                                    data-ng-repeat="samp in sampleConversations track by $index" data-ng-click="setActivePill($index)">
+                                        <h4 class="list-group-item-heading">{{ meOrUsername(samp.user1) }} \u00BB {{ meOrUsername(samp.user2) }}
+                                            <span class="badge pull-right" data-ng-if="samp.messages.length>1"> {{ samp.messages.length }} </span>
+                                        </h4>
+                                        <p class="list-group-item-text">{{ samp.title }}</p>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     <div class="col-sm-8 col-md-8 clearfix">
                         <div class="message-title" data-ng-show="sampleConversations.length">
                             <h5><a href="#">{{ sampleConversations[activeConvo].title }}</a>

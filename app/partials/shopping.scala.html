@@ -134,8 +134,8 @@
 
             <div class="listing container-with-shadow" data-ng-repeat="lst in allListings" data-ng-if="lst.listing.pictures[0]">
                 <div class="listing-item">
-                    <div class="profile row">
-                        <div class="pull-right" style="padding-right: 20px; color: grey; font-size: 12px;">
+                    <div class="row-fluid profile clearfix">
+                        <div class="pull-right item-time" style="color: grey; font-size: 12px;">
                             <span data-am-time-ago="{{lst.listing.date}}" data-am-preprocess="unix"></span>
                         </div>
                         <img class="profile-img pull-left" data-ng-src="//graph.facebook.com/v2.1/{{lst.user.fbuserid}}/picture?height=200&width=200" src="" alt=""/>
@@ -148,11 +148,11 @@
                             <i></i>
                             <i></i>
                         </div>
-                        <span class="pull-right" style="margin-top: 10px; font-size: 15px; font-weight: 100; letter-spacing: 1px;">
-                            <label class="label label-info" style="margin-right: 20px; padding-top: 3px"> {{ lst.listing.formatted_price }} </label>
+                        <span class="pull-right price-wrapper">
+                            <label class="label label-info"> {{ lst.listing.formatted_price }} </label>
                         </span>
                     </div>
-                    <div data-ng-controller="ModalListingCtrl" class="" style="padding-left: 5px; padding-right: 5px; margin-bottom: 10px;">
+                    <div data-ng-controller="ModalListingCtrl" class="clearfix listing-title">
                         <b>» {{ lst.listing.title }} </b>&emsp;<a href="javascript:;" data-ng-click="open('lg')">see more...</a>
                     </div>
                     <div class="row" style="overflow: scroll; padding-left: 20px; max-height: 300px;">

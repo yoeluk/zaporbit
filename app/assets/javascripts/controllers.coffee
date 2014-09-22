@@ -802,6 +802,186 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
         }
       ]
     }
+    {
+      title: 'First edition of the "On the origin of species" - Great conditions!'
+      user1:
+        name: "John"
+        surname: "Smith"
+        id: 1
+        fbuserid: 1234
+      user2:
+        name: "Diana"
+        surname: "Windsor"
+        id: 2
+        fbuserid: 2345
+      messages: [
+        {
+          message: "These messages are generated in place of real messages that you might receive when selling or buying an item on ZapOrbit. These examples demonstrate the simplicity of the site."
+          senderid: 1
+          recipientid: 2
+          date: Date.now()
+        }
+        {
+          message: 'In this hypothetical case you are interested in Diana\'s item "On the origin of species". Your messages to Diana will appear here with a light green background.'
+          senderid: 1
+          recipientid: 2
+          date: Date.now()
+        }
+        {
+          message: 'Diana\'s replies will appear on this side. This order reflects the buyer and seller relationship.'
+          senderid: 2
+          recipientid: 1
+          date: Date.now()
+        }
+      ]
+    }
+    {
+      title: "Mountain bike in good conditions - large frame"
+      user1:
+        name: "Diana"
+        surname: "Windsor"
+        id: 1
+        fbuserid: 2345
+      user2:
+        name: "John"
+        surname: "Smith"
+        id: 2
+        fbuserid: 1234
+      messages: [
+        {
+          message: 'In this other hypothetical case Diana is interested in your item and she contacted you asking you how old is the bike and if it comes with front lights, for example. Her message will appear here.'
+          senderid: 1
+          recipientid: 2
+          date: Date.now()
+        }
+        {
+          message: 'Diana is the buyer and you are the seller then your replies to Diana\'s questions appears on this side.'
+          senderid: 2
+          recipientid: 1
+          date: Date.now()
+        }
+      ]
+    }
+    {
+      title: 'First edition of the "On the origin of species" - Great conditions!'
+      user1:
+        name: "John"
+        surname: "Smith"
+        id: 1
+        fbuserid: 1234
+      user2:
+        name: "Diana"
+        surname: "Windsor"
+        id: 2
+        fbuserid: 2345
+      messages: [
+        {
+          message: "These messages are generated in place of real messages that you might receive when selling or buying an item on ZapOrbit. These examples demonstrate the simplicity of the site."
+          senderid: 1
+          recipientid: 2
+          date: Date.now()
+        }
+        {
+          message: 'In this hypothetical case you are interested in Diana\'s item "On the origin of species". Your messages to Diana will appear here with a light green background.'
+          senderid: 1
+          recipientid: 2
+          date: Date.now()
+        }
+        {
+          message: 'Diana\'s replies will appear on this side. This order reflects the buyer and seller relationship.'
+          senderid: 2
+          recipientid: 1
+          date: Date.now()
+        }
+      ]
+    }
+    {
+      title: "Mountain bike in good conditions - large frame"
+      user1:
+        name: "Diana"
+        surname: "Windsor"
+        id: 1
+        fbuserid: 2345
+      user2:
+        name: "John"
+        surname: "Smith"
+        id: 2
+        fbuserid: 1234
+      messages: [
+        {
+          message: 'In this other hypothetical case Diana is interested in your item and she contacted you asking you how old is the bike and if it comes with front lights, for example. Her message will appear here.'
+          senderid: 1
+          recipientid: 2
+          date: Date.now()
+        }
+        {
+          message: 'Diana is the buyer and you are the seller then your replies to Diana\'s questions appears on this side.'
+          senderid: 2
+          recipientid: 1
+          date: Date.now()
+        }
+      ]
+    }
+    {
+      title: 'First edition of the "On the origin of species" - Great conditions!'
+      user1:
+        name: "John"
+        surname: "Smith"
+        id: 1
+        fbuserid: 1234
+      user2:
+        name: "Diana"
+        surname: "Windsor"
+        id: 2
+        fbuserid: 2345
+      messages: [
+        {
+          message: "These messages are generated in place of real messages that you might receive when selling or buying an item on ZapOrbit. These examples demonstrate the simplicity of the site."
+          senderid: 1
+          recipientid: 2
+          date: Date.now()
+        }
+        {
+          message: 'In this hypothetical case you are interested in Diana\'s item "On the origin of species". Your messages to Diana will appear here with a light green background.'
+          senderid: 1
+          recipientid: 2
+          date: Date.now()
+        }
+        {
+          message: 'Diana\'s replies will appear on this side. This order reflects the buyer and seller relationship.'
+          senderid: 2
+          recipientid: 1
+          date: Date.now()
+        }
+      ]
+    }
+    {
+      title: "Mountain bike in good conditions - large frame"
+      user1:
+        name: "Diana"
+        surname: "Windsor"
+        id: 1
+        fbuserid: 2345
+      user2:
+        name: "John"
+        surname: "Smith"
+        id: 2
+        fbuserid: 1234
+      messages: [
+        {
+          message: 'In this other hypothetical case Diana is interested in your item and she contacted you asking you how old is the bike and if it comes with front lights, for example. Her message will appear here.'
+          senderid: 1
+          recipientid: 2
+          date: Date.now()
+        }
+        {
+          message: 'Diana is the buyer and you are the seller then your replies to Diana\'s questions appears on this side.'
+          senderid: 2
+          recipientid: 1
+          date: Date.now()
+        }
+      ]
+    }
   ]
 
   $scope.activeConvo = 0
