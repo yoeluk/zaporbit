@@ -984,6 +984,11 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     }
   ]
 
+  $scope.deleteConvo = (event, index) ->
+    element = `event.srcElement ? event.srcElement : event.target;`
+    console.log index, element, angular.element(element)
+    $scope.sampleConversations.splice(index,1)
+
   $scope.activeConvo = 0
 
   $scope.isThisMe = (index) ->

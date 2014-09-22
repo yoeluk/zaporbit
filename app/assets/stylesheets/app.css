@@ -474,6 +474,7 @@ img.resize{
 .convo {
     max-height: 600px;
     margin-bottom: 0;
+    padding-bottom: 5px;
     /*overflow: -moz-scrollbars-none;
     -ms-overflow-style: none;*/
 }
@@ -505,13 +506,11 @@ img.resize{
 }
 .messages-wrapper {
     padding-top: 10px;
-    max-height: 500px;
     /*overflow-y: scroll;
     overflow: -moz-scrollbars-none;
     ms-overflow-style: none;*/
     padding-right: 10px;
-    height: 500px!important;
-    min-height: 100%;
+    min-height: 450px;
 }
 .message > div {
     float: left;
@@ -550,6 +549,11 @@ img.resize{
     margin: 3px 0 15px 0;
     text-align: center;
 }
+.message-counter {
+    font-size: 13px;
+    font-weight: 400;
+    vertical-align: 7%;
+}
 .tabs-separator {
     height: 20px;
     border: 1px solid #ddd;
@@ -560,59 +564,107 @@ img.resize{
 .records-wrapper  {
     border: 1px solid #ddd;
     border-top: none;
-    height: auto;
-    min-height: 710px!important;
+    min-height: 668px;
     background-color: #ffffff;
-}
-.records-wrapper.sample {
-    min-height: 780px!important;
 }
 .purchase-pills {
     padding: 0 15px;
 }
-.list-group-item {
-    background-color: #f5f5f5;
-}
+/* Directly override bootstrap list-group-item */
 .list-group-item > p {
     overflow: hidden;
-    height: 35px;
+    height: 17px;
 }
-.list-group-item:hover, .list-group-item:focus {
-    background-color: #f0f0f0;
+.list-group-item .badge {
+    background-color: #AAAAAA;
 }
-.list-group-item.active,
-.list-group-item.active:hover,
-.list-group-item.active:focus {
-    background-image: linear-gradient(to bottom, #95DD34 0%, #69AE0E 100%);
+.list-group-item:first-child {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+.list-group-item:last-child {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+.close {
+    font-size: 18px;
+}
+/* Add custom convo-preview to list-group-item */
+.convo-preview {
+    position: relative;
+    height: 62px;
+}
+.close-wrapper {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    z-index: 3;
+}
+.close-wrapper > .close {
+    display: none;
+}
+.convo-preview.active > .close-wrapper > .close,
+.convo-preview:hover > .close-wrapper > .close,
+.convo-preview:focus > .close-wrapper > .close {
+    display: inline;
+}
+.list-group > div {
+    border-radius: 4px;
+    /* box-shadow wouldn't show because the outer div needs overflow:hidden to hide the scrollbars */
+    /* box-shadow: 0 0 5px #ccc; */
+}
+.list-group > div:first-child .list-group-item {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+.list-group > div:last-child .list-group-item {
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    margin-bottom: 0;
+}
+.convo-preview.active > .list-group-item,
+.convo-preview.active:hover > .list-group-item,
+.convo-preview.active:focus > .list-group-item {
+    background-image: linear-gradient(to bottom, #89CB30 0%, #72BB10 100%);
     background-repeat: repeat-x;
     border-color: #72BB10;
     text-shadow:
     -1px -1px 0 #5ca402,
     1px -1px 0 #5ca402,
     -1px 1px 0 #5ca402,
-    1px 1px 0 #5ca402 !important;
+    1px 1px 0 #5ca402;
+    z-index: 0;
 }
-.list-group-item.active
-.list-group-item-text,
-.list-group-item.active:hover
-.list-group-item-text,
-.list-group-item.active:focus
-.list-group-item-text {
+.convo-preview.active .list-group-item-text,
+.convo-preview.active:hover .list-group-item-text,
+.convo-preview.active:focus .list-group-item-text {
     text-shadow: none;
     color: #307100;
 }
-.list-group-item .badge {
-    background-color: #AAAAAA;
+.convo-preview.active > a.list-group-item .list-group-item-heading,
+.convo-preview.active:hover > a.list-group-item .list-group-item-heading,
+.convo-preview.active:focus > a.list-group-item .list-group-item-heading {
+    color: #ffffff;
 }
-.list-group-item.active .badge,
-.list-group-item.active:hover .badge,
-.list-group-item.active:focus .badge {
+.convo-preview.active .badge,
+.convo-preview.active:hover .badge,
+.convo-preview.active:focus .badge {
     text-shadow: none;
     background-color: #ffffff;
     color: rgb(66, 139, 202);
 }
+.close-wrapper:hover + .list-group-item > .list-group-item-text,
+.close-wrapper:hover + .list-group-item > .list-group-item-heading,
+.close-wrapper:hover + .list-group-item,
+.close-wrapper:focus + .list-group-item {
+    background: #EB4848 none!important;
+    border-color: #EB4848!important;
+    color: rgb(51, 51, 51)!important;
+    text-shadow: none!important;
+}
 .outer-convo {
     overflow: hidden;
+    max-height: 600px;
 }
 .scroll {
     margin-right: -18px !important;
