@@ -176,6 +176,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
             msg.date = d
         $log.debug data
         setReplies()
+        $scope.recordTemplate = $scope.recordTemplates[0]
 
   $scope.sendReply = ->
     message = $scope.replies[$scope.activePill[$scope.activeTab]].trim()
@@ -243,8 +244,6 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
   setReplies = ->
     _.each $scope.conversations, (convo, i) ->
       $scope.replies[i] = ""
-
-  $scope.recordTemplate = $scope.recordTemplates[0]
 
   $scope.msgPulledRight = (index) ->
     userIds = {}

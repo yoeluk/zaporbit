@@ -224,13 +224,15 @@ angular.module "ZapOrbit.directives", []
     $timeout ->
       reparse(iElement)
 ]
-.directive "scroll", ["$window", ($window) ->
+.directive "scrollTop", ["$window", ($window) ->
   link: (scope, element, attrs) ->
     angular.element($window).bind "scroll", ->
       if @pageYOffset >= 100
         scope.fixedToTop = true
+        scope.userHome = true
       else
         scope.fixedToTop = false
+        scope.userHome = false
       scope.$apply()
 ]
 .directive "replyAttr", [ ->

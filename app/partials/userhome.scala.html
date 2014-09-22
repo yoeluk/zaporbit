@@ -84,11 +84,13 @@
 
                 <div class="row-fluid clearfix" data-ng-if="conversations.length">
                     <div class="col-sm-4 col-md-4 convo">
-
                         <div class="outer-convo">
                             <div class="list-group convo scroll">
                                 <div data-ng-repeat="conv in conversations track by $index" class="animate">
                                     <div class="convo-preview" data-ng-class="{ active: isActivePill($index) }">
+                                        <div class="close-wrapper">
+                                            <button type="button" class="close" data-ng-click="deleteConvo($event, $index)"> x </button>
+                                        </div>
                                         <a href="javascript:;"
                                         class="list-group-item"
                                         data-ng-click="setActivePill($index)"
@@ -100,9 +102,6 @@
                                             </h4>
                                             <p class="list-group-item-text"> {{ conv.conversation.title }} </p>
                                         </a>
-                                        <div class="close-wrapper">
-                                            <button type="button" class="close" data-ng-click="deleteConvo($event, $index)"> x </button>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -216,7 +215,7 @@
             </div>
             <div class="col-xs-6 col-md-3">
 
-                <div data-ng-include="profileTemplate.url"></div>
+                <div data-scroll-top data-ng-class="{posFixed: fixedToTop, 'user-home': userHome}" class="user-home-summary" data-ng-include="profileTemplate.url"></div>
 
             </div>
         </div>

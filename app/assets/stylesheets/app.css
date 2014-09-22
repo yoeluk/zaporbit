@@ -112,9 +112,6 @@ a.issue-title:hover,a.issue-title:focus {
     background-color: #f7f7f9;
     min-height: 150px;
 }
-.profile {
-    padding-left: 5px;
-}
 .profile-img {
     max-height:50px;
     height:50px;
@@ -364,14 +361,20 @@ textarea:focus {
 .posFixed {
     position: relative;
 }
+.user-home-summary .merchant {
+    display: block;
+}
 @media (min-width: 768px) {
     .col-sm-3ths {
         width: 33.33%;
         float: left;
         margin-right: 75px;
     }
-    .posFixed{
+    .posFixed {
         position: relative;
+    }
+    .user-home-summary .merchant {
+        display: inline;
     }
 }
 @media (min-width: 992px) {
@@ -380,10 +383,16 @@ textarea:focus {
         float: left;
         margin-right: 75px;
     }
-    .posFixed{
+    .posFixed {
         position: fixed;
         top: 5px;
         width: 300px;
+    }
+    .posFixed.user-home {
+        width: 217px;
+    }
+    .user-home-summary .merchant {
+        display: none;
     }
 }
 @media (min-width: 1200px) {
@@ -396,6 +405,12 @@ textarea:focus {
         position: fixed;
         top: 5px;
         width: 366px;
+    }
+    .posFixed.user-home {
+        width: 266px;
+    }
+    .user-home-summary .merchant {
+        display: block;
     }
 }
 img.resize{
