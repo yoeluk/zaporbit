@@ -21,55 +21,68 @@
             </script>
 
             <script type="text/ng-template" id="messages-example-template.html">
+
                 <div class="row-fluid clearfix" data-ng-controller="MessagesExampleCtrl">
+
                     <div class="col-sm-12 col-md-12" data-ng-if="showAlert" style="padding-right: 15px;">
                         <div class="alert alert-warning" role="alert"> Alert message! The messages shown below are sample messages that describe the messaging services. They will automatically remove themselves as soon as you receive or send a message.</div>
                     </div>
-                    <div class="col-sm-4 col-md-4">
-                        <div class="outer-convo">
-                            <div class="list-group convo scroll">
-                                <div data-ng-repeat="samp in sampleConversations track by $index" class="animate">
-                                    <div class="convo-preview" data-ng-class="{ active: isActivePill($index) }">
-                                        <div class="close-wrapper">
-                                            <button type="button" class="close" data-ng-click="deleteConvo($event, $index)"> x </button>
+                    <div class="col-sm-5 col-md-5">
+                        <div class="convo-placeholder">
+                            <div class="outer-convo">
+                                <div class="list-group convo scroll" data-ng-style="osPadding()">
+                                    <div data-ng-repeat="samp in sampleConversations track by $index">
+                                        <div class="convo-preview" data-ng-class="{ active: isActivePill($index) }"
+                                        data-ng-mouseenter="scrollToWidth($event)"
+                                        data-ng-mouseleave="scrollToStart($event)">
+                                            <div class="close-wrapper">
+                                                <button type="button" class="close" data-ng-click="deleteConvo($event, $index)">
+                                                    <span class="glyphicon glyphicon-trash"></span>
+                                                </button>
+                                            </div>
+                                            <a href="javascript:;" class="list-group-item"
+                                            data-ng-click="setActivePill($index)">
+                                                <h4 class="list-group-item-heading">{{ meOrUsername(samp.user1) }} \u00BB {{ meOrUsername(samp.user2) }}
+                                                    <span class="message-counter" data-ng-if="samp.messages.length>1"> ({{ samp.messages.length }}) </span>
+                                                </h4>
+                                                <p class="list-group-item-text">{{ samp.title }}</p>
+                                            </a>
                                         </div>
-                                        <a href="javascript:;" class="list-group-item"
-                                        data-ng-click="setActivePill($index)">
-                                            <h4 class="list-group-item-heading">{{ meOrUsername(samp.user1) }} \u00BB {{ meOrUsername(samp.user2) }}
-                                                <span class="message-counter" data-ng-if="samp.messages.length>1"> ({{ samp.messages.length }}) </span>
-                                            </h4>
-                                            <p class="list-group-item-text">{{ samp.title }}</p>
-                                        </a>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-8 col-md-8 clearfix">
-                        <div class="message-title" data-ng-show="sampleConversations.length">
-                            <h4><a href="#">{{ sampleConversations[activeConvo].title }}</a>
-                            </h4>
-                        </div>
-                        <div class="message-from" data-ng-show="sampleConversations.length">
-                            <i>{{ sellerOrBuyer() }}:</i>
-                            <a href="javascript:;">
-                                {{ withWho() }}
-                            </a>
-                        </div>
+                    <div class="col-sm-7 col-md-7 clearfix">
+
                         <div class="convos" data-ng-repeat="(cIndex, conv) in sampleConversations" data-ng-show="isActivePill(cIndex)">
-                            <div class="messages-wrapper">
-                                <div class="row-fluid message" data-ng-class="{ 'pull-right': msgPulledRight($index) }"
-                                data-ng-repeat="msg in sampleConversations[activeConvo].messages track by $index">
-                                    <div class="string" data-ng-class="{ 'me': isThisMe($index) }"><span> {{ msg.message }} </span></div>
-                                    <div class="message-date"> {{ msg.date | amCalendar }} </div>
+                            <div class="message-outer">
+                                <div class="message-title" data-ng-show="sampleConversations.length">
+                                    <h4><a href="#">{{ sampleConversations[activeConvo].title }}</a>
+                                    </h4>
+                                </div>
+                                <div class="message-from" data-ng-show="sampleConversations.length">
+                                    <i>{{ sellerOrBuyer() }}:</i>
+                                    <a href="javascript:;">
+                                        {{ withWho() }}
+                                    </a>
+                                </div>
+                                <div class="messages-wrapper" data-ng-style="msgWrapperStyle()">
+                                    <div class="row-fluid message" data-ng-class="{ 'pull-right': msgPulledRight($index) }"
+                                    data-ng-repeat="msg in sampleConversations[activeConvo].messages track by $index">
+                                        <div class="string" data-ng-class="{ 'me': isThisMe($index) }">
+                                            <span> {{ msg.message }} </span>
+                                        </div>
+                                        <div class="message-date"> {{ msg.date | amCalendar }} </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="clearfix" style="padding: 0 10px 0 0;">
+                            <div class="clearfix">
                                 <div class="message-reply pull-left" data-reply-attr data-ng-model="tempReply" contentEditable="true">
                                     {{ tempReply }}
                                 </div>
                             </div>
-                            <div class="clearfix" style="padding-right: 10px;">
+                            <div class="clearfix">
                                 <button class="btn btn-default btn-sm pull-right" style="margin-bottom: 10px;" data-ng-click="sendReply()">
                                         <!--<span class="glyphicon glyphicon-send" style="margin-right: 5px"></span>-->
                                         Reply
@@ -82,58 +95,74 @@
 
             <script type="text/ng-template" id="message-template.html">
 
-                <div class="row-fluid clearfix" data-ng-if="conversations.length">
-                    <div class="col-sm-4 col-md-4 convo">
-                        <div class="outer-convo">
-                            <div class="list-group convo scroll">
-                                <div data-ng-repeat="conv in conversations track by $index" class="animate">
-                                    <div class="convo-preview" data-ng-class="{ active: isActivePill($index) }">
-                                        <div class="close-wrapper">
-                                            <button type="button" class="close" data-ng-click="deleteConvo($event, $index)"> x </button>
+                <div style="padding:0 10px;">
+                    <progressbar ng-if="loadingProg" class="progress-striped active progress" animate="true" value="100" type="info"> {{ loadingMessage }} </progressbar>
+                </div>
+
+                <div class="row-fluid clearfix" data-ng-if="!loadingProg && conversations.length ">
+
+                    <div class="col-sm-5 col-md-5">
+                        <div class="convo-placeholder">
+                            <div class="outer-convo">
+                                <div class="list-group convo scroll" data-ng-style="osPadding()">
+                                    <div data-ng-repeat="conv in conversations track by $index">
+                                        <div class="convo-preview" data-ng-class="{ active: isActivePill($index) }"
+                                        data-ng-mouseenter="scrollToWidth($event)"
+                                        data-ng-mouseleave="scrollToStart($event)">
+                                            <div class="close-wrapper">
+                                                <button type="button" class="close" data-ng-click="deleteConvo($event, $index)">
+                                                    <span class="glyphicon glyphicon-trash"></span>
+                                                </button>
+                                            </div>
+                                            <a href="javascript:;"
+                                            class="list-group-item"
+                                            data-ng-click="setActivePill($index)"
+                                            data-ng-disable="replying">
+                                                <h4 class="list-group-item-heading">{{ meOrUsername(conv.user1) }} \u00BB {{ meOrUsername(conv.user2) }}
+                                                    <span class="message-counter" data-ng-if="conv.conversation.messages.length>1">
+                                                        ({{ conv.conversation.messages.length }})
+                                                    </span>
+                                                </h4>
+                                                <p class="list-group-item-text"> {{ conv.conversation.title }} </p>
+                                            </a>
                                         </div>
-                                        <a href="javascript:;"
-                                        class="list-group-item"
-                                        data-ng-click="setActivePill($index)"
-                                        data-ng-disable="replying">
-                                            <h4 class="list-group-item-heading">{{ meOrUsername(conv.user1) }} \u00BB {{ meOrUsername(conv.user2) }}
-                                                <span class="message-counter" data-ng-if="conv.conversation.messages.length>1">
-                                                    ({{ conv.conversation.messages.length }})
-                                                </span>
-                                            </h4>
-                                            <p class="list-group-item-text"> {{ conv.conversation.title }} </p>
-                                        </a>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-8 col-md-8">
-                        <div class="message-title" data-ng-show="conversations.length">
-                            <h4><a href="/#!/listing_item/{{conversations[activePill[activeTab]].conversation.listingid}}">
-                                {{ conversations[activePill[activeTab]].conversation.title }}
-                                </a>
-                            </h4>
-                        </div>
-                        <div class="message-from" data-ng-show="conversations.length">
-                            <i>{{ sellerOrBuyer() }}:</i>
-                            <a href="javascript:;">
-                                {{ withWho() }}
-                            </a>
-                        </div>
+                    <div class="col-sm-7 col-md-7">
+
                         <div class="convos" data-ng-repeat="(cIndex, conv) in conversations" data-ng-show="isActivePill(cIndex)">
-                            <div class="messages-wrapper">
-                                <div class="row-fluid message" data-ng-class="{ 'pull-right': msgPulledRight($index) }"
-                                data-ng-repeat="msg in conversations[activePill[activeTab]].conversation.messages track by $index">
-                                    <div class="string" data-ng-class="{ 'me': isThisMe($index) }"><span> {{ msg.message }} </span></div>
-                                    <div class="message-date"> {{ msg.date | amCalendar }} </div>
+                            <div class="message-outer">
+                                <div class="message-title" data-ng-show="conversations.length">
+                                    <h4><a href="/#!/listing_item/{{conversations[activePill[activeTab]].conversation.listingid}}">
+                                        {{ conversations[activePill[activeTab]].conversation.title }}
+                                    </a>
+                                    </h4>
+                                </div>
+                                <div class="message-from" data-ng-show="conversations.length">
+                                    <i>{{ sellerOrBuyer() }}:</i>
+                                    <a href="javascript:;">
+                                        {{ withWho() }}
+                                    </a>
+                                </div>
+                                <div class="messages-wrapper" data-ng-style="msgWrapperStyle()">
+                                    <div class="row-fluid message" data-ng-class="{ 'pull-right': msgPulledRight($index) }"
+                                    data-ng-repeat="msg in conversations[activePill[activeTab]].conversation.messages track by $index">
+                                        <div class="string" data-ng-class="{ 'me': isThisMe($index) }">
+                                            <span> {{ msg.message }} </span>
+                                        </div>
+                                        <div class="message-date"> {{ msg.date | amCalendar }} </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="clearfix" style="padding: 0 10px 0 0;">
+                            <div class="clearfix">
                                 <div class="message-reply pull-left" data-reply-attr data-ng-model="tempReply" contentEditable="true">
                                     {{ tempReply }}
                                 </div>
                             </div>
-                            <div class="clearfix" style="padding-right: 10px;">
+                            <div class="clearfix">
                                 <button class="btn btn-default btn-sm pull-right" style="margin-bottom: 10px;" data-ng-click="sendReply()">
                                         <!--<span class="glyphicon glyphicon-send" style="margin-right: 5px"></span>-->
                                         Reply
@@ -143,7 +172,7 @@
                     </div>
                 </div>
 
-                <div data-ng-include="messagesExampleTemplate.url" data-ng-if="!conversations.length"></div>
+                <div data-ng-include="messagesExampleTemplate.url" data-ng-if="!loadingProg && !conversations.length"></div>
 
             </script>
 
@@ -202,7 +231,7 @@
                         </li>
                     </ul>
                     <div class="tabs-separator"></div>
-                    <div data-ng-include="recordTemplate.url" class="records-wrapper" data-ng-class="{ sample: isSample() }"></div>
+                    <div data-ng-include="recordTemplate.url" class="records-wrapper"></div>
                 </div>
             </script>
 

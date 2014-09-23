@@ -251,3 +251,14 @@ angular.module "ZapOrbit.directives", []
     element.bind "blur keyup change", ->
       scope.$apply read
 ]
+.directive "scrollWidth", ["$window", ($window) ->
+  link: (scope, element, attrs) ->
+    angular.element(element).bind "scroll", ->
+      if @pageYOffset >= 100
+        scope.fixedToTop = true
+        scope.userHome = true
+      else
+        scope.fixedToTop = false
+        scope.userHome = false
+      scope.$apply()
+]

@@ -4,7 +4,6 @@
 angular.module "ZapOrbit", [
   "ngRoute",
   "ngResource",
-  "ngAnimate",
   "ZapOrbit.filters",
   "ZapOrbit.services",
   "ZapOrbit.directives",

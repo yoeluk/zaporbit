@@ -92,7 +92,9 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
   $scope.loginStatus(true)
 
 ]
-.controller "SecuredHomeCtrl", ["$scope", "$http", "FacebookLogin", "$log", ($scope, $http, FacebookLogin, $log) ->
+.controller "SecuredHomeCtrl", ["$scope", "$http", "FacebookLogin", "$log", "$window", ($scope, $http, FacebookLogin, $log, $window) ->
+
+  $scope.loadingProg = true
 
   $scope.tabs = [
     {
@@ -154,6 +156,8 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     }
   ]
 
+  $scope.recordTemplate = $scope.recordTemplates[0]
+
   $scope.myFbId = FacebookLogin.getFbUser().id
 
   $scope.replying = false
@@ -176,7 +180,9 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
             msg.date = d
         $log.debug data
         setReplies()
-        $scope.recordTemplate = $scope.recordTemplates[0]
+        $scope.loadingProg = false
+
+  getRecords()
 
   $scope.sendReply = ->
     message = $scope.replies[$scope.activePill[$scope.activeTab]].trim()
@@ -205,8 +211,6 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       .error (error) ->
         $scope.replying = false
         console.log error
-
-  getRecords()
 
   $scope.isThisMe = (index) ->
     convo = $scope.conversations[$scope.activePill[$scope.activeTab]]
@@ -278,6 +282,29 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
   $scope.isActivePill = (index) ->
     $scope.activePill[$scope.activeTab] == index
+
+  $scope.scrollToWidth = (event) ->
+    $timeout ->
+      element = if event.srcElement? then event.srcElement else event.target
+      title = angular.element(element).find( "h4" )
+      counter = title.find( "span" )
+      title.animate
+        scrollLeft: title.width() + counter.width()
+      , "slow"
+
+  $scope.scrollToStart = (event) ->
+    $timeout ->
+      element = if event.srcElement? then event.srcElement else event.target
+      title = angular.element(element).find( "h4" )
+      title.scrollLeft(0)
+
+  $scope.osPadding = ->
+    if $window.navigator.appVersion.indexOf("Mac") != -1 then {"padding-right":"25px"}
+    else {"padding-right":"8px"}
+
+  $scope.msgWrapperStyle = ->
+    if $window.navigator.appVersion.indexOf("Mac") != -1 then {'margin-right': '-30px', 'padding-right': '40px'}
+    else {"padding-right":"13px"}
 
 #  $timeout ->
 #    if $scope.replies[$scope.activePill[$scope.activeTab]] is not undefined
@@ -731,7 +758,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 .controller "AlertCtrl", ["$scope", "$timeout", "ListingService", ($scope, $timeout, ListingService) ->
 
 ]
-.controller "MessagesExampleCtrl", ["$scope", "$timeout", ($scope, $timeout) ->
+.controller "MessagesExampleCtrl", ["$scope", "$timeout", "$window", ($scope, $timeout, $window) ->
 
   $scope.showAlert = false
 
@@ -740,7 +767,247 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
   , 200
 
   $scope.myFbId = 1234
-  $scope.sampleConversations = [
+  $scope.sampleConversations = $scope.conversations = [
+    {
+      title: 'First edition of the "On the origin of species" - Great conditions!'
+      user1:
+        name: "John"
+        surname: "Smith"
+        id: 1
+        fbuserid: 1234
+      user2:
+        name: "Diana"
+        surname: "Windsor"
+        id: 2
+        fbuserid: 2345
+      messages: [
+        {
+          message: "These messages are generated in place of real messages that you might receive when selling or buying an item on ZapOrbit. These examples demonstrate the simplicity of the site."
+          senderid: 1
+          recipientid: 2
+          date: Date.now()
+        }
+        {
+          message: 'In this hypothetical case you are interested in Diana\'s item "On the origin of species". Your messages to Diana will appear here with a light green background.'
+          senderid: 1
+          recipientid: 2
+          date: Date.now()
+        }
+        {
+          message: 'Diana\'s replies will appear on this side. This order reflects the buyer and seller relationship.'
+          senderid: 2
+          recipientid: 1
+          date: Date.now()
+        }
+      ]
+    }
+    {
+      title: "Mountain bike in good conditions - large frame"
+      user1:
+        name: "Diana"
+        surname: "Windsor"
+        id: 1
+        fbuserid: 2345
+      user2:
+        name: "John"
+        surname: "Smith"
+        id: 2
+        fbuserid: 1234
+      messages: [
+        {
+          message: 'In this other hypothetical case Diana is interested in your item and she contacted you asking you how old is the bike and if it comes with front lights, for example. Her message will appear here.'
+          senderid: 1
+          recipientid: 2
+          date: Date.now()
+        }
+        {
+          message: 'Diana is the buyer and you are the seller then your replies to Diana\'s questions appears on this side.'
+          senderid: 2
+          recipientid: 1
+          date: Date.now()
+        }
+      ]
+    }
+    {
+      title: 'First edition of the "On the origin of species" - Great conditions!'
+      user1:
+        name: "John"
+        surname: "Smith"
+        id: 1
+        fbuserid: 1234
+      user2:
+        name: "Diana"
+        surname: "Windsor"
+        id: 2
+        fbuserid: 2345
+      messages: [
+        {
+          message: "These messages are generated in place of real messages that you might receive when selling or buying an item on ZapOrbit. These examples demonstrate the simplicity of the site."
+          senderid: 1
+          recipientid: 2
+          date: Date.now()
+        }
+        {
+          message: 'In this hypothetical case you are interested in Diana\'s item "On the origin of species". Your messages to Diana will appear here with a light green background.'
+          senderid: 1
+          recipientid: 2
+          date: Date.now()
+        }
+        {
+          message: 'Diana\'s replies will appear on this side. This order reflects the buyer and seller relationship.'
+          senderid: 2
+          recipientid: 1
+          date: Date.now()
+        }
+      ]
+    }
+    {
+      title: "Mountain bike in good conditions - large frame"
+      user1:
+        name: "Montgomery"
+        surname: "Windsor"
+        id: 1
+        fbuserid: 2345
+      user2:
+        name: "John"
+        surname: "Smith"
+        id: 2
+        fbuserid: 1234
+      messages: [
+        {
+          message: 'In this other hypothetical case Diana is interested in your item and she contacted you asking you how old is the bike and if it comes with front lights, for example. Her message will appear here.'
+          senderid: 1
+          recipientid: 2
+          date: Date.now()
+        }
+        {
+          message: 'Diana is the buyer and you are the seller then your replies to Diana\'s questions appears on this side.'
+          senderid: 2
+          recipientid: 1
+          date: Date.now()
+        }
+      ]
+    }
+    {
+      title: 'First edition of the "On the origin of species" - Great conditions!'
+      user1:
+        name: "John"
+        surname: "Smith"
+        id: 1
+        fbuserid: 1234
+      user2:
+        name: "Diana"
+        surname: "Windsor"
+        id: 2
+        fbuserid: 2345
+      messages: [
+        {
+          message: "These messages are generated in place of real messages that you might receive when selling or buying an item on ZapOrbit. These examples demonstrate the simplicity of the site."
+          senderid: 1
+          recipientid: 2
+          date: Date.now()
+        }
+        {
+          message: 'In this hypothetical case you are interested in Diana\'s item "On the origin of species". Your messages to Diana will appear here with a light green background.'
+          senderid: 1
+          recipientid: 2
+          date: Date.now()
+        }
+        {
+          message: 'Diana\'s replies will appear on this side. This order reflects the buyer and seller relationship.'
+          senderid: 2
+          recipientid: 1
+          date: Date.now()
+        }
+      ]
+    }
+    {
+      title: "Mountain bike in good conditions - large frame"
+      user1:
+        name: "Diana"
+        surname: "Windsor"
+        id: 1
+        fbuserid: 2345
+      user2:
+        name: "John"
+        surname: "Smith"
+        id: 2
+        fbuserid: 1234
+      messages: [
+        {
+          message: 'In this other hypothetical case Diana is interested in your item and she contacted you asking you how old is the bike and if it comes with front lights, for example. Her message will appear here.'
+          senderid: 1
+          recipientid: 2
+          date: Date.now()
+        }
+        {
+          message: 'Diana is the buyer and you are the seller then your replies to Diana\'s questions appears on this side.'
+          senderid: 2
+          recipientid: 1
+          date: Date.now()
+        }
+      ]
+    }
+    {
+      title: 'First edition of the "On the origin of species" - Great conditions!'
+      user1:
+        name: "John"
+        surname: "Smith"
+        id: 1
+        fbuserid: 1234
+      user2:
+        name: "Diana"
+        surname: "Windsor"
+        id: 2
+        fbuserid: 2345
+      messages: [
+        {
+          message: "These messages are generated in place of real messages that you might receive when selling or buying an item on ZapOrbit. These examples demonstrate the simplicity of the site."
+          senderid: 1
+          recipientid: 2
+          date: Date.now()
+        }
+        {
+          message: 'In this hypothetical case you are interested in Diana\'s item "On the origin of species". Your messages to Diana will appear here with a light green background.'
+          senderid: 1
+          recipientid: 2
+          date: Date.now()
+        }
+        {
+          message: 'Diana\'s replies will appear on this side. This order reflects the buyer and seller relationship.'
+          senderid: 2
+          recipientid: 1
+          date: Date.now()
+        }
+      ]
+    }
+    {
+      title: "Mountain bike in good conditions - large frame"
+      user1:
+        name: "Diana"
+        surname: "Windsor"
+        id: 1
+        fbuserid: 2345
+      user2:
+        name: "John"
+        surname: "Smith"
+        id: 2
+        fbuserid: 1234
+      messages: [
+        {
+          message: 'In this other hypothetical case Diana is interested in your item and she contacted you asking you how old is the bike and if it comes with front lights, for example. Her message will appear here.'
+          senderid: 1
+          recipientid: 2
+          date: Date.now()
+        }
+        {
+          message: 'Diana is the buyer and you are the seller then your replies to Diana\'s questions appears on this side.'
+          senderid: 2
+          recipientid: 1
+          date: Date.now()
+        }
+      ]
+    }
     {
       title: 'First edition of the "On the origin of species" - Great conditions!'
       user1:
@@ -983,9 +1250,23 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     }
   ]
 
+  $scope.scrollToWidth = (event) ->
+    $timeout ->
+      element = if event.srcElement? then event.srcElement else event.target
+      title = angular.element(element).find( "h4" )
+      counter = title.find( "span" )
+      title.animate
+        scrollLeft: title.width() + counter.width()
+      , "slow"
+
+  $scope.scrollToStart = (event) ->
+    $timeout ->
+      element = if event.srcElement? then event.srcElement else event.target
+      title = angular.element(element).find( "h4" )
+      title.scrollLeft(0)
+
   $scope.deleteConvo = (event, index) ->
     element = `event.srcElement ? event.srcElement : event.target;`
-    console.log index, element, angular.element(element)
     $scope.sampleConversations.splice(index,1)
 
   $scope.activeConvo = 0
@@ -1026,4 +1307,12 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     userIds[user2id] = $scope.sampleConversations[$scope.activeConvo].user2.fbuserid
     senderid = $scope.sampleConversations[$scope.activeConvo].messages[index].senderid
     userIds[senderid] == $scope.sampleConversations[$scope.activeConvo].user2.fbuserid
+
+  $scope.osPadding = ->
+    if $window.navigator.appVersion.indexOf("Mac") != -1 then {"padding-right":"25px"}
+    else {"padding-right":"8px"}
+
+  $scope.msgWrapperStyle = ->
+    if $window.navigator.appVersion.indexOf("Mac") != -1 then {'margin-right': '-30px', 'padding-right': '40px'}
+    else {"padding-right":"13px"}
 ]
