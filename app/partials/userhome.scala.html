@@ -20,6 +20,40 @@
                 </div>
             </script>
 
+            <script type="text/ng-template" id="profile-template.html">
+                <div class="row-fluid" data-ng-controller="ProfileProfileCtrl">
+                    <div class="col-sm-12 col-md-12">
+                        <div class="cover">
+                            <div class="camera">
+                                <a href='javascript:;' class="glyphicon glyphicon-camera btn-file">
+                                    <input type="file" data-ng-file-select="onFileSelect($files)" accept="image/*">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="profile-profile">
+                            <div class="inner-profile">
+                                <div class="profile-picture">
+                                    <div class="camera">
+                                        <a href='javascript:;' class="glyphicon glyphicon-camera btn-file">
+                                            <input type="file" data-ng-file-select="onFileSelect($files)" accept="image/*">
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="about pull-right">
+                                    <!--<span class="glyphicon glyphicon-pencil pencil"></span>-->
+                                    <div class="self-description" data-ng-attr-contenteditable="{{isEditable}}" data-my-description data-max="170">
+                                        Tell others a little bit about you. What do you feel passionate about? What are your hobbies?
+
+                                    </div>
+                                </div>
+                                <div class="profile-footer"></div>
+                            </div>
+                        </div>
+                        <div class="profile-background"></div>
+                    </div>
+                </div>
+            </script>
+
             <script type="text/ng-template" id="messages-example-template.html">
 
                 <div class="row-fluid clearfix" data-ng-controller="MessagesExampleCtrl">
@@ -158,12 +192,12 @@
                                 </div>
                             </div>
                             <div class="clearfix">
-                                <div class="message-reply pull-left" data-reply-attr data-ng-model="tempReply" contentEditable="true">
+                                <div class="message-reply pull-left" data-reply-attr data-index="{{cIndex}}" data-ng-model="tempReply" contentEditable="true">
                                     {{ tempReply }}
                                 </div>
                             </div>
                             <div class="clearfix">
-                                <button class="btn btn-default btn-sm pull-right" style="margin-bottom: 10px;" data-ng-click="sendReply()">
+                                <button class="btn btn-default btn-sm pull-right" style="margin-bottom: 10px;" data-ng-click="sendReply($index)">
                                         <!--<span class="glyphicon glyphicon-send" style="margin-right: 5px"></span>-->
                                         Reply
                                 </button>
@@ -226,7 +260,7 @@
                     <ul class="nav nav-tabs">
                         <li data-ng-class="{ active: isActiveTab(tabIndex) }" data-ng-repeat="(tabIndex, tab) in tabs">
                             <a href="javascript:;" data-ng-click="setActiveTab(tabIndex)"> <span data-ng-class="tabIcon(tabIndex)" class="tab-icon"></span> {{ tab.name }}
-                                <span class="badge" data-ng-if="tabIndex == 0 && conversations.length > 1"> {{ conversations.length }} </span>
+                                <span class="badge" data-ng-if="tab.name == 'Messages' && conversations.length > 1"> {{ conversations.length }} </span>
                             </a>
                         </li>
                     </ul>

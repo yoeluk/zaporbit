@@ -11,6 +11,7 @@
         <meta content="ZapOrbit App" name="description">
         <meta content="ZapOrbit" name="author">
         <title>@title</title>
+
         <link href="@StaticWebJarAssets.getUrl(WebJarAssets.locate("bootstrap.css"))" rel="stylesheet">
         <link href="@StaticWebJarAssets.getUrl(WebJarAssets.locate("bootstrap-theme.css"))" rel="stylesheet">
         <link href="@routes.Assets.versioned("stylesheets/customNavbar.css")" rel="stylesheet">
@@ -42,6 +43,7 @@
 
         <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
         <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("jquery.min.js"))"></script>
+        <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("angular-file-upload-shim.min.js"))"></script>
 
         <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("angular.min.js"))"></script>
         <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("angular-route.min.js"))"></script>
@@ -55,6 +57,8 @@
         <script src="@StaticWebJarAssets.getUrl2(WebJarAssets.locate("angular-moment.min.js"), "0.6.2-2")"></script>
 
         <script src="@routes.Assets.versioned("javascripts/angular-local-storage.js")"></script>
+        <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("angular-file-upload.min.js"))"></script>
+
         <script src="@routes.Assets.versioned("javascripts/app.js")"></script>
         <script src="@routes.Assets.versioned("javascripts/services.js")"></script>
         <script src="@routes.Assets.versioned("javascripts/controllers.js")"></script>

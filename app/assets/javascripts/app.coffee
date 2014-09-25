@@ -11,7 +11,8 @@ angular.module "ZapOrbit", [
   "ui.bootstrap",
   "google-maps",
   "angularMoment",
-  "LocalStorageModule"
+  "LocalStorageModule",
+  'angularFileUpload'
 ]
 .constant "pageSize", 25
 .config ["$locationProvider", "$routeProvider", "$httpProvider", ($locationProvider, $routeProvider, $httpProvider) ->

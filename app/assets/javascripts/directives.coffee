@@ -235,7 +235,7 @@ angular.module "ZapOrbit.directives", []
         scope.userHome = false
       scope.$apply()
 ]
-.directive "replyAttr", [ ->
+.directive "replyAttr", ["$rootScope", ($rootScope) ->
   restrict: "A"
   require: "?ngModel"
   link: (scope, element, attrs, ngModel) ->
@@ -250,6 +250,11 @@ angular.module "ZapOrbit.directives", []
 
     element.bind "blur keyup change", ->
       scope.$apply read
+
+    scope.$on "replied", (e, index) ->
+      if index == parseInt(attrs.index)
+        ngModel.$setViewValue ""
+        ngModel.$render()
 ]
 .directive "scrollWidth", ["$window", ($window) ->
   link: (scope, element, attrs) ->
@@ -261,4 +266,18 @@ angular.module "ZapOrbit.directives", []
         scope.fixedToTop = false
         scope.userHome = false
       scope.$apply()
+]
+.directive "myDescription", [ ->
+  link: (scope, element, attrs) ->
+
+    element.bind "keypress", (e) ->
+      if element.text().length == parseInt(attrs.max)
+        e.preventDefault();
+]
+.directive "uploadPicture", [ ->
+  link: (scope, element, attrs) ->
+
+    element.bind "fileselect", (event, numFiles, label) ->
+      console.log numFiles
+      console.log label
 ]

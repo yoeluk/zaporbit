@@ -39,6 +39,8 @@ libraryDependencies ++= {
     //"org.webjars" % "lz-string" % "1.3.3",
     "org.webjars" % "angular-moment" % "0.6.2-2" exclude("org.webjars", "angularjs"),
     "org.webjars" % "angular-google-maps" % "1.2.1" exclude("org.webjars", "angularjs"),
+    "org.webjars" % "font-awesome" % "4.2.0",
+    "org.webjars" % "angular-file-upload" % "1.6.7",
     cache,
     filters,
     ws

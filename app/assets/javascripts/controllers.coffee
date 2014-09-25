@@ -45,7 +45,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
   $scope.loadingMessage = "Loading..."
 
-  $scope.title = "Profile Summary"
+  $scope.title = "Public Summary"
 
   $scope.loadingProg = true
 
@@ -92,219 +92,228 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
   $scope.loginStatus(true)
 
 ]
-.controller "SecuredHomeCtrl", ["$scope", "$http", "FacebookLogin", "$log", "$window", ($scope, $http, FacebookLogin, $log, $window) ->
+.controller "SecuredHomeCtrl", ["$scope", "$http", "FacebookLogin", "$log", "$window", '$routeParams',"$timeout", "$rootScope",
+  ($scope, $http, FacebookLogin, $log, $window, $routeParams, $timeout, $rootScope) ->
 
-  $scope.loadingProg = true
+    $scope.loadingProg = true
 
-  $scope.tabs = [
-    {
-      name: "Messages"
-      icon: "glyphicon-envelope"
-    }
-    {
-      name: "Purchases"
-      icon: "glyphicon-credit-card"
-    }
-    {
-      name: "Sales"
-      icon: "glyphicon-transfer"
-    }
-    {
-      name: "Billing"
-      icon: "glyphicon-briefcase"
-    }
-  ]
+    $scope.tabs = [
+      {
+        name: "Profile"
+        icon: "glyphicon-user"
+      }
+      {
+        name: "Messages"
+        icon: "glyphicon-envelope"
+      }
+      {
+        name: "Purchases"
+        icon: "glyphicon-credit-card"
+      }
+      {
+        name: "Sales"
+        icon: "glyphicon-transfer"
+      }
+      {
+        name: "Billing"
+        icon: "glyphicon-briefcase"
+      }
+    ]
 
-  $scope.recordTemplates = [
-    {
-      url: "message-template.html"
-    }
-    {
-      url: "purchase-template.html"
-    }
-    {
-      url: "sale-template.html"
-    }
-    {
-      url: "billing-template.html"
-    }
-  ]
+    $scope.recordTemplates = [
+      {
+        url: "profile-template.html"
+      }
+      {
+        url: "message-template.html"
+      }
+      {
+        url: "purchase-template.html"
+      }
+      {
+        url: "sale-template.html"
+      }
+      {
+        url: "billing-template.html"
+      }
+    ]
 
-  $scope.messagesExampleTemplate =
-    url: "messages-example-template.html"
+    $scope.messagesExampleTemplate =
+      url: "messages-example-template.html"
 
-  $scope.transactionPills = [
-    {
-      name: "Requested"
-    }
-    {
-      name: "Commited"
-    }
-    {
-      name: "Completed"
-    }
-    {
-      name: "Failed"
-    }
-  ]
-  $scope.billingPills = [
-    {
-      name: "Unpaid Bills"
-    }
-    {
-      name: "Paid Bills"
-    }
-  ]
+    $scope.transactionPills = [
+      {
+        name: "Requested"
+      }
+      {
+        name: "Commited"
+      }
+      {
+        name: "Completed"
+      }
+      {
+        name: "Failed"
+      }
+    ]
+    $scope.billingPills = [
+      {
+        name: "Unpaid Bills"
+      }
+      {
+        name: "Paid Bills"
+      }
+    ]
 
-  $scope.recordTemplate = $scope.recordTemplates[0]
+    $scope.myFbId = FacebookLogin.getFbUser().id
 
-  $scope.myFbId = FacebookLogin.getFbUser().id
+    $scope.replying = false
 
-  $scope.replying = false
+    myTrim = (x) ->
+      x.replace(/^\s+|\s+$/gm,'')
 
-  myTrim = (x) ->
-    x.replace(/^\s+|\s+$/gm,'')
-
-  getRecords = ->
-    $http
-      method: "GET"
-      url: "/api/getrecords/0"
-    .success (data, status) ->
-      if data?
-        $scope.records = data
-        $scope.conversations = $scope.records.messages_records
-        _.each $scope.conversations, (convo) ->
-          _.each convo.conversation.messages, (msg) ->
-            t = msg.created_on.split /[- :]/
-            d = new Date t[0], t[1]-1, t[2], t[3], t[4], t[5]
-            msg.date = d
-        $log.debug data
-        setReplies()
-        $scope.loadingProg = false
-
-  getRecords()
-
-  $scope.sendReply = ->
-    message = $scope.replies[$scope.activePill[$scope.activeTab]].trim()
-    if message? and message.length > 0
-      convo = $scope.conversations[$scope.activePill[$scope.activeTab]]
-      reply =
-        convid: convo.conversation.id
-        recipientid: if convo.user1.fbuserid != $scope.myFbId then convo.user1.id else convo.user2.id
-        message: message
-      $scope.replying = true
+    getRecords = ->
       $http
-        method: "POST"
-        data: reply
-        url: "/api/replytoconvo"
-        'Content-Type': "application/json"
+        method: "GET"
+        url: "/api/getrecords/0"
       .success (data, status) ->
-        if data? and data['withId']?
-          data.message.id = data['withId']
-          data.message.date = Date.now()
-          convo.conversation.messages.push data.message
-        $scope.replying = false
-        $scope.replies[$scope.activePill[$scope.activeTab]] = ""
-        $scope.tempReply = ""
-        if status.code == 200
-          console.log data
-      .error (error) ->
-        $scope.replying = false
-        console.log error
+        if data?
+          $scope.records = data
+          $scope.conversations = $scope.records.messages_records
+          _.each $scope.conversations, (convo) ->
+            _.each convo.conversation.messages, (msg) ->
+              t = msg.created_on.split /[- :]/
+              d = new Date t[0], t[1]-1, t[2], t[3], t[4], t[5]
+              msg.date = d
+          $log.debug data
+          setReplies()
+          $scope.loadingProg = false
 
-  $scope.isThisMe = (index) ->
-    convo = $scope.conversations[$scope.activePill[$scope.activeTab]]
-    userIds = {}
-    userIds[convo.user1.id] = convo.user1.fbuserid
-    userIds[convo.user2.id] = convo.user2.fbuserid
-    senderid = convo.conversation.messages[index].senderid
-    userIds[senderid] == $scope.myFbId
+    getRecords()
 
-  $scope.sellerOrBuyer = ->
-    if $scope.conversations? && $scope.conversations[$scope.activePill[$scope.activeTab]]?
-      if $scope.conversations[$scope.activePill[$scope.activeTab]].user1.fbuserid != $scope.myFbId then "Buyer" else "Seller"
+    $scope.sendReply = (index) ->
+      message = $scope.replies[$scope.activePill[$scope.activeTab]].trim()
+      if message? and message.length > 0
+        convo = $scope.conversations[$scope.activePill[$scope.activeTab]]
+        reply =
+          convid: convo.conversation.id
+          recipientid: if convo.user1.fbuserid != $scope.myFbId then convo.user1.id else convo.user2.id
+          message: message
+        $scope.replying = true
+        $http
+          method: "POST"
+          data: reply
+          url: "/api/replytoconvo"
+          'Content-Type': "application/json"
+        .success (data, status) ->
+          if data? and data['withId']?
+            data.message.id = data['withId']
+            data.message.date = Date.now()
+            convo.conversation.messages.push data.message
+            $scope.$broadcast "replied", index
+          $scope.replying = false
+          $scope.replies[$scope.activePill[$scope.activeTab]] = ""
+          $scope.tempReply = ""
+          if status.code == 200
+            console.log data
+        .error (error) ->
+          $scope.replying = false
+          console.log error
 
-  $scope.withWho = ->
-    if $scope.conversations? && $scope.conversations[$scope.activePill[$scope.activeTab]]?
-      if $scope.conversations[$scope.activePill[$scope.activeTab]].user1.fbuserid != $scope.myFbId
-        $scope.conversations[$scope.activePill[$scope.activeTab]].user1.name + " " + $scope.conversations[$scope.activePill[$scope.activeTab]].user1.surname
-      else $scope.conversations[$scope.activePill[$scope.activeTab]].user2.name + " " + $scope.conversations[$scope.activePill[$scope.activeTab]].user2.surname
+    $scope.isThisMe = (index) ->
+      convo = $scope.conversations[$scope.activePill[$scope.activeTab]]
+      userIds = {}
+      userIds[convo.user1.id] = convo.user1.fbuserid
+      userIds[convo.user2.id] = convo.user2.fbuserid
+      senderid = convo.conversation.messages[index].senderid
+      userIds[senderid] == $scope.myFbId
 
-  $scope.meOrUsername = (user) ->
-    if user.fbuserid == $scope.myFbId then "me"
-    else user.name
+    $scope.sellerOrBuyer = ->
+      if $scope.conversations? && $scope.conversations[$scope.activePill[$scope.activeTab]]?
+        if $scope.conversations[$scope.activePill[$scope.activeTab]].user1.fbuserid != $scope.myFbId then "Buyer" else "Seller"
 
-  $scope.activeTab = 0
+    $scope.withWho = ->
+      if $scope.conversations? && $scope.conversations[$scope.activePill[$scope.activeTab]]?
+        if $scope.conversations[$scope.activePill[$scope.activeTab]].user1.fbuserid != $scope.myFbId
+          $scope.conversations[$scope.activePill[$scope.activeTab]].user1.name + " " + $scope.conversations[$scope.activePill[$scope.activeTab]].user1.surname
+        else $scope.conversations[$scope.activePill[$scope.activeTab]].user2.name + " " + $scope.conversations[$scope.activePill[$scope.activeTab]].user2.surname
 
-  $scope.activePill = {}
+    $scope.meOrUsername = (user) ->
+      if user.fbuserid == $scope.myFbId then "me"
+      else user.name
 
-  $scope.replies = {}
+    $scope.activeTab = if $routeParams? && $routeParams.id? then parseInt($routeParams.id) else 0
 
-  $scope.tempReply = if $scope.replies[$scope.activePill[$scope.activeTab]]? then $scope.replies[$scope.activePill[$scope.activeTab]] else ""
+    $scope.recordTemplate = $scope.recordTemplates[$scope.activeTab]
 
-  _.each $scope.tabs, (tab, i) ->
-    $scope.activePill[i] = 0
+    $scope.activePill = {}
 
-  setReplies = ->
-    _.each $scope.conversations, (convo, i) ->
-      $scope.replies[i] = ""
+    $scope.replies = {}
 
-  $scope.msgPulledRight = (index) ->
-    userIds = {}
-    user1id = $scope.conversations[$scope.activePill[$scope.activeTab]].user1.id
-    user2id = $scope.conversations[$scope.activePill[$scope.activeTab]].user2.id
-    userIds[user1id] = $scope.conversations[$scope.activePill[$scope.activeTab]].user1.fbuserid
-    userIds[user2id] = $scope.conversations[$scope.activePill[$scope.activeTab]].user2.fbuserid
-    senderid = $scope.conversations[$scope.activePill[$scope.activeTab]].conversation.messages[index].senderid
-    userIds[senderid] == $scope.conversations[$scope.activePill[$scope.activeTab]].user2.fbuserid
+    $scope.tempReply = if $scope.replies[$scope.activePill[$scope.activeTab]]? then $scope.replies[$scope.activePill[$scope.activeTab]] else ""
 
-  $scope.isSample = ->
-    if $scope.activeTab == 0 && $scope.conversations?
-      $scope.conversations.length == 0
-    else false
+    _.each $scope.tabs, (tab, i) ->
+      $scope.activePill[i] = 0
 
-  $scope.tabIcon = (index) ->
-    classes = {}
-    classes.glyphicon = true
-    classes[$scope.tabs[index].icon] = true
-    classes
+    setReplies = ->
+      _.each $scope.conversations, (convo, i) ->
+        $scope.replies[i] = ""
 
-  $scope.setActiveTab = (index) ->
-    $scope.recordTemplate = $scope.recordTemplates[index]
-    $scope.activeTab = index
+    $scope.msgPulledRight = (index) ->
+      userIds = {}
+      user1id = $scope.conversations[$scope.activePill[$scope.activeTab]].user1.id
+      user2id = $scope.conversations[$scope.activePill[$scope.activeTab]].user2.id
+      userIds[user1id] = $scope.conversations[$scope.activePill[$scope.activeTab]].user1.fbuserid
+      userIds[user2id] = $scope.conversations[$scope.activePill[$scope.activeTab]].user2.fbuserid
+      senderid = $scope.conversations[$scope.activePill[$scope.activeTab]].conversation.messages[index].senderid
+      userIds[senderid] == $scope.conversations[$scope.activePill[$scope.activeTab]].user2.fbuserid
 
-  $scope.isActiveTab = (index) ->
-    index == $scope.activeTab
+    $scope.isSample = ->
+      if $scope.recordTemplate.url == "message-template.html" && $scope.conversations?
+        $scope.conversations.length == 0
+      else false
 
-  $scope.setActivePill = (index) ->
-    $scope.activePill[$scope.activeTab] = index
-    $scope.tempReply = $scope.replies[index]
+    $scope.tabIcon = (index) ->
+      classes = {}
+      classes.glyphicon = true
+      classes[$scope.tabs[index].icon] = true
+      classes
 
-  $scope.isActivePill = (index) ->
-    $scope.activePill[$scope.activeTab] == index
+    $scope.setActiveTab = (index) ->
+      $scope.recordTemplate = $scope.recordTemplates[index]
+      $scope.activeTab = index
 
-  $scope.scrollToWidth = (event) ->
-    $timeout ->
-      element = if event.srcElement? then event.srcElement else event.target
-      title = angular.element(element).find( "h4" )
-      counter = title.find( "span" )
-      title.animate
-        scrollLeft: title.width() + counter.width()
-      , "slow"
+    $scope.isActiveTab = (index) ->
+      index == $scope.activeTab
 
-  $scope.scrollToStart = (event) ->
-    $timeout ->
-      element = if event.srcElement? then event.srcElement else event.target
-      title = angular.element(element).find( "h4" )
-      title.scrollLeft(0)
+    $scope.setActivePill = (index) ->
+      $scope.activePill[$scope.activeTab] = index
+      $scope.tempReply = $scope.replies[index]
 
-  $scope.osPadding = ->
-    if $window.navigator.appVersion.indexOf("Mac") != -1 then {"padding-right":"25px"}
-    else {"padding-right":"8px"}
+    $scope.isActivePill = (index) ->
+      $scope.activePill[$scope.activeTab] == index
 
-  $scope.msgWrapperStyle = ->
-    if $window.navigator.appVersion.indexOf("Mac") != -1 then {'margin-right': '-30px', 'padding-right': '40px'}
-    else {"padding-right":"13px"}
+    $scope.scrollToWidth = (event) ->
+      $timeout ->
+        element = if event.srcElement? then event.srcElement else event.target
+        title = angular.element(element).find( "h4" )
+        counter = title.find( "span" )
+        title.animate
+          scrollLeft: title.width() + counter.width()
+        , "slow"
+
+    $scope.scrollToStart = (event) ->
+      $timeout ->
+        element = if event.srcElement? then event.srcElement else event.target
+        title = angular.element(element).find( "h4" )
+        title.scrollLeft(0)
+
+    $scope.osPadding = ->
+      if $window.navigator.appVersion.indexOf("Mac") != -1 then {"padding-right":"25px"}
+      else {"padding-right":"8px"}
+
+    $scope.msgWrapperStyle = ->
+      if $window.navigator.appVersion.indexOf("Mac") != -1 then {'margin-right': '-30px', 'padding-right': '40px'}
+      else {"padding-right":"13px"}
 
 #  $timeout ->
 #    if $scope.replies[$scope.activePill[$scope.activeTab]] is not undefined
@@ -1315,4 +1324,12 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
   $scope.msgWrapperStyle = ->
     if $window.navigator.appVersion.indexOf("Mac") != -1 then {'margin-right': '-30px', 'padding-right': '40px'}
     else {"padding-right":"13px"}
+]
+.controller "ProfileProfileCtrl", ["$scope", "$timeout", "$upload", ($scope, $timeout, $upload) ->
+
+  $scope.isEditable = true
+
+  $scope.onFileSelect = ($files) ->
+    console.log $files
+
 ]
