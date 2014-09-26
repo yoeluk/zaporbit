@@ -40,19 +40,24 @@ class Locations(tag: Tag) extends Table[Location](tag, "Locations") {
 object Locations extends DAO {
 
   def count(locality: String, adminArea: String)(implicit session: Session): Int =
-    Query(locations
-      .filter(_.locality.toLowerCase like locality.toLowerCase)
-      .filter(_.administrativeArea.toLowerCase === adminArea.toLowerCase)
-      .length).first
+    Query(
+      (for {
+        l <- locations
+          .filter(_.locality.toLowerCase like locality.toLowerCase)
+          .filter(_.administrativeArea.toLowerCase === adminArea.toLowerCase)
+        s <- listingStatuses.filter(_.offerid === l.offerid)
+        o <- l.offer if s.offerid === l.offerid && s.status === "selling"
+      } yield o).length).first
 
-  def countFiltered(locality: String, adminArea: String, filter: String)(implicit session: Session): Int =  {
+  def countFiltered(locality: String, adminArea: String, filter: String)(implicit session: Session): Int =
     Query(
       (for {
         l <- locations.filter(_.locality.toLowerCase === locality.toLowerCase)
           .filter(_.administrativeArea.toLowerCase === adminArea.toLowerCase)
-        o <- l.offer if o.title.toLowerCase like "%"+filter.toLowerCase+"%"
+        s <- listingStatuses.filter(_.offerid === l.offerid)
+        o <- l.offer if s.offerid === l.offerid && s.status === "selling" &&
+                        (o.title.toLowerCase like "%"+filter.toLowerCase+"%")
       } yield o).length).first
-  }
 
   /**
    *
@@ -106,7 +111,8 @@ object Locations extends DAO {
       l <- locations if
         l.locality.toLowerCase === loc.locality.toLowerCase &&
         l.administrativeArea.toLowerCase === loc.administrativeArea.toLowerCase
-      o <- l.offer
+      s <- listingStatuses.filter(_.offerid === l.offerid)
+      o <- l.offer if s.offerid === l.offerid && s.status === "selling"
       u <- o.user
     } yield (
         (o.id.?,
@@ -199,7 +205,8 @@ object Locations extends DAO {
     val q = ((for {
       l <- locations.filter(_.locality.toLowerCase === loc.locality.toLowerCase)
         .filter(_.administrativeArea.toLowerCase === loc.administrativeArea.toLowerCase)
-      o <- l.offer
+      s <- listingStatuses.filter(_.offerid === l.offerid)
+      o <- l.offer if s.offerid === l.offerid && s.status === "selling"
       u <- o.user
     } yield ((
         o.id.?,

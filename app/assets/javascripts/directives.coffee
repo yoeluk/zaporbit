@@ -32,6 +32,13 @@ angular.module "ZapOrbit.directives", []
         "background-image": "url(" + value + ")"
         "background-size": "cover"
 ]
+.directive "imgCentred", [->
+  link: (scope, element, attrs) ->
+    attrs.$observe "imgCentred", (value) ->
+      element.css
+        "background": "url(" + value + ") repeat-y center center"
+        "background-size": "cover"
+]
 .directive 'infiniteScroll', ['$rootScope', '$window', '$timeout', 'THROTTLE_MILLISECONDS', ($rootScope, $window, $timeout, THROTTLE_MILLISECONDS) ->
   scope:
     infiniteScroll: '&'
@@ -270,14 +277,22 @@ angular.module "ZapOrbit.directives", []
 .directive "myDescription", [ ->
   link: (scope, element, attrs) ->
 
-    element.bind "keypress", (e) ->
-      if element.text().length == parseInt(attrs.max)
-        e.preventDefault();
+    element.bind "focus", (e) ->
+      console.log "started editing"
+
+    element.bind "blur", (e) ->
+      "Tell others a little bit about you. What do you feel passionate about? What is worth your while?"
+      console.log "ended editing"
+
+    element.bind "keydown", (e) ->
+      key = if e.keyCode == 13 then "Enter" else if e.keyCode == 8 then "Backspace"
+      if key == "Enter" then e.preventDefault()
+      if key != "Backspace" && element.text().length == parseInt(attrs.max)
+        e.preventDefault()
 ]
-.directive "uploadPicture", [ ->
+.directive "focus", [ ->
   link: (scope, element, attrs) ->
 
-    element.bind "fileselect", (event, numFiles, label) ->
-      console.log numFiles
-      console.log label
+    scope.$on "activate", (e) ->
+      element.get(0).focus()
 ]

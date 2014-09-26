@@ -23,27 +23,42 @@
             <script type="text/ng-template" id="profile-template.html">
                 <div class="row-fluid" data-ng-controller="ProfileProfileCtrl">
                     <div class="col-sm-12 col-md-12">
-                        <div class="cover">
+                        <div class="cover" data-img-centred="{{backgroundPicture}}">
                             <div class="camera">
                                 <a href='javascript:;' class="glyphicon glyphicon-camera btn-file">
-                                    <input type="file" data-ng-file-select="onFileSelect($files)" accept="image/*">
+                                    <input type="file" data-ng-file-select="onBackgroundSelect($files)" accept="image/*">
                                 </a>
                             </div>
                         </div>
                         <div class="profile-profile">
                             <div class="inner-profile">
-                                <div class="profile-picture">
-                                    <div class="camera">
-                                        <a href='javascript:;' class="glyphicon glyphicon-camera btn-file">
-                                            <input type="file" data-ng-file-select="onFileSelect($files)" accept="image/*">
-                                        </a>
+                                <div class="picture-wrapper">
+                                    <div class="profile-picture" data-img-centred="{{profilePicture}}">
+                                        <div class="camera">
+                                            <a href='javascript:;' class="glyphicon glyphicon-camera btn-file">
+                                                <input type="file" data-ng-file-select="onPictureSelect($files)" accept="image/*">
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="about pull-right">
+                                <h4>Yoel Ruslan Garcia Diaz</h4>
+                                <div class="stars profile-stars">
+                                    <div class="rating profile-rating" style="width: 50%"></div>
+                                    <i></i>
+                                    <i></i>
+                                    <i></i>
+                                    <i></i>
+                                    <i></i>
+                                </div>
+                                <button class="btn btn-default editing edit-link" data-ng-click="startEditing()" data-ng-if="!isEditing()">Edit</button>
+                                <div class="editing" data-ng-if="isEditing()">
+                                    <button class="btn btn-warning" data-ng-click="doneEditing()">Done Editing</button>
+                                    <a href="javascript:;" class="clearfix cancel-editing" data-ng-click="cancelEditing()">Cancel editing</a>
+                                </div>
+                                <div class="about">
                                     <!--<span class="glyphicon glyphicon-pencil pencil"></span>-->
-                                    <div class="self-description" data-ng-attr-contenteditable="{{isEditable}}" data-my-description data-max="170">
-                                        Tell others a little bit about you. What do you feel passionate about? What are your hobbies?
-
+                                    <div class="self-description" data-focus contenteditable="true" data-my-description data-max="170">
+                                        Tell others a little bit about you in one sentence. What is worth your while?
                                     </div>
                                 </div>
                                 <div class="profile-footer"></div>

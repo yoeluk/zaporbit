@@ -1325,11 +1325,57 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     if $window.navigator.appVersion.indexOf("Mac") != -1 then {'margin-right': '-30px', 'padding-right': '40px'}
     else {"padding-right":"13px"}
 ]
-.controller "ProfileProfileCtrl", ["$scope", "$timeout", "$upload", ($scope, $timeout, $upload) ->
+.controller "ProfileProfileCtrl", ["$scope", "$timeout", "$upload", "$log", ($scope, $timeout, $upload, $log) ->
 
-  $scope.isEditable = true
+  updateData = {}
 
-  $scope.onFileSelect = ($files) ->
-    console.log $files
+  profileData =
+    profPicture: "/vassets/images/pic_placeholder.png"
+    backPicture: "/vassets/images/profile_cover_img.png"
+    aboutMe: "Tell others a little bit about you in one sentence. What is worth your while?"
+
+  $scope.startEditing = ->
+    $scope.$broadcast "activate"
+    updateData.fakeProp = ""
+
+  $scope.cancelEditing = ->
+    setProfileData(profileData)
+    updateData = {}
+
+  $scope.doneEditing = ->
+    _.each Object.getOwnPropertyNames(updateData), (prop) ->
+      if profileData[prop]? && updateData[prop] != "" then profileData[prop] = updateData[prop]
+    setProfileData(profileData)
+    updateData = {}
+
+
+  $scope.isEditing = ->
+    if Object.getOwnPropertyNames(updateData).length > 0 then true else false
+
+  setProfileData = (data) ->
+    $scope.profilePicture = data.profPicture
+    $scope.backgroundPicture = data.backPicture
+
+  setProfileData(profileData)
+
+  $scope.onPictureSelect = ($files) ->
+    file = $files[0]
+    fileReader = new FileReader();
+    fileReader.readAsDataURL(file);
+    fileReader.onload = (e) ->
+      $timeout ->
+        $scope.profilePicture = e.target.result
+        updateData.profPicture = e.target.result
+        updateData.profFile = file
+
+  $scope.onBackgroundSelect = ($files) ->
+    file = $files[0]
+    fileReader = new FileReader();
+    fileReader.readAsDataURL(file);
+    fileReader.onload = (e) ->
+      $timeout ->
+        $scope.backgroundPicture = e.target.result
+        updateData.backPicture = e.target.result
+        updateData.backFile = file
 
 ]

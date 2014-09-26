@@ -30,4 +30,5 @@ private[models] trait DAO {
   val merchants = TableQuery[Merchants]
   val friends = TableQuery[Friends]
   val oauth2info = TableQuery[OAuth2s]
+  val listingStatuses = TableQuery[ListingStatuses]
 }
