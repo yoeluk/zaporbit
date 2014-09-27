@@ -112,6 +112,16 @@ a.issue-title:hover,a.issue-title:focus {
     background-color: #f7f7f9;
     min-height: 150px;
 }
+.circular {
+    height: 50px;
+    width: 50px;
+    background-position:50% 50%;
+    background-repeat:no-repeat;
+    background-size: cover;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+}
 .profile-img {
     max-height:50px;
     height:50px;
@@ -422,6 +432,7 @@ textarea:focus {
     width: 130px;
     height: 130px;
     padding: 5px;
+    background-color: #ffffff;
     border: 1px solid #C3C3C3;
 }
 .inner-profile h4 {

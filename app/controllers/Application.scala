@@ -102,7 +102,17 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
         DB.withSession { implicit s =>
           val rt = Ratings.ratingForUser(user.id.get)
           val rating = 100*rt._1.toInt
-          Ok( partials.html.profile( user, rating ) )
+          val defaultPictureUrl = "//graph.facebook.com/v2.1/"+user.fbuserid+"/picture?height=200&width=200"
+          UserOptions.findByUserid(user.id.get) match {
+            case None =>
+              Ok( partials.html.profile( user, rating, defaultPictureUrl ) )
+            case Some(opts) =>
+              val customPictureUrl = opts.picture match {
+                  case None => defaultPictureUrl
+                  case Some(b) => "/options/pictures/"+b
+                }
+              Ok( partials.html.profile( user, rating, customPictureUrl ) )
+          }
         }
     }
   }
