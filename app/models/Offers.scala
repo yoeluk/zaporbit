@@ -50,6 +50,8 @@ case class Listing(id: Option[Long] = None,
                    updated_on: Option[Timestamp] = None)
   extends OfferTrait
 
+case class OfferStatus(status: String)
+
 class Offers(tag: Tag) extends Table[Offer](tag, "Offers") {
   def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
   def title = column[String]("title", O.NotNull)
@@ -226,6 +228,55 @@ object Offers extends DAO {
           p <- pictures if p.offerid === row._1.get
         } yield p.name).list), row._6, row._7, row._8, row._9, row._10, row._11, row._12))
     Page(result, page, offset, totalRows)
+  }
+
+  /**
+   *
+   * @param page
+   * @param pageSize
+   * @param orderBy
+   * @param userId
+   * @param session
+   * @return
+   */
+  def offersForUser(page: Int = 0,
+                    pageSize: Int = 20,
+                    orderBy: Int = 1,
+                    userId: Long = 1)(implicit session: Session): Page[(Offer, OfferStatus)] = {
+    val offset = pageSize * page
+    val query = (for {
+      o <- offers.filter(_.userid === userId)
+    } yield (
+        o.id.?,
+        o.title,
+        o.description,
+        o.price,
+        o.locale,
+        o.currency_code,
+        o.shop,
+        o.highlight,
+        o.waggle,
+        o.telephone.?,
+        o.userid,
+        o.created_on.?,
+        o.updated_on.?)
+      ).sortBy(_._11.desc).drop(offset).take(pageSize)
+    val totalRows = offerCountOfUser(userId)
+    val ofrs = query.list.map( row =>
+        Offer(row._1, row._2, row._3, row._4, row._5, row._6, row._7, row._8, row._9, row._10, row._11, row._12, row._13)
+    )
+    val oids = ofrs.map(_.id.get)
+
+    val status = (for {
+      s <- listingStatuses.filter(_.offerid inSet oids)
+    } yield
+      s.offerid -> s.status
+      ).toMap
+
+    val resOffers = ofrs.map { o =>
+      (o, OfferStatus(status.getOrElse(o.id.get, "none")))
+    }
+    Page(resOffers, page, offset, totalRows)
   }
   /**
    * Insert a new offer

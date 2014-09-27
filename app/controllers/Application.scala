@@ -85,6 +85,13 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
         case None =>
           Redirect( routes.Application.loggedoutTemplate() )
       }
+    } else if (partial == "profileprofile") {
+      request.headers.get("X-Auth-Token") match {
+        case Some(_) =>
+          Redirect( routes.Application.profileProfile() )
+        case None =>
+          Redirect( routes.Application.loggedoutTemplate() )
+      }
     } else
         BadRequest(partial + " could not be found")
   }
@@ -96,6 +103,45 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
           val rt = Ratings.ratingForUser(user.id.get)
           val rating = 100*rt._1.toInt
           Ok( partials.html.profile( user, rating ) )
+        }
+    }
+  }
+
+  def profileProfile = SecuredAction { implicit request =>
+    request.user.main match {
+      case user =>
+        DB.withSession { implicit s =>
+          val rt = Ratings.ratingForUser(user.id.get)
+          val rating = 100*rt._1.toInt
+          val defaultOptions = UserOption(
+            userid = user.id.get,
+            background = Some("/vassets/images/profile_cover_img.png"),
+            picture = Some("/vassets/images/pic_placeholder.png"),
+            about = Some("Tell others a little bit about you in one sentence. What is worth your while?"))
+          UserOptions.findByUserid(user.id.get) match {
+            case None =>
+              Ok( partials.html.profileProfile( user, rating, defaultOptions ) )
+            case Some(opts) =>
+              val currentOptions = UserOption(
+                userid = opts.userid,
+                background = opts.background match {
+                  case None =>
+                    Some("/vassets/images/profile_cover_img.png")
+                  case Some(b) => Some("/options/pictures/"+b)
+                },
+                picture = opts.picture match {
+                  case None =>
+                    Some("/vassets/images/pic_placeholder.png")
+                  case Some(p) => Some("/options/pictures/"+p)
+                },
+                about = opts.about match {
+                  case None =>
+                    Some("Tell others a little bit about you in one sentence. What is worth your while?")
+                  case x => x
+                }
+              )
+              Ok( partials.html.profileProfile( user, rating, currentOptions ) )
+          }
         }
     }
   }

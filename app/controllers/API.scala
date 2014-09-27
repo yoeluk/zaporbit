@@ -268,6 +268,31 @@ object writers {
       )
     }
   }
+  implicit val implicitOffersForUserWrites = new Writes[Page[(Offer, OfferStatus)]] {
+    def writes(page: Page[(Offer, OfferStatus)]): JsValue = {
+      JsArray(
+        for {
+          item <- page.items
+        } yield Json.obj(
+          "listing" -> Json.obj(
+            "id" -> item._1.id,
+            "title" -> item._1.title,
+            "description" -> item._1.description,
+            "price" -> item._1.price,
+            "locale" -> item._1.locale,
+            "userid" -> item._1.userid,
+            "highlight" -> item._1.highlight,
+            "waggle" -> item._1.waggle,
+            "shop" -> item._1.shop,
+            "updated_on" -> item._1.updated_on.orNull.toString
+          ),
+          "listingStatus" -> Json.obj(
+            "status" -> item._2.status
+          )
+        )
+      )
+    }
+  }
   implicit val implicitBuyingTransWrites = new Writes[Page[BuyingTrans]] {
     def writes(page: Page[BuyingTrans]): JsValue = {
       JsArray(
@@ -682,13 +707,77 @@ class API(override implicit val env: RuntimeEnvironment[SocialUser]) extends sec
    *
    * @param page the page
    * @param orderBy order by
-   * @param userId the user id
    * @return
    */
-  def listingsByUsers(page: Int, orderBy: Int, userId: Long) = DBAction {
-    implicit rs =>
-      val pageResult = Offers.list1(page = page, orderBy = orderBy, userId = userId)
-      Ok(Json.toJson(pageResult))
+  def listingsByUser(page: Int, orderBy: Int) = SecuredAction { implicit request =>
+    request.user.main match {
+      case user =>
+        DB.withSession { implicit rs =>
+          val pageResult = Offers.list1(page = page, orderBy = orderBy, userId = user.id.get)
+          Ok(Json.toJson(pageResult))
+        }
+    }
+  }
+
+  /**
+   *
+   * @param page
+   * @param orderBy
+   * @return
+   */
+  def offersByUser(page: Int, orderBy: Int) = SecuredAction { implicit request =>
+    request.user.main match {
+      case user =>
+        DB.withSession { implicit rs =>
+          val pageResult = Offers.offersForUser(page = page, orderBy = orderBy, userId = user.id.get)
+          Ok(Json.toJson(pageResult))
+        }
+    }
+  }
+
+  def updateListingStatus = SecuredAction(parse.json) { implicit request =>
+    request.user.main match {
+      case user =>
+        DB.withSession { implicit rs =>
+          (request.body \ "listingid").asOpt[Long] match {
+            case Some(listingid) =>
+              (request.body \ "status").asOpt[String] match {
+                case Some(status) =>
+                  ListingStatuses.update(listingid, status)
+                  Ok(Json.obj(
+                    "message" -> "listing published",
+                    "status" -> "OK"
+                  ))
+              }
+          }
+        }
+    }
+  }
+
+  def updateUserOptions = SecuredAction(parse.json) { implicit request =>
+    request.user.main match {
+      case user =>
+        DB.withSession { implicit rs =>
+          val about = (request.body \ "about").asOpt[String]
+          val background = (request.body \ "backgroundPicture").asOpt[String]
+          val picture = (request.body \ "profilePicture").asOpt[String]
+          val options = UserOption(userid = user.id.get, background = background, picture = picture, about = about)
+          UserOptions.insertOrUpdate(options)
+          Ok(Json.obj(
+            "status" -> "OK",
+            "message" -> "the user's options were updated"
+          ))
+        }
+    }
+  }
+
+  def saveOptionsToDisk(name: String) = Action(parse.file(to = new File(configuration.getString("options_dir").get + name)) ) {
+    implicit request =>
+      Ok(Json.obj(
+        "status" -> "OK",
+        "message" -> JsString("picture " + name + " was uploaded.")
+      )
+      )
   }
 
   /*
@@ -738,7 +827,6 @@ class API(override implicit val env: RuntimeEnvironment[SocialUser]) extends sec
     implicit request =>
       Ok(Json.obj(
         "status" -> "OK",
-        "pictureName" -> name,
         "message" -> JsString("picture " + name + " was uploaded.")
         )
       )

@@ -39,6 +39,13 @@ angular.module "ZapOrbit.directives", []
         "background": "url(" + value + ") repeat-y center center"
         "background-size": "cover"
 ]
+.directive "imgOverride", [->
+  link: (scope, element, attrs) ->
+    attrs.$observe "imgOverride", (value) ->
+      if value != "" then element.css
+        "background": "url(" + value + ") repeat-y center center"
+        "background-size": "cover"
+]
 .directive 'infiniteScroll', ['$rootScope', '$window', '$timeout', 'THROTTLE_MILLISECONDS', ($rootScope, $window, $timeout, THROTTLE_MILLISECONDS) ->
   scope:
     infiniteScroll: '&'
@@ -242,7 +249,7 @@ angular.module "ZapOrbit.directives", []
         scope.userHome = false
       scope.$apply()
 ]
-.directive "replyAttr", ["$rootScope", ($rootScope) ->
+.directive "replyAttr", [ ->
   restrict: "A"
   require: "?ngModel"
   link: (scope, element, attrs, ngModel) ->
@@ -274,21 +281,32 @@ angular.module "ZapOrbit.directives", []
         scope.userHome = false
       scope.$apply()
 ]
-.directive "myDescription", [ ->
+.directive "myDescription", ["$timeout", ($timeout) ->
+  restrict: "A"
   link: (scope, element, attrs) ->
 
+    myTrim = (x) ->
+      x.replace(/^\s+|\s+$/gm,'')
+
+    initMessage = "Tell others a little bit about you in one sentence. What is worth your while?"
+
     element.bind "focus", (e) ->
-      console.log "started editing"
+      if myTrim( element.text() ) == initMessage then element.empty()
 
     element.bind "blur", (e) ->
-      "Tell others a little bit about you. What do you feel passionate about? What is worth your while?"
-      console.log "ended editing"
+      if myTrim( element.text() ) == "" then element.text(initMessage)
 
     element.bind "keydown", (e) ->
       key = if e.keyCode == 13 then "Enter" else if e.keyCode == 8 then "Backspace"
       if key == "Enter" then e.preventDefault()
       if key != "Backspace" && element.text().length == parseInt(attrs.max)
         e.preventDefault()
+      else
+        $timeout ->
+          trimmedAboutMe = myTrim( element.text() )
+          if trimmedAboutMe != ""
+            scope.$broadcast "aboutMe", trimmedAboutMe
+          else scope.$broadcast "aboutMe", initMessage
 ]
 .directive "focus", [ ->
   link: (scope, element, attrs) ->

@@ -285,20 +285,37 @@ angular.module "ZapOrbit.services", []
     getFbUser: getFbUser
 
 ]
-.factory "ListingsForUser", ["$injector", "localStorageService", "$timeout", "$log", ($injector, localStorage, $timeout, $log) ->
+.factory "ListingsForUser", ["$http", "$timeout", "$log", ($http, $timeout, $log) ->
 
   listings = undefined
 
   setListings = (lts) ->
     listings = lts
 
-  getListingsForUser = (remote) ->
-    if remote
-      $http = $injector.get '$http'
-      $http
-        method: "GET"
-        url: '/auth/api/authenticate/facebook'
-      .success (data, status) ->
+  listingsForUser = (callback) ->
+    $http
+      method: "GET"
+      url: '/api/offersbyuser/0/1'
+    .success (data, status) ->
+      setListings(data)
+      callback(data)
+
+  getListingsForUser = (param) ->
+    if listings? && !param.remote then callback(listings)
+    else listingsForUser(param.callback)
+
+  updateListingStatus = (index, status, callback) ->
+    $http
+      method: "POST"
+      data:
+        listingid: listings[index].listing.id
+        status: status
+      url: '/api/updatelistingstatus'
+    .success (data) ->
+      if data? and data.status == "OK"
+        listings[index].listingStatus.status = status
+        callback(listings)
 
   getListingsForUser: getListingsForUser
+  updateListingStatus: updateListingStatus
 ]

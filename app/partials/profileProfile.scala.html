@@ -1,0 +1,97 @@
+@(user: User, rating: Int, options: UserOption)
+
+<div class="row-fluid clearfix" data-ng-controller="ProfileProfileCtrl">
+    <div class="col-sm-12 col-md-12">
+        <div class="cover" data-img-centred=@options.background.get data-img-override="{{backgroundPicture}}">
+            <div class="camera">
+                <a href='javascript:;' class="glyphicon glyphicon-camera btn-file">
+                    <input type="file" data-ng-file-select="onBackgroundSelect($files)" accept="image/*">
+                </a>
+            </div>
+        </div>
+        <div class="profile-profile">
+            <div class="inner-profile">
+                <div class="picture-wrapper">
+                    <div class="profile-picture" data-img-centred=@options.picture.get data-img-override="{{profilePicture}}">
+                        <div class="camera">
+                            <a href='javascript:;' class="glyphicon glyphicon-camera btn-file">
+                                <input type="file" data-ng-file-select="onPictureSelect($files)" accept="image/*">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <h4> @user.name @user.surname </h4>
+                <div class="stars profile-stars">
+                    <div class="rating profile-rating" style="width: @rating%"></div>
+                    <i></i>
+                    <i></i>
+                    <i></i>
+                    <i></i>
+                    <i></i>
+                </div>
+                <button class="btn btn-default editing edit-link" data-ng-click="startEditing()" data-ng-if="!isEditing()">Edit</button>
+                <div class="editing" data-ng-if="isEditing()">
+                    <button class="btn btn-success" data-ng-click="doneEditing()">Done Editing</button>
+                    <a href="javascript:;" class="clearfix cancel-editing" data-ng-click="cancelEditing()">Cancel editing</a>
+                </div>
+                <div class="about">
+                        <!--<span class="glyphicon glyphicon-pencil pencil"></span>-->
+                    <div class="self-description" data-focus contenteditable="true" data-my-description data-max="170">
+                        @options.about.get
+                    </div>
+                </div>
+                <div class="profile-footer">
+
+                </div>
+            </div>
+        </div>
+        <div class="profile-background">
+            <div style="height: 130px"></div>
+            <div class="own-listings-wrapper">
+                <div class="new-listing">
+                    <button class="btn btn-warning"> New Listing </button>
+                </div>
+                <div class="clearfix" style="padding: 0 2px;">
+                    <h4 class="pull-left"> Listings <span class="glyphicon glyphicon-bullhorn"></span></h4>
+                </div>
+
+                <div class="alert alert-warning" role="alert" data-ng-if="ownListings.length == 0"> You don't have any listings at present. Need to sale something? Create a listing now. It's quick and simple!  </div>
+
+                <div class="panel panel-default" data-ng-repeat="lst in ownListings track by $index">
+                    <div class="panel-body">
+                        <h4 style="margin: 0"><a href="/#!/listing_item/{{lst.listing.id}}"> {{ lst.listing.title }} </a></h4>
+                        <div class="description-wrapper">
+                            <p style="max-height: 35px; overflow: hidden; text-overflow: ellipsis"> {{ lst.listing.description }} </p>
+                        </div>
+                    </div>
+                    <div class="panel-footer" style="font-size: 12px;">
+                        <div>
+                            <a class="foot-link" data-ng-class="canList($index)" data-ng-click="updateStatus($index, 'forsale')">
+                                <span class="glyphicon glyphicon-arrow-up"></span> List </a>
+                        </div>
+                        <div>
+                            <a class="foot-link" data-ng-class="canWithdraw($index)" data-ng-click="updateStatus($index, 'idle')">
+                                <span class="glyphicon glyphicon-arrow-down"></span> Withdraw </a>
+                        </div>
+                        <div>
+                            <a class="foot-link" data-ng-class="canRelist($index)">
+                                <span class="glyphicon glyphicon-repeat"></span> Re-list </a>
+                        </div>
+                        <div>
+                            <a class="foot-link" data-ng-class="canShare($index)">
+                                <span class="glyphicon glyphicon-share-alt"></span> Share </a>
+                        </div>
+                        <div>
+                            <a class="foot-link" data-ng-class="canUpdate($index)">
+                                <span class="glyphicon glyphicon-pencil"></span> Update </a>
+                        </div>
+                        <div>
+                            <a class="foot-link" data-ng-class="canDelete($index)">
+                                <span class="glyphicon glyphicon-trash"></span> Delete </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

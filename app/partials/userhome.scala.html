@@ -20,52 +20,42 @@
                 </div>
             </script>
 
-            <script type="text/ng-template" id="profile-template.html">
-                <div class="row-fluid" data-ng-controller="ProfileProfileCtrl">
-                    <div class="col-sm-12 col-md-12">
-                        <div class="cover" data-img-centred="{{backgroundPicture}}">
-                            <div class="camera">
-                                <a href='javascript:;' class="glyphicon glyphicon-camera btn-file">
-                                    <input type="file" data-ng-file-select="onBackgroundSelect($files)" accept="image/*">
-                                </a>
+            <script type="text/ng-template" id="newissue-template.html">
+                <div class="modal-header">
+                    <h3 class="modal-title"> New Issue Composer </h3>
+                </div>
+                <div class="modal-body">
+                    <div id="msg" class="alert alert-warning" data-ng-show="successMsg" data-ng-bind="successMsg"></div>
+                    <div id="errorMsg" class="alert alert-danger" data-ng-show="errorMsg" data-ng-bind="errorMsg"></div>
+                    <progressbar class="progress-striped active" data-ng-show="inProgress" max="200" value="200" type="warning"><i> Submitting... </i></progressbar>
+                    <form name="newIssue" novalidate class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label for="summary" class="col-sm-2 control-label">Summary
+                                <span class="label label-danger" data-ng-show="submitted && newIssue.summary.$error.required">Required!</span>
+                            </label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="summary" data-ng-model="summary" id="summary" placeholder="Summary" required />
                             </div>
                         </div>
-                        <div class="profile-profile">
-                            <div class="inner-profile">
-                                <div class="picture-wrapper">
-                                    <div class="profile-picture" data-img-centred="{{profilePicture}}">
-                                        <div class="camera">
-                                            <a href='javascript:;' class="glyphicon glyphicon-camera btn-file">
-                                                <input type="file" data-ng-file-select="onPictureSelect($files)" accept="image/*">
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <h4>Yoel Ruslan Garcia Diaz</h4>
-                                <div class="stars profile-stars">
-                                    <div class="rating profile-rating" style="width: 50%"></div>
-                                    <i></i>
-                                    <i></i>
-                                    <i></i>
-                                    <i></i>
-                                    <i></i>
-                                </div>
-                                <button class="btn btn-default editing edit-link" data-ng-click="startEditing()" data-ng-if="!isEditing()">Edit</button>
-                                <div class="editing" data-ng-if="isEditing()">
-                                    <button class="btn btn-warning" data-ng-click="doneEditing()">Done Editing</button>
-                                    <a href="javascript:;" class="clearfix cancel-editing" data-ng-click="cancelEditing()">Cancel editing</a>
-                                </div>
-                                <div class="about">
-                                    <!--<span class="glyphicon glyphicon-pencil pencil"></span>-->
-                                    <div class="self-description" data-focus contenteditable="true" data-my-description data-max="170">
-                                        Tell others a little bit about you in one sentence. What is worth your while?
-                                    </div>
-                                </div>
-                                <div class="profile-footer"></div>
+                        <div class="form-group">
+                            <label for="description" class="col-sm-2 control-label">Description
+                                <span class="label label-danger" data-ng-show="submitted && newIssue.description.$error.required">Required!</span>
+                            </label>
+                            <div class="col-sm-10">
+                                <textarea type="text" class="form-control" name="description" data-ng-model="description" id="description" placeholder="Description" rows="10" required></textarea>
                             </div>
                         </div>
-                        <div class="profile-background"></div>
-                    </div>
+                        <div class="form-group">
+                            <label for="description" class="col-sm-2 control-label">Email</label>
+                                <div class="col-sm-10">
+                                <input type="text" class="form-control" name="email" data-ng-model="email" id="email" placeholder="Your email (optional for receiving issue updates)" />
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-success" data-ng-disabled="inProgress || posted" data-ng-click="submit(newIssue)">Submit</button>
+                            <button class="btn btn-warning" data-ng-disabled="disableCancel" data-ng-click="cancel()"> {{ cancelTitle }} </button>
+                        </div>
+                    </form>
                 </div>
             </script>
 

@@ -97,6 +97,8 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
     $scope.loadingProg = true
 
+    randId = Math.floor((Math.random() * 1000) + 1)
+
     $scope.tabs = [
       {
         name: "Profile"
@@ -122,7 +124,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
     $scope.recordTemplates = [
       {
-        url: "profile-template.html"
+        url: "/partials/profileprofile?id=" + randId
       }
       {
         url: "message-template.html"
@@ -837,426 +839,6 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
         }
       ]
     }
-    {
-      title: 'First edition of the "On the origin of species" - Great conditions!'
-      user1:
-        name: "John"
-        surname: "Smith"
-        id: 1
-        fbuserid: 1234
-      user2:
-        name: "Diana"
-        surname: "Windsor"
-        id: 2
-        fbuserid: 2345
-      messages: [
-        {
-          message: "These messages are generated in place of real messages that you might receive when selling or buying an item on ZapOrbit. These examples demonstrate the simplicity of the site."
-          senderid: 1
-          recipientid: 2
-          date: Date.now()
-        }
-        {
-          message: 'In this hypothetical case you are interested in Diana\'s item "On the origin of species". Your messages to Diana will appear here with a light green background.'
-          senderid: 1
-          recipientid: 2
-          date: Date.now()
-        }
-        {
-          message: 'Diana\'s replies will appear on this side. This order reflects the buyer and seller relationship.'
-          senderid: 2
-          recipientid: 1
-          date: Date.now()
-        }
-      ]
-    }
-    {
-      title: "Mountain bike in good conditions - large frame"
-      user1:
-        name: "Montgomery"
-        surname: "Windsor"
-        id: 1
-        fbuserid: 2345
-      user2:
-        name: "John"
-        surname: "Smith"
-        id: 2
-        fbuserid: 1234
-      messages: [
-        {
-          message: 'In this other hypothetical case Diana is interested in your item and she contacted you asking you how old is the bike and if it comes with front lights, for example. Her message will appear here.'
-          senderid: 1
-          recipientid: 2
-          date: Date.now()
-        }
-        {
-          message: 'Diana is the buyer and you are the seller then your replies to Diana\'s questions appears on this side.'
-          senderid: 2
-          recipientid: 1
-          date: Date.now()
-        }
-      ]
-    }
-    {
-      title: 'First edition of the "On the origin of species" - Great conditions!'
-      user1:
-        name: "John"
-        surname: "Smith"
-        id: 1
-        fbuserid: 1234
-      user2:
-        name: "Diana"
-        surname: "Windsor"
-        id: 2
-        fbuserid: 2345
-      messages: [
-        {
-          message: "These messages are generated in place of real messages that you might receive when selling or buying an item on ZapOrbit. These examples demonstrate the simplicity of the site."
-          senderid: 1
-          recipientid: 2
-          date: Date.now()
-        }
-        {
-          message: 'In this hypothetical case you are interested in Diana\'s item "On the origin of species". Your messages to Diana will appear here with a light green background.'
-          senderid: 1
-          recipientid: 2
-          date: Date.now()
-        }
-        {
-          message: 'Diana\'s replies will appear on this side. This order reflects the buyer and seller relationship.'
-          senderid: 2
-          recipientid: 1
-          date: Date.now()
-        }
-      ]
-    }
-    {
-      title: "Mountain bike in good conditions - large frame"
-      user1:
-        name: "Diana"
-        surname: "Windsor"
-        id: 1
-        fbuserid: 2345
-      user2:
-        name: "John"
-        surname: "Smith"
-        id: 2
-        fbuserid: 1234
-      messages: [
-        {
-          message: 'In this other hypothetical case Diana is interested in your item and she contacted you asking you how old is the bike and if it comes with front lights, for example. Her message will appear here.'
-          senderid: 1
-          recipientid: 2
-          date: Date.now()
-        }
-        {
-          message: 'Diana is the buyer and you are the seller then your replies to Diana\'s questions appears on this side.'
-          senderid: 2
-          recipientid: 1
-          date: Date.now()
-        }
-      ]
-    }
-    {
-      title: 'First edition of the "On the origin of species" - Great conditions!'
-      user1:
-        name: "John"
-        surname: "Smith"
-        id: 1
-        fbuserid: 1234
-      user2:
-        name: "Diana"
-        surname: "Windsor"
-        id: 2
-        fbuserid: 2345
-      messages: [
-        {
-          message: "These messages are generated in place of real messages that you might receive when selling or buying an item on ZapOrbit. These examples demonstrate the simplicity of the site."
-          senderid: 1
-          recipientid: 2
-          date: Date.now()
-        }
-        {
-          message: 'In this hypothetical case you are interested in Diana\'s item "On the origin of species". Your messages to Diana will appear here with a light green background.'
-          senderid: 1
-          recipientid: 2
-          date: Date.now()
-        }
-        {
-          message: 'Diana\'s replies will appear on this side. This order reflects the buyer and seller relationship.'
-          senderid: 2
-          recipientid: 1
-          date: Date.now()
-        }
-      ]
-    }
-    {
-      title: "Mountain bike in good conditions - large frame"
-      user1:
-        name: "Diana"
-        surname: "Windsor"
-        id: 1
-        fbuserid: 2345
-      user2:
-        name: "John"
-        surname: "Smith"
-        id: 2
-        fbuserid: 1234
-      messages: [
-        {
-          message: 'In this other hypothetical case Diana is interested in your item and she contacted you asking you how old is the bike and if it comes with front lights, for example. Her message will appear here.'
-          senderid: 1
-          recipientid: 2
-          date: Date.now()
-        }
-        {
-          message: 'Diana is the buyer and you are the seller then your replies to Diana\'s questions appears on this side.'
-          senderid: 2
-          recipientid: 1
-          date: Date.now()
-        }
-      ]
-    }
-    {
-      title: 'First edition of the "On the origin of species" - Great conditions!'
-      user1:
-        name: "John"
-        surname: "Smith"
-        id: 1
-        fbuserid: 1234
-      user2:
-        name: "Diana"
-        surname: "Windsor"
-        id: 2
-        fbuserid: 2345
-      messages: [
-        {
-          message: "These messages are generated in place of real messages that you might receive when selling or buying an item on ZapOrbit. These examples demonstrate the simplicity of the site."
-          senderid: 1
-          recipientid: 2
-          date: Date.now()
-        }
-        {
-          message: 'In this hypothetical case you are interested in Diana\'s item "On the origin of species". Your messages to Diana will appear here with a light green background.'
-          senderid: 1
-          recipientid: 2
-          date: Date.now()
-        }
-        {
-          message: 'Diana\'s replies will appear on this side. This order reflects the buyer and seller relationship.'
-          senderid: 2
-          recipientid: 1
-          date: Date.now()
-        }
-      ]
-    }
-    {
-      title: "Mountain bike in good conditions - large frame"
-      user1:
-        name: "Diana"
-        surname: "Windsor"
-        id: 1
-        fbuserid: 2345
-      user2:
-        name: "John"
-        surname: "Smith"
-        id: 2
-        fbuserid: 1234
-      messages: [
-        {
-          message: 'In this other hypothetical case Diana is interested in your item and she contacted you asking you how old is the bike and if it comes with front lights, for example. Her message will appear here.'
-          senderid: 1
-          recipientid: 2
-          date: Date.now()
-        }
-        {
-          message: 'Diana is the buyer and you are the seller then your replies to Diana\'s questions appears on this side.'
-          senderid: 2
-          recipientid: 1
-          date: Date.now()
-        }
-      ]
-    }
-    {
-      title: 'First edition of the "On the origin of species" - Great conditions!'
-      user1:
-        name: "John"
-        surname: "Smith"
-        id: 1
-        fbuserid: 1234
-      user2:
-        name: "Diana"
-        surname: "Windsor"
-        id: 2
-        fbuserid: 2345
-      messages: [
-        {
-          message: "These messages are generated in place of real messages that you might receive when selling or buying an item on ZapOrbit. These examples demonstrate the simplicity of the site."
-          senderid: 1
-          recipientid: 2
-          date: Date.now()
-        }
-        {
-          message: 'In this hypothetical case you are interested in Diana\'s item "On the origin of species". Your messages to Diana will appear here with a light green background.'
-          senderid: 1
-          recipientid: 2
-          date: Date.now()
-        }
-        {
-          message: 'Diana\'s replies will appear on this side. This order reflects the buyer and seller relationship.'
-          senderid: 2
-          recipientid: 1
-          date: Date.now()
-        }
-      ]
-    }
-    {
-      title: "Mountain bike in good conditions - large frame"
-      user1:
-        name: "Diana"
-        surname: "Windsor"
-        id: 1
-        fbuserid: 2345
-      user2:
-        name: "John"
-        surname: "Smith"
-        id: 2
-        fbuserid: 1234
-      messages: [
-        {
-          message: 'In this other hypothetical case Diana is interested in your item and she contacted you asking you how old is the bike and if it comes with front lights, for example. Her message will appear here.'
-          senderid: 1
-          recipientid: 2
-          date: Date.now()
-        }
-        {
-          message: 'Diana is the buyer and you are the seller then your replies to Diana\'s questions appears on this side.'
-          senderid: 2
-          recipientid: 1
-          date: Date.now()
-        }
-      ]
-    }
-    {
-      title: 'First edition of the "On the origin of species" - Great conditions!'
-      user1:
-        name: "John"
-        surname: "Smith"
-        id: 1
-        fbuserid: 1234
-      user2:
-        name: "Diana"
-        surname: "Windsor"
-        id: 2
-        fbuserid: 2345
-      messages: [
-        {
-          message: "These messages are generated in place of real messages that you might receive when selling or buying an item on ZapOrbit. These examples demonstrate the simplicity of the site."
-          senderid: 1
-          recipientid: 2
-          date: Date.now()
-        }
-        {
-          message: 'In this hypothetical case you are interested in Diana\'s item "On the origin of species". Your messages to Diana will appear here with a light green background.'
-          senderid: 1
-          recipientid: 2
-          date: Date.now()
-        }
-        {
-          message: 'Diana\'s replies will appear on this side. This order reflects the buyer and seller relationship.'
-          senderid: 2
-          recipientid: 1
-          date: Date.now()
-        }
-      ]
-    }
-    {
-      title: "Mountain bike in good conditions - large frame"
-      user1:
-        name: "Diana"
-        surname: "Windsor"
-        id: 1
-        fbuserid: 2345
-      user2:
-        name: "John"
-        surname: "Smith"
-        id: 2
-        fbuserid: 1234
-      messages: [
-        {
-          message: 'In this other hypothetical case Diana is interested in your item and she contacted you asking you how old is the bike and if it comes with front lights, for example. Her message will appear here.'
-          senderid: 1
-          recipientid: 2
-          date: Date.now()
-        }
-        {
-          message: 'Diana is the buyer and you are the seller then your replies to Diana\'s questions appears on this side.'
-          senderid: 2
-          recipientid: 1
-          date: Date.now()
-        }
-      ]
-    }
-    {
-      title: 'First edition of the "On the origin of species" - Great conditions!'
-      user1:
-        name: "John"
-        surname: "Smith"
-        id: 1
-        fbuserid: 1234
-      user2:
-        name: "Diana"
-        surname: "Windsor"
-        id: 2
-        fbuserid: 2345
-      messages: [
-        {
-          message: "These messages are generated in place of real messages that you might receive when selling or buying an item on ZapOrbit. These examples demonstrate the simplicity of the site."
-          senderid: 1
-          recipientid: 2
-          date: Date.now()
-        }
-        {
-          message: 'In this hypothetical case you are interested in Diana\'s item "On the origin of species". Your messages to Diana will appear here with a light green background.'
-          senderid: 1
-          recipientid: 2
-          date: Date.now()
-        }
-        {
-          message: 'Diana\'s replies will appear on this side. This order reflects the buyer and seller relationship.'
-          senderid: 2
-          recipientid: 1
-          date: Date.now()
-        }
-      ]
-    }
-    {
-      title: "Mountain bike in good conditions - large frame"
-      user1:
-        name: "Diana"
-        surname: "Windsor"
-        id: 1
-        fbuserid: 2345
-      user2:
-        name: "John"
-        surname: "Smith"
-        id: 2
-        fbuserid: 1234
-      messages: [
-        {
-          message: 'In this other hypothetical case Diana is interested in your item and she contacted you asking you how old is the bike and if it comes with front lights, for example. Her message will appear here.'
-          senderid: 1
-          recipientid: 2
-          date: Date.now()
-        }
-        {
-          message: 'Diana is the buyer and you are the seller then your replies to Diana\'s questions appears on this side.'
-          senderid: 2
-          recipientid: 1
-          date: Date.now()
-        }
-      ]
-    }
   ]
 
   $scope.scrollToWidth = (event) ->
@@ -1325,14 +907,70 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     if $window.navigator.appVersion.indexOf("Mac") != -1 then {'margin-right': '-30px', 'padding-right': '40px'}
     else {"padding-right":"13px"}
 ]
-.controller "ProfileProfileCtrl", ["$scope", "$timeout", "$upload", "$log", ($scope, $timeout, $upload, $log) ->
+.controller "ProfileProfileCtrl", ["$scope", "ListingsForUser", "$timeout", "$upload", "$log", ($scope, ListingsForUser, $timeout, $upload, $log) ->
+
+  setOwnListings = (listings) ->
+    $scope.ownListings = listings
+
+  ListingsForUser.getListingsForUser
+    remote: true
+    callback: setOwnListings
+
+  $scope.canList = (index) ->
+    if $scope.ownListings?
+      lst = $scope.ownListings[index]
+      if lst.listingStatus.status == 'none' || lst.listingStatus.status == 'idle' then {}
+      else {disable: true}
+
+  $scope.canWithdraw = (index) ->
+    if $scope.ownListings?
+      lst = $scope.ownListings[index]
+      if lst.listingStatus.status == 'forsale' then {}
+      else {disable: true}
+
+  $scope.canRelist = (index) ->
+    if $scope.ownListings?
+      lst = $scope.ownListings[index]
+      if lst.listingStatus.status == 'sold' then {}
+      else {disable: true}
+
+  $scope.canShare = (index) ->
+    {disable: true}
+
+  $scope.canUpdate = (index) ->
+    if $scope.ownListings?
+      lst = $scope.ownListings[index]
+      if lst.listingStatus.status != 'commited' then {}
+      else {disable: true}
+
+  $scope.canDelete = (index) ->
+    if $scope.ownListings?
+      lst = $scope.ownListings[index]
+      if lst.listingStatus.status != 'commited' then {}
+      else {disable: true}
+
+  $scope.updateStatus = (index, status) ->
+    ListingsForUser.updateListingStatus index, status, setOwnListings
 
   updateData = {}
 
+  $scope.$on "aboutMe", (e, aboutMe) ->
+    updateData.aboutMe = aboutMe
+
   profileData =
-    profPicture: "/vassets/images/pic_placeholder.png"
-    backPicture: "/vassets/images/profile_cover_img.png"
-    aboutMe: "Tell others a little bit about you in one sentence. What is worth your while?"
+    profilePicture:
+      src: ""
+    backgroundPicture:
+      src: ""
+
+  pictureName = (size) ->
+    name = "";
+    chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@*_$";
+    i = 0
+    while i < size
+      name += chars.charAt(Math.floor(Math.random() * chars.length));
+      ++i
+    name
 
   $scope.startEditing = ->
     $scope.$broadcast "activate"
@@ -1343,39 +981,89 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     updateData = {}
 
   $scope.doneEditing = ->
-    _.each Object.getOwnPropertyNames(updateData), (prop) ->
+    turns = []
+    turns.push
+      prop: 'about'
+      value: if updateData.aboutMe? and updateData.aboutMe != "" then updateData.aboutMe else ""
+    hasPictures = false
+    propsLength = Object.getOwnPropertyNames(updateData).length
+    _.each Object.getOwnPropertyNames(updateData), (prop, i) ->
       if profileData[prop]? && updateData[prop] != "" then profileData[prop] = updateData[prop]
+      if prop == "profilePicture" || prop == "backgroundPicture"
+        hasPictures = true
+        file = updateData[prop].file
+        fileReader = new FileReader()
+        fileReader.readAsArrayBuffer file
+        parts = file.name.split "."
+        fileName = pictureName(24) + "." + parts[1]
+        turns.push
+          value: fileName
+          prop: prop
+        fileReader.onload = (e) ->
+          $upload.http
+            url: 'api/saveOptionsPictures/'+fileName
+            method: 'POST'
+            data: e.target.result
+            headers:
+              'Content-Type': file.type
+              'Content-Disposition':
+                filename: fileName
+          .progress (evt) ->
+            console.log 'percent: ' + parseInt(100.0 * evt.loaded / evt.total)
+          .success (data, status, headers, config) ->
+            if propsLength == i+1
+              updateOptions = {}
+              _.each turns, (t) ->
+                if t.value != ""
+                  updateOptions[t.prop] = t.value
+              updateUserOptions(updateOptions)
+
     setProfileData(profileData)
+    if !hasPictures and updateData.aboutMe? and updateData.aboutMe != ""
+      updateUserOptions
+        about: updateData.aboutMe
     updateData = {}
+
+  updateUserOptions = (data) ->
+    $upload.http
+      url: '/api/updateuseroptions'
+      method: 'POST'
+      data: data
+    .success (data, status, headers) ->
+      console.log data
 
 
   $scope.isEditing = ->
     if Object.getOwnPropertyNames(updateData).length > 0 then true else false
 
   setProfileData = (data) ->
-    $scope.profilePicture = data.profPicture
-    $scope.backgroundPicture = data.backPicture
+    $scope.profilePicture = data.profilePicture.src
+    $scope.backgroundPicture = data.backgroundPicture.src
 
   setProfileData(profileData)
 
   $scope.onPictureSelect = ($files) ->
     file = $files[0]
-    fileReader = new FileReader();
-    fileReader.readAsDataURL(file);
-    fileReader.onload = (e) ->
-      $timeout ->
-        $scope.profilePicture = e.target.result
-        updateData.profPicture = e.target.result
-        updateData.profFile = file
+    if file.type == "image/jpeg" || file.type == "image/png" || file.type == "image/jpg"
+      fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+      fileReader.onload = (e) ->
+        $timeout ->
+          $scope.profilePicture = e.target.result
+          updateData.profilePicture =
+            src: e.target.result
+            file: file
 
   $scope.onBackgroundSelect = ($files) ->
     file = $files[0]
-    fileReader = new FileReader();
-    fileReader.readAsDataURL(file);
-    fileReader.onload = (e) ->
-      $timeout ->
-        $scope.backgroundPicture = e.target.result
-        updateData.backPicture = e.target.result
-        updateData.backFile = file
+    if file.type == "image/jpeg" || file.type == "image/png" || file.type == "image/jpg"
+      fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+      fileReader.onload = (e) ->
+        $timeout ->
+          $scope.backgroundPicture = e.target.result
+          updateData.backgroundPicture =
+            src: e.target.result
+            file: file
 
 ]

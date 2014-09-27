@@ -3,7 +3,7 @@ package models
 import java.sql.Timestamp
 import play.api.db.slick.Config.driver.simple._
 
-case class ListingStatus(id: Option[Long],
+case class ListingStatus(id: Option[Long] = None,
                           status: String,
                           offerid: Long,
                           created_on: Option[Timestamp] = None,
@@ -21,9 +21,6 @@ class ListingStatuses(tag: Tag) extends Table[ListingStatus](tag, "ListingStatus
 
 object ListingStatuses extends DAO {
 
-  def findById(offerid: Long)(implicit session: Session): Option[ListingStatus] =
-    listingStatuses.filter(_.offerid === offerid).firstOption
-
   def findByStatus(status: String)(implicit session: Session): List[ListingStatus] =
     listingStatuses.filter(_.status === status).list
   /**
@@ -36,15 +33,14 @@ object ListingStatuses extends DAO {
   def update(offerid: Long, status: String)(implicit  session: Session): Unit = {
     listingStatuses.filter(_.offerid === offerid).firstOption match {
       case Some(st) =>
-        val newStatus = st.copy(status = status)
-        listingStatuses.update(newStatus)
+        val query = listingStatuses.filter(_.id === offerid)
+        query.map { row =>
+          row.status
+        }.update(status)
       case None =>
+        val newListingStatus = ListingStatus(status = status, offerid = offerid)
+        listingStatuses.insert(newListingStatus)
     }
   }
-  /**
-   * Delete a location
-   * @param offerid
-   */
-  def delete(offerid: Long)(implicit session: Session): Unit =
-    listingStatuses.filter(_.offerid === offerid).delete
+
 }
