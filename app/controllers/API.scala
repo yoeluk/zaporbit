@@ -268,8 +268,8 @@ object writers {
       )
     }
   }
-  implicit val implicitOffersForUserWrites = new Writes[Page[(Offer, OfferStatus)]] {
-    def writes(page: Page[(Offer, OfferStatus)]): JsValue = {
+  implicit val implicitOffersForUserWrites = new Writes[Page[(Offer, OfferStatus, OfferPicture)]] {
+    def writes(page: Page[(Offer, OfferStatus, OfferPicture)]): JsValue = {
       JsArray(
         for {
           item <- page.items
@@ -288,6 +288,9 @@ object writers {
           ),
           "listingStatus" -> Json.obj(
             "status" -> item._2.status
+          ),
+          "listingPicture" -> Json.obj(
+            "name" -> item._3.name
           )
         )
       )
@@ -811,11 +814,13 @@ class API(override implicit val env: RuntimeEnvironment[SocialUser]) extends sec
 
   /**
    *
-   * @param picture
+   * @param name
    * @return
    */
-  def downloadPicture(picture: String) = Action {
-    Ok.sendFile(new File(configuration.getString("pictures_dir").get + picture + ".jpg"))
+  def downloadPicture(name: String) = Action {
+    val parts = name.split("\\.", -1)
+    val ext = if (parts.length > 1) "" else ".jpg"
+    Ok.sendFile(new File(configuration.getString("pictures_dir").get + name + ext))
   }
 
   /**
@@ -823,7 +828,7 @@ class API(override implicit val env: RuntimeEnvironment[SocialUser]) extends sec
    * @param name
    * @return
    */
-  def savePictureToDisk(name: String) = Action(parse.file(to = new File(configuration.getString("pictures_dir").get + name + ".jpg")) ) {
+  def savePictureToDisk(name: String) = Action(parse.file(to = new File(configuration.getString("pictures_dir").get + name + (if (name.split("\\.", -1).length > 1) "" else ".jpg") ))) {
     implicit request =>
       Ok(Json.obj(
         "status" -> "OK",
@@ -1094,40 +1099,91 @@ class API(override implicit val env: RuntimeEnvironment[SocialUser]) extends sec
    * @param transid
    * @return
    */
-  def cancelTransaction(transid: Long) = DBAction { implicit rs =>
-    Transactions.findPendingOrProcessingTransById(transid) match {
-      case Some(trans) =>
-        Ok(Json.obj(
-          "status" -> "KO",
-          "message" -> "forbidden"
-        ))
-      case None =>
-        Transactions.delete(transid)
-        Ok(Json.obj(
-          "status" -> "OK",
-          "message" -> "transaction deleted"))
+  def cancelTransaction(transid: Long) = SecuredAction(parse.json) { implicit request =>
+    request.user.main match {
+      case user =>
+        DB.withSession { implicit s =>
+          Transactions.findPendingOrProcessingTransById(transid) match {
+            case Some(trans) =>
+              Ok(Json.obj(
+                "status" -> "KO",
+                "message" -> "forbidden"
+              ))
+            case None =>
+              Buyings.findByTransid(transid) match {
+                case Some(t) =>
+                  if (t.userid == user.id.get) {
+                    Buyings.delete(t.id.get)
+                    Ok(Json.obj(
+                      "status" -> "OK",
+                      "message" -> "transaction deleted"))
+                  } else Unauthorized("")
+                case None =>
+                  Sellings.findByTransid(transid) match {
+                    case Some(t) =>
+                      if (t.userid == user.id.get) {
+                        Sellings.delete(t.id.get)
+                        Ok(Json.obj(
+                          "status" -> "OK",
+                          "message" -> "transaction deleted"))
+                      } else Unauthorized("")
+                    case None =>
+                      BadRequest("")
+                  }
+              }
+          }
+        }
     }
   }
 
-  def acceptTransaction(transid: Long) = DBAction { implicit rs =>
-    Sellings.acceptSellingTrans(transid)
-    Ok(Json.obj(
-      "status" -> "OK",
-      "message" -> "transaction accepted"))
+  def acceptTransaction(transid: Long) = SecuredAction(parse.json) { implicit request =>
+    request.user.main match {
+      case user =>
+        DB.withSession { implicit s =>
+          Transactions.findById(transid) match {
+            case Some(t) =>
+              if (t.sellerid == user.id.get) {
+                Sellings.acceptSellingTrans(transid)
+                ListingStatuses.update(offerid = t.offerid, status = "committed")
+                Ok(Json.obj(
+                  "status" -> "OK",
+                  "message" -> "transaction accepted"))
+              }
+              else
+                Unauthorized("")
+          }
+        }
+    }
   }
 
-  def completeTransaction(transid: Long) = DBAction { implicit rs =>
-    Transactions.completeTransaction(transid)
-    Ok(Json.obj(
-      "status" -> "OK",
-      "message" -> "transaction completed"))
+  def completeTransaction(transid: Long) = SecuredAction(parse.json) { implicit request =>
+    request.user.main match {
+      case user =>
+        DB.withSession { implicit s =>
+          if (Transactions.completeTransaction(transid = transid, userid = user.id.get)) {
+            Ok(Json.obj(
+              "status" -> "OK",
+              "message" -> "transaction completed"))
+          }
+          else
+            Unauthorized("insufficient privileges")
+        }
+    }
   }
 
-  def backdownFromDeal(transid: Long) = DBAction { implicit rs =>
-    Transactions.failTransaction(transid)
-    Ok(Json.obj(
-      "status" -> "OK",
-      "message" -> "deal cancelled"))
+  def backdownFromDeal(transid: Long) = SecuredAction(parse.json) { implicit request =>
+    request.user.main match {
+      case user =>
+        DB.withSession { implicit s =>
+          if (Transactions.failTransaction(transid = transid, userid = user.id.get)) {
+            Ok(Json.obj(
+              "status" -> "OK",
+              "message" -> "deal cancelled"))
+          }
+          else
+            Unauthorized("insufficient privileges")
+        }
+    }
   }
 
   /**

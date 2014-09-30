@@ -16,6 +16,7 @@ class ListingStatuses(tag: Tag) extends Table[ListingStatus](tag, "ListingStatus
   def created_on = column[Timestamp]("created_on", O.Nullable)
   def updated_on = column[Timestamp]("updated_on", O.Nullable)
   def * = (id.?, status, offerid, created_on.?, updated_on.?) <> (ListingStatus.tupled, ListingStatus.unapply _)
+  def offer = foreignKey("fk_status_offer", offerid, TableQuery[Offers])(_.id)
 }
 
 
@@ -33,7 +34,8 @@ object ListingStatuses extends DAO {
   def update(offerid: Long, status: String)(implicit  session: Session): Unit = {
     listingStatuses.filter(_.offerid === offerid).firstOption match {
       case Some(st) =>
-        val query = listingStatuses.filter(_.id === offerid)
+        println(st.offerid)
+        val query = listingStatuses.filter(_.offerid === offerid)
         query.map { row =>
           row.status
         }.update(status)

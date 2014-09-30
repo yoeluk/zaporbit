@@ -17,10 +17,11 @@ public class ServeThumbnail extends Controller {
         response().setContentType("image");
         ByteArrayOutputStream img_stream = null;
         try {
+            String[] parts = filename.split("\\.", -1);
             File file = new File(Play.application().configuration().getString("pictures_dir")+filename);
             BufferedImage thumbnail = createThumbnail(ImageIO.read(file));
             img_stream = new ByteArrayOutputStream();
-            ImageIO.write(thumbnail, "jpg", img_stream);
+            ImageIO.write(thumbnail, parts[1], img_stream);
         } catch (FileNotFoundException e) {
             return badRequest("image not found");
         } catch (IOException e) {

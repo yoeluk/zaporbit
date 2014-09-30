@@ -22,7 +22,7 @@
                 </div>
                 <h4> @user.name @user.surname </h4>
                 <div class="stars profile-stars">
-                    <div class="rating profile-rating" style="width: @rating%"></div>
+                    <div class="rating profile-rating" style="width: 0%"></div>
                     <i></i>
                     <i></i>
                     <i></i>
@@ -77,8 +77,9 @@
                             <a class="foot-link" data-ng-class="canRelist($index)">
                                 <span class="glyphicon glyphicon-repeat"></span> Re-list </a>
                         </div>
+
                         <div>
-                            <a class="foot-link" data-ng-class="canShare($index)">
+                            <a class="foot-link" data-ng-click="share(lst)">
                                 <span class="glyphicon glyphicon-share-alt"></span> Share </a>
                         </div>
                         <div>

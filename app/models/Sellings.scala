@@ -52,7 +52,7 @@ object Sellings extends DAO {
   def findByUserId(id: Long)(implicit session: Session): Option[Selling] =
     sellings.filter(_.userid === id).firstOption
 
-  def findByTransId(transid: Long)(implicit session: Session): Option[Selling] =
+  def findByTransid(transid: Long)(implicit session: Session): Option[Selling] =
     sellings.filter(_.transactionid === transid).firstOption
 
   /**

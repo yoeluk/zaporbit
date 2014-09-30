@@ -81,9 +81,6 @@ object Transactions extends DAO {
   def findById(id: Long)(implicit session: Session): Option[Transaction] =
     transactions.filter(_.id === id).firstOption
 
-  def findByTransId(transid: Long)(implicit session: Session): Option[Transaction] =
-    transactions.filter(_.id === transid).firstOption
-
   def findPendingOrProcessingTransById(offerid: Long)(implicit session: Session): Option[Transaction] =
     (for {
       t <- transactions if t.offerid === offerid &&
@@ -94,40 +91,56 @@ object Transactions extends DAO {
   def insertReturningId(transaction: Transaction)(implicit session: Session): Option[Long] =
     Option(transactions returning transactions.map(_.id) insert transaction)
 
-  def completeTransaction(transid: Long)(implicit session: Session): Unit = {
-    val trans = transactions.filter(_.id === transid).first
-    transactions.filter(_.id === transid).map { row =>
-      row.status
-    }.update("completed")
-    sellings.filter(_.transactionid === transid).map { row =>
-      row.status
-    }.update("completed")
-    buyings.filter(_.transactionid === transid).map { row =>
-      row.status
-    }.update("completed")
-    Json.obj(
-      "status" -> "unpaid",
-      "userid" -> trans.sellerid,
-      "offer_title" ->  trans.offer_title,
-      "offer_description" -> trans.offer_description,
-      "offer_price" -> trans.offer_price,
-      "locale" -> trans.locale,
-      "currency_code" -> trans.currency_code,
-      "transactionid" -> trans.id.get).validate[Billing].map { bill =>
-      billings.insert(bill)
+  def completeTransaction(transid: Long, userid: Long)(implicit session: Session): Boolean = {
+    transactions.filter(_.id === transid).firstOption match {
+      case None => false
+      case Some(trans) =>
+        if (trans.sellerid == userid) {
+          transactions.filter(_.id === transid).map { row =>
+            row.status
+          }.update("completed")
+          sellings.filter(_.transactionid === transid).map { row =>
+            row.status
+          }.update("completed")
+          buyings.filter(_.transactionid === transid).map { row =>
+            row.status
+          }.update("completed")
+          Json.obj(
+            "status" -> "unpaid",
+            "userid" -> trans.sellerid,
+            "offer_title" ->  trans.offer_title,
+            "offer_description" -> trans.offer_description,
+            "offer_price" -> trans.offer_price,
+            "locale" -> trans.locale,
+            "currency_code" -> trans.currency_code,
+            "transactionid" -> trans.id.get).validate[Billing].map { bill =>
+            billings.insert(bill)
+          }
+          true
+        } else false
     }
   }
 
-  def failTransaction(transid: Long)(implicit session: Session): Unit = {
-    transactions.filter(_.id === transid).map { row =>
-      row.status
-    }.update("failed")
-    sellings.filter(_.transactionid === transid).map { row =>
-      row.status
-    }.update("failed")
-    buyings.filter(_.transactionid === transid).map { row =>
-      row.status
-    }.update("failed")
+  def failTransaction(transid: Long, userid: Long)(implicit session: Session): Boolean = {
+    transactions.filter(_.id === transid).firstOption match {
+      case None => false
+      case Some(trans) =>
+        if (trans.sellerid == userid || trans.buyerid == userid) {
+          transactions.filter(_.id === transid).map {
+            row =>
+              row.status
+          }.update("failed")
+          sellings.filter(_.transactionid === transid).map {
+            row =>
+              row.status
+          }.update("failed")
+          buyings.filter(_.transactionid === transid).map {
+            row =>
+              row.status
+          }.update("failed")
+          true
+        } else false
+    }
   }
 
 }

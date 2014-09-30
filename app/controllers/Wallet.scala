@@ -129,6 +129,7 @@ object Wallet extends Controller {
                                       "locale" -> offer.locale,
                                       "transactionid" -> transId).validate[Billing].map { bill =>
                                         Billings.insert(bill)
+                                        ListingStatuses.update(offerid = offerid.toLong, status = "sold")
                                       Ok(wallet_id)
                                     }.getOrElse(BadRequest("invalid billing"))
                                   }.getOrElse(BadRequest("invalid  selling trans"))

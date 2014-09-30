@@ -52,6 +52,8 @@ case class Listing(id: Option[Long] = None,
 
 case class OfferStatus(status: String)
 
+case class OfferPicture(name: String)
+
 class Offers(tag: Tag) extends Table[Offer](tag, "Offers") {
   def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
   def title = column[String]("title", O.NotNull)
@@ -97,8 +99,7 @@ object Offers extends DAO {
     updated_on = offer.updated_on)
 
   def findListingById(id: Long)(implicit session: Session): Option[Listing] = {
-    val oOpt = offers.filter(_.id === id).firstOption
-    oOpt match {
+    offers.filter(_.id === id).firstOption match {
       case Some(o) =>
         Option(Listing(
           o.id,
@@ -242,7 +243,7 @@ object Offers extends DAO {
   def offersForUser(page: Int = 0,
                     pageSize: Int = 20,
                     orderBy: Int = 1,
-                    userId: Long = 1)(implicit session: Session): Page[(Offer, OfferStatus)] = {
+                    userId: Long = 1)(implicit session: Session): Page[(Offer, OfferStatus, OfferPicture)] = {
     val offset = pageSize * page
     val query = (for {
       o <- offers.filter(_.userid === userId)
@@ -273,8 +274,14 @@ object Offers extends DAO {
       s.offerid -> s.status
       ).toMap
 
+    val pics = (for {
+      p <- pictures.filter(_.offerid inSet oids)
+    } yield
+      p.offerid -> p.name
+      ).toMap
+
     val resOffers = ofrs.map { o =>
-      (o, OfferStatus(status.getOrElse(o.id.get, "none")))
+      (o, OfferStatus(status.getOrElse(o.id.get, "none")), OfferPicture(pics.getOrElse(o.id.get, "none")))
     }
     Page(resOffers, page, offset, totalRows)
   }

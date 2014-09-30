@@ -332,7 +332,8 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       $scope.markers = undefined
 
       $scope.getRatingWidth = (user) ->
-        'width': 100*((50+user.rating)/(5*(user.ratingCount+10)))+"%"
+        'width': 0+"%"
+        #'width': 100*((50+user.rating)/(5*(user.ratingCount+10)))+"%"
 
       timeInMs = 500
 
@@ -919,7 +920,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
   $scope.canList = (index) ->
     if $scope.ownListings?
       lst = $scope.ownListings[index]
-      if lst.listingStatus.status == 'none' || lst.listingStatus.status == 'idle' then {}
+      if lst.listingStatus.status == 'idle' || lst.listingStatus.status == 'none' then {}
       else {disable: true}
 
   $scope.canWithdraw = (index) ->
@@ -940,13 +941,13 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
   $scope.canUpdate = (index) ->
     if $scope.ownListings?
       lst = $scope.ownListings[index]
-      if lst.listingStatus.status != 'commited' then {}
+      if lst.listingStatus.status != 'committed' then {}
       else {disable: true}
 
   $scope.canDelete = (index) ->
     if $scope.ownListings?
       lst = $scope.ownListings[index]
-      if lst.listingStatus.status != 'commited' then {}
+      if lst.listingStatus.status != 'committed' then {}
       else {disable: true}
 
   $scope.updateStatus = (index, status) ->
@@ -1032,7 +1033,6 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     .success (data, status, headers) ->
       console.log data
 
-
   $scope.isEditing = ->
     if Object.getOwnPropertyNames(updateData).length > 0 then true else false
 
@@ -1065,5 +1065,14 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
           updateData.backgroundPicture =
             src: e.target.result
             file: file
+
+
+  $scope.share = (lst) ->
+    FB.ui
+      method: 'feed',
+      name: lst.listing.title,
+      link: 'https://zaporbit.com/#!/listing_item/'+lst.listing.id,
+      picture: 'https://zaporbit.com/pictures/'+lst.listingPicture.name,
+      description: lst.listing.description,
 
 ]

@@ -2,7 +2,7 @@
 body {
     /*padding-top: 80px !important;*/
     padding-bottom: 30px;
-    background-color: #f9f9f9;
+    background-color: rgb(248,248,245)!important;
     color: #333333;
     font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
     font-size: 13px;
@@ -133,12 +133,28 @@ a.issue-title:hover,a.issue-title:focus {
     padding-left: 65px
 }
 .price-wrapper {
+    position: relative;
     font-size: 15px;
     font-weight: 100;
     letter-spacing: 1px;
     margin-top: 5px;
+    margin-right: 5px;
 }
 .price-wrapper > label {
+    padding: 3px 5px 3px 7px;
+}
+.price-wrapper > a {
+    position: absolute;
+    top:0;
+    right: 0;
+    visibility:hidden;
+    opacity:0;
+    transition:visibility 0s linear 0.3s,opacity 0.3s linear;
+}
+.price-wrapper:hover > a {
+    visibility:visible;
+    opacity:1;
+    transition-delay:0s;
 }
 .item-time {
     margin-right: 5px;
@@ -159,6 +175,7 @@ a.issue-title:hover,a.issue-title:focus {
 .container-with-shadow {
     border: 10px solid #fff;
     box-shadow: 0 0 5px #ccc;
+    background-color: #f6f6f6;
 }
 .listing > .listing-item {
     padding: 10px 5px 0 5px;

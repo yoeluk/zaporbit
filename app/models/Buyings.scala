@@ -49,6 +49,9 @@ object Buyings extends DAO {
   def findById(id: Long)(implicit session: Session): Option[Buying] =
     buyings.filter(_.id === id).firstOption
 
+  def findByTransid(transid: Long)(implicit session: Session): Option[Buying] =
+    buyings.filter(_.transactionid === transid).firstOption
+
   def findByUserId(id: Long)(implicit session: Session): Option[Buying] =
     buyings.filter(_.userid === id).firstOption
 

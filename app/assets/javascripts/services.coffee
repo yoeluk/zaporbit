@@ -289,8 +289,9 @@ angular.module "ZapOrbit.services", []
 
   listings = undefined
 
-  setListings = (lts) ->
-    listings = lts
+  setListings = (lst) ->
+    console.log lst
+    listings = lst
 
   listingsForUser = (callback) ->
     $http

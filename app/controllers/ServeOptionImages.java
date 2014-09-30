@@ -16,10 +16,11 @@ public class ServeOptionImages extends Controller {
         response().setContentType("image");
         ByteArrayOutputStream img_stream = null;
         try {
+            String[] parts = filename.split("\\.", -1);
             File file = new File(Play.application().configuration().getString("options_dir")+filename);
             BufferedImage thumbnail = ImageIO.read(file);
             img_stream = new ByteArrayOutputStream();
-            ImageIO.write(thumbnail, "jpg", img_stream);
+            ImageIO.write(thumbnail, parts[1], img_stream);
         } catch (FileNotFoundException e) {
             return badRequest("image not found");
         } catch (IOException e) {
