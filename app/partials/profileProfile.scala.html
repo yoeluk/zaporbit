@@ -1,7 +1,7 @@
 @(user: User, rating: Int, options: UserOption)
 
 <div class="row-fluid clearfix" data-ng-controller="ProfileProfileCtrl">
-    <div class="col-sm-12 col-md-12">
+    <div class="col-sm-12 col-md-12 profile-frame">
         <div class="cover" data-img-centred=@options.background.get data-img-override="{{backgroundPicture}}">
             <div class="camera">
                 <a href='javascript:;' class="glyphicon glyphicon-camera btn-file">
@@ -11,6 +11,7 @@
         </div>
         <div class="profile-profile">
             <div class="inner-profile">
+
                 <div class="picture-wrapper">
                     <div class="profile-picture" data-img-centred=@options.picture.get data-img-override="{{profilePicture}}">
                         <div class="camera">
@@ -20,34 +21,31 @@
                         </div>
                     </div>
                 </div>
-                <h4> @user.name @user.surname </h4>
-                <div class="stars profile-stars">
-                    <div class="rating profile-rating" style="width: 0%"></div>
-                    <i></i>
-                    <i></i>
-                    <i></i>
-                    <i></i>
-                    <i></i>
-                </div>
-                <button class="btn btn-default editing edit-link" data-ng-click="startEditing()" data-ng-if="!isEditing()">Edit</button>
-                <div class="editing" data-ng-if="isEditing()">
-                    <button class="btn btn-success" data-ng-click="doneEditing()">Done Editing</button>
-                    <a href="javascript:;" class="clearfix cancel-editing" data-ng-click="cancelEditing()">Cancel editing</a>
-                </div>
-                <div class="about">
-                        <!--<span class="glyphicon glyphicon-pencil pencil"></span>-->
-                    <div class="self-description" data-focus contenteditable="true" data-my-description data-max="170">
-                        @options.about.get
-                    </div>
-                </div>
-                <div class="profile-footer">
 
+                <h3> @user.name @user.surname </h3>
+
+                <div class="profile-footer">
+                    <div class="pull-left">
+                        <div class="profile-stars-wrapper">
+                            <div class="stars">
+                                <div class="rating profile-rating" style="width: 0%"></div>
+                                <i></i>
+                                <i></i>
+                                <i></i>
+                                <i></i>
+                                <i></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pull-left" data-ng-click="setActive($index)" data-ng-class="isActive($index)" data-ng-repeat="menu in profileMenus track by $index">
+                        <div><h5> {{ menu.name }} </h5></div>
+                        <div class="indicator"></div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="profile-background">
-            <div style="height: 130px"></div>
-            <div class="own-listings-wrapper">
+        <script type="text/ng-template" id="own-listings-template">
+            <div class="own-listings-wrapper" data-ng-controller="OwnListingsCtrl">
                 <div class="new-listing">
                     <button class="btn btn-warning"> New Listing </button>
                 </div>
@@ -59,9 +57,9 @@
 
                 <div class="panel panel-default" data-ng-repeat="lst in ownListings track by $index">
                     <div class="panel-body">
-                        <h4 style="margin: 0"><a href="/#!/listing_item/{{lst.listing.id}}"> {{ lst.listing.title }} </a></h4>
+                        <h4 style="margin: 0"><a href="/#!/listing_item/{{lst.listing.id}}" data-ng-bind-html="lst.listing.title"></a></h4>
                         <div class="description-wrapper">
-                            <p style="max-height: 35px; overflow: hidden; text-overflow: ellipsis"> {{ lst.listing.description }} </p>
+                            <p> {{ lst.listing.description }} </p>
                         </div>
                     </div>
                     <div class="panel-footer" style="font-size: 12px;">
@@ -93,6 +91,10 @@
                     </div>
                 </div>
             </div>
+        </script>
+        <div class="profile-background">
+            <div style="height: 50px"></div>
+            <div data-ng-include="template.url"></div>
         </div>
     </div>
 </div>

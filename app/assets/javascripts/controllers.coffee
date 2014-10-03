@@ -908,50 +908,41 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     if $window.navigator.appVersion.indexOf("Mac") != -1 then {'margin-right': '-30px', 'padding-right': '40px'}
     else {"padding-right":"13px"}
 ]
-.controller "ProfileProfileCtrl", ["$scope", "ListingsForUser", "$timeout", "$upload", "$log", ($scope, ListingsForUser, $timeout, $upload, $log) ->
+.controller "ProfileProfileCtrl", ["$scope", "$timeout", "$upload", "$log", ($scope, $timeout, $upload, $log) ->
 
-  setOwnListings = (listings) ->
-    $scope.ownListings = listings
+  $scope.profileMenus = [
+    {
+      name: "Listings"
+    }
+    {
+      name: "Feedbacks"
+    }
+    {
+      name: "Following"
+    }
+    {
+      name: "Merchant"
+    }
+  ]
 
-  ListingsForUser.getListingsForUser
-    remote: true
-    callback: setOwnListings
+  templates = [
+    {
+      name: "listingTemplate"
+      url: "own-listings-template"
+    }
+  ]
 
-  $scope.canList = (index) ->
-    if $scope.ownListings?
-      lst = $scope.ownListings[index]
-      if lst.listingStatus.status == 'idle' || lst.listingStatus.status == 'none' then {}
-      else {disable: true}
+  $scope.template = templates[0]
 
-  $scope.canWithdraw = (index) ->
-    if $scope.ownListings?
-      lst = $scope.ownListings[index]
-      if lst.listingStatus.status == 'forsale' then {}
-      else {disable: true}
+  activeMenu = $scope.profileMenus[0]
 
-  $scope.canRelist = (index) ->
-    if $scope.ownListings?
-      lst = $scope.ownListings[index]
-      if lst.listingStatus.status == 'sold' then {}
-      else {disable: true}
+  $scope.isActive = (index) ->
+    active: $scope.profileMenus[index].name == activeMenu.name
 
-  $scope.canShare = (index) ->
-    {disable: true}
-
-  $scope.canUpdate = (index) ->
-    if $scope.ownListings?
-      lst = $scope.ownListings[index]
-      if lst.listingStatus.status != 'committed' then {}
-      else {disable: true}
-
-  $scope.canDelete = (index) ->
-    if $scope.ownListings?
-      lst = $scope.ownListings[index]
-      if lst.listingStatus.status != 'committed' then {}
-      else {disable: true}
-
-  $scope.updateStatus = (index, status) ->
-    ListingsForUser.updateListingStatus index, status, setOwnListings
+  $scope.setActive = (index) ->
+    if templates[index]? then $scope.template = templates[index]
+    else $scope.template = ""
+    activeMenu = $scope.profileMenus[index]
 
   updateData = {}
 
@@ -981,7 +972,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     setProfileData(profileData)
     updateData = {}
 
-  $scope.doneEditing = ->
+  doneEditing = ->
     turns = []
     turns.push
       prop: 'about'
@@ -1053,6 +1044,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
           updateData.profilePicture =
             src: e.target.result
             file: file
+          doneEditing()
 
   $scope.onBackgroundSelect = ($files) ->
     file = $files[0]
@@ -1065,7 +1057,53 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
           updateData.backgroundPicture =
             src: e.target.result
             file: file
+          doneEditing()
 
+]
+.controller "OwnListingsCtrl", ["$scope", "$timeout", "ListingsForUser", ($scope, $timeout, ListingsForUser) ->
+
+  setOwnListings = (listings) ->
+    $scope.ownListings = listings
+
+  ListingsForUser.getListingsForUser
+    remote: true
+    callback: setOwnListings
+
+  $scope.canList = (index) ->
+    if $scope.ownListings?
+      lst = $scope.ownListings[index]
+      if lst.listingStatus.status == 'idle' || lst.listingStatus.status == 'none' then {}
+      else {disable: true}
+
+  $scope.canWithdraw = (index) ->
+    if $scope.ownListings?
+      lst = $scope.ownListings[index]
+      if lst.listingStatus.status == 'forsale' then {}
+      else {disable: true}
+
+  $scope.canRelist = (index) ->
+    if $scope.ownListings?
+      lst = $scope.ownListings[index]
+      if lst.listingStatus.status == 'sold' then {}
+      else {disable: true}
+
+  $scope.canShare = (index) ->
+    {disable: true}
+
+  $scope.canUpdate = (index) ->
+    if $scope.ownListings?
+      lst = $scope.ownListings[index]
+      if lst.listingStatus.status != 'committed' then {}
+      else {disable: true}
+
+  $scope.canDelete = (index) ->
+    if $scope.ownListings?
+      lst = $scope.ownListings[index]
+      if lst.listingStatus.status != 'committed' then {}
+      else {disable: true}
+
+  $scope.updateStatus = (index, status) ->
+    ListingsForUser.updateListingStatus index, status, setOwnListings
 
   $scope.share = (lst) ->
     FB.ui
@@ -1074,5 +1112,39 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       link: 'https://zaporbit.com/#!/listing_item/'+lst.listing.id,
       picture: 'https://zaporbit.com/pictures/'+lst.listingPicture.name,
       description: lst.listing.description,
+
+]
+.controller "UserProfileCtrl", ["$scope", ($scope) ->
+
+  $scope.profileMenus = [
+    {
+      name: "Listings"
+    }
+    {
+      name: "Feedbacks"
+    }
+  ]
+
+  templates = [
+    {
+      name: "listingTemplate"
+      url: "user-listings-template"
+    }
+  ]
+
+  $scope.template = templates[0]
+
+  activeMenu = $scope.profileMenus[0]
+
+  $scope.isActive = (index) ->
+    active: $scope.profileMenus[index].name == activeMenu.name
+
+  $scope.setActive = (index) ->
+    if templates[index]? then $scope.template = templates[index]
+    else $scope.template = ""
+    activeMenu = $scope.profileMenus[index]
+
+]
+.controller "UserListingsCtrl", ["$scope", ($scope) ->
 
 ]

@@ -1,0 +1,99 @@
+@(user: User, rating: Int, options: UserOption)
+
+<div class="container outer-container">
+    <div class="row template-header">
+        <div class="col-xs-12 col-md-9">
+
+            <div class="row-fluid clearfix profile-wrapper" data-ng-controller="UserProfileCtrl">
+                <div class="col-sm-12 col-md-12 profile-frame">
+                    <div class="cover" data-img-centred=@options.background.get></div>
+                    <div class="profile-profile">
+                        <div class="inner-profile">
+                            <div class="picture-wrapper">
+                                <div class="profile-picture" data-img-centred=@options.picture.get></div>
+                            </div>
+
+                            <h3> @user.name @user.surname </h3>
+
+                            <div class="profile-footer">
+                                <div class="pull-left">
+                                    <div class="profile-stars-wrapper">
+                                        <div class="stars">
+                                            <div class="rating profile-rating" style="width: 0%"></div>
+                                            <i></i>
+                                            <i></i>
+                                            <i></i>
+                                            <i></i>
+                                            <i></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="pull-left" data-ng-click="setActive($index)" data-ng-class="isActive($index)" data-ng-repeat="menu in profileMenus track by $index">
+                                    <div><h5> {{ menu.name }} </h5></div>
+                                    <div class="indicator"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <script type="text/ng-template" id="user-listings-template">
+                        <div class="own-listings-wrapper" data-ng-controller="UserListingsCtrl">
+                            <div class="clearfix" style="padding: 0 2px;">
+                                <h4 class="pull-left"> Listings <span class="glyphicon glyphicon-bullhorn"></span></h4>
+                            </div>
+
+                            <div class="alert alert-warning" role="alert" data-ng-if="ownListings.length == 0"> You don't have any listings at present. Need to sale something? Create a listing now. It's quick and simple!  </div>
+
+                            <div class="panel panel-default" data-ng-repeat="lst in ownListings track by $index">
+                                <div class="panel-body">
+                                    <h4 style="margin: 0"><a href="/#!/listing_item/{{lst.listing.id}}" data-ng-bind-html="lst.listing.title"></a></h4>
+                                    <div class="description-wrapper">
+                                        <p> {{ lst.listing.description }} </p>
+                                    </div>
+                                </div>
+                                <div class="panel-footer" style="font-size: 12px;">
+                                    <div>
+                                        <a class="foot-link" data-ng-class="canList($index)" data-ng-click="updateStatus($index, 'forsale')">
+                                            <span class="glyphicon glyphicon-arrow-up"></span> List </a>
+                                    </div>
+                                    <div>
+                                        <a class="foot-link" data-ng-class="canWithdraw($index)" data-ng-click="updateStatus($index, 'idle')">
+                                            <span class="glyphicon glyphicon-arrow-down"></span> Withdraw </a>
+                                    </div>
+                                    <div>
+                                        <a class="foot-link" data-ng-class="canRelist($index)">
+                                            <span class="glyphicon glyphicon-repeat"></span> Re-list </a>
+                                    </div>
+
+                                    <div>
+                                        <a class="foot-link" data-ng-click="share(lst)">
+                                            <span class="glyphicon glyphicon-share-alt"></span> Share </a>
+                                    </div>
+                                    <div>
+                                        <a class="foot-link" data-ng-class="canUpdate($index)">
+                                            <span class="glyphicon glyphicon-pencil"></span> Update </a>
+                                    </div>
+                                    <div>
+                                        <a class="foot-link" data-ng-class="canDelete($index)">
+                                            <span class="glyphicon glyphicon-trash"></span> Delete </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </script>
+
+                    <div class="profile-background">
+                        <div style="height: 50px"></div>
+
+                        <div data-ng-include="template.url"></div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-6 col-md-3" data-ng-controller="ProfileCtrl">
+
+            </div>
+        </div>
+    </div>
+</div>

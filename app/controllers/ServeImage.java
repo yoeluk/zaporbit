@@ -3,9 +3,7 @@ package controllers;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
-import javax.activation.MimetypesFileTypeMap;
 import java.io.IOException;
-import java.lang.reflect.Array;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import play.mvc.Controller;

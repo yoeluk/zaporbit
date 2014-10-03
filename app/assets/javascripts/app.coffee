@@ -38,6 +38,9 @@ angular.module "ZapOrbit", [
     .when "/userhome",
       templateUrl: "/partials/userhome"
       controller: "UserHomeCtrl"
+    .when "/userprofile/:userid",
+      templateUrl: (params) -> "/userprofile/"+params.userid
+      controller: "UserProfileCtrl"
 ]
 
 angular.module 'infinite-scroll', []

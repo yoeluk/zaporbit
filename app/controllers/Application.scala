@@ -7,6 +7,8 @@ import play.api.db.slick._
 import play.api.libs.json._
 import securesocial.controllers.BaseLoginPage
 
+import play.api.db.slick.Config.driver._
+
 import securesocial.core.services.RoutesService
 import securesocial.core.{RuntimeEnvironment, IdentityProvider}
 
@@ -29,16 +31,9 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
       case Some(offer) =>
         Locations.findZLocByOfferId(itemid) match {
           case Some(loc) =>
-            val ZOLoc = ZOLocation(
-              street = loc.street,
-              locality = loc.locality,
-              administrativeArea = loc.administrativeArea,
-              latitude = loc.latitude,
-              longitude = loc.longitude
-            )
             Users.findById(offer.userid) match {
               case Some(user) =>
-                val optToken = if(user.isMerchant.get) {
+                val optToken = if (user.isMerchant.get) {
                   Merchants.findByUserId(offer.userid) match {
                     case Some(merchant) =>
                       Some(Wallet.generateToken(offer, merchant.identifier, merchant.secret, user.id.get))
@@ -47,7 +42,7 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
                 val lst = Offers.listingWithOffer(offer)
                 val rt = Ratings.ratingForUser(user.id.get)
                 val rating = 100*rt._1.toInt
-                Ok(partials.html.itemTemplate(lst, lst.pictures.get, loc, user, rating, currency = offer.currency_code, token = optToken))
+                Ok(partials.html.itemTemplate(lst, lst.pictures.get, loc, user, rating, currency = offer.currency_code, token = optToken, pictureUrl(user.id.get)))
               case None =>
                 Ok(Json.obj(
                   "status" -> "KO"
@@ -65,19 +60,65 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
     }
   }
 
+  def userProfile(userid: Long) = DBAction { implicit rs =>
+    Users.findById(userid) match {
+      case Some(user) =>
+        val rt = Ratings.ratingForUser(user.id.get)
+        val rating = 100*rt._1.toInt
+        val defaultOptions = UserOption(
+          userid = user.id.get,
+          background = Some("/vassets/images/profile_cover_img.png"),
+          picture = Some("/vassets/images/pic_placeholder.png"),
+          about = Some("Tell others a little bit about you in one sentence. What is worth your while?"))
+        UserOptions.findByUserid(user.id.get) match {
+          case None =>
+            Ok( partials.html.userProfile( user, rating, defaultOptions ) )
+          case Some(opts) =>
+            val currentOptions = UserOption(
+              userid = opts.userid,
+              background = opts.background match {
+                case None =>
+                  Some("/vassets/images/profile_cover_img.png")
+                case Some(b) => Some("/options/pictures/"+b)
+              },
+              picture = opts.picture match {
+                case None =>
+                  Some("/vassets/images/pic_placeholder.png")
+                case Some(p) => Some("/options/pictures/"+p)
+              },
+              about = opts.about match {
+                case None =>
+                  Some("Tell others a little bit about you in one sentence. What is worth your while?")
+                case x => x
+              }
+            )
+            Ok( partials.html.userProfile( user, rating, currentOptions ) )
+        }
+      case None =>
+        BadRequest("")
+    }
+  }
+
   def partialTemplates(partial: String) = Action { implicit request =>
-    if (partial == "home") {
-      Ok(partials.html.home(""))
-    } else if (partial == "support") {
-      Ok(partials.html.support(""))
-    } else if (partial == "listings") {
-      Ok(partials.html.shopping(""))
-    } else if (partial == "modalItem") {
-      Ok(partials.html.uiModalItem())
-    } else if (partial == "loginPartial") {
+    if ( partial == "home" ) {
+      Ok(partials.html.home("") )
+    } else if ( partial == "support" ) {
+      Ok(partials.html.support("") )
+    } else if ( partial == "listings" ) {
+      Ok(partials.html.shopping("") )
+    } else if ( partial == "modalItem" ) {
+      Ok(partials.html.uiModalItem() )
+    } else if ( partial == "loginPartial" ) {
       Ok( partials.html.loginPartial() )
-    } else if (partial == "userhome") {
-      Ok( partials.html.userhome())
+    } else if ( partial == "userhome" ) {
+      Ok( partials.html.userhome() )
+    } else if ( partial == "userprofile" ) {
+      request.getQueryString("id") match {
+        case Some( userid ) =>
+          Redirect( routes.Application.userProfile( userid.toLong ) )
+        case None =>
+          BadRequest("unknown user")
+      }
     } else if (partial == "profile") {
       request.headers.get("X-Auth-Token") match {
         case Some(_) =>
@@ -153,6 +194,19 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
               Ok( partials.html.profileProfile( user, rating, currentOptions ) )
           }
         }
+    }
+  }
+
+  def credentialTemplate(userid: String) = DBAction { implicit rs =>
+    Ok(partials.html.credentials( pictureUrl( userid.toLong ) ))
+  }
+
+  def pictureUrl(userid: Long)(implicit s: simple.Session): String = {
+    UserOptions.findByUserid(userid.toLong) match {
+      case None =>
+        "//graph.facebook.com/v2.1/{{lst.user.fbuserid}}/picture?height=200&width=200"
+      case Some(opts) =>
+        "/options/pictures/"+opts.picture.get
     }
   }
 

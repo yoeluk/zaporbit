@@ -20,6 +20,8 @@ GET         /api/markconvoread/:convid                              @controllers
 GET         /api/leaveconvo/:convid/:userid                         @controllers.API.leaveConvo(convid: Long, userid: Long)
 GET         /api/getfeedbacksforuser/:userid                        @controllers.API.returnFeedbacksForUser(userid: Long)
 GET         /api/currentUser                                        @controllers.API.currentUser
+GET         /credentialtemplate/:userid                             @controllers.Application.credentialTemplate(userid: String)
+
 
 # item
 GET         /listing_item/:itemid                                   @controllers.Application.getListing(itemid: Long)
@@ -30,6 +32,7 @@ GET         /partials/:partial                                      @controllers
 GET         /profileTemplate                                        @controllers.Application.profileTemplate()
 GET         /loggedoutTemplate                                      @controllers.Application.loggedoutTemplate()
 GET         /profileprofile                                         @controllers.Application.profileProfile()
+GET         /userprofile/:userid                                    @controllers.Application.userProfile(userid: Long)
 
 # web Api
 

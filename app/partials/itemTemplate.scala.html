@@ -1,4 +1,4 @@
-@(listing: Listing, pictures:List[String], loc: Location, user: User, rating: Float, currency: String, token: Option[String], ext: String = ".jpg")
+@(listing: Listing, pictures:List[String], loc: Location, user: User, rating: Float, currency: String, token: Option[String], pictureUrl: String, ext: String = ".jpg")
 <script src="https://wallet.google.com/inapp/lib/buy.js"></script>
 <script type="text/javascript" language="javascript">
     // Success handler
@@ -76,8 +76,8 @@
                     <div class="" style="margin-bottom: 10px; border-bottom: 1px solid rgb(229, 229, 229)">
                         <h5> Seller </h5>
                     </div>
-                    <div class="profile row">
-                        <img class="profile-img pull-left" data-ng-src="//graph.facebook.com/v2.1/@user.fbuserid/picture?height=200&width=200" src="" alt=""/>
+                    <div class="profile row-fluid clearfix">
+                        <div class="circular pull-left" style="background-image: url( @pictureUrl )"></div>
                         <div class="profile-crd" style=""><a href="javascript:;"><b> @user.name @user.surname </b></a></div>
                         <div class="stars pull-left">
                             <div class="rating" style="width: @rating%"></div>

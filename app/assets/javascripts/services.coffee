@@ -298,7 +298,7 @@ angular.module "ZapOrbit.services", []
       method: "GET"
       url: '/api/offersbyuser/0/1'
     .success (data, status) ->
-      setListings(data)
+      setListings(data.reverse())
       callback(data)
 
   getListingsForUser = (param) ->
