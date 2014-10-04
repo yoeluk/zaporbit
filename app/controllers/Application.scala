@@ -60,43 +60,49 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
     }
   }
 
-  def userProfile(userid: Long) = DBAction { implicit rs =>
-    Users.findById(userid) match {
-      case Some(user) =>
-        val rt = Ratings.ratingForUser(user.id.get)
-        val rating = 100*rt._1.toInt
-        val defaultOptions = UserOption(
-          userid = user.id.get,
-          background = Some("/vassets/images/profile_cover_img.png"),
-          picture = Some("/vassets/images/pic_placeholder.png"),
-          about = Some("Tell others a little bit about you in one sentence. What is worth your while?"))
-        UserOptions.findByUserid(user.id.get) match {
+  def userProfile = DBAction { implicit rs =>
+    rs.getQueryString("id") match {
+      case Some(userid) =>
+        Users.findById(userid.toLong) match {
+          case Some(user) =>
+            val rt = Ratings.ratingForUser(user.id.get)
+            val rating = 100*rt._1.toInt
+            val defaultOptions = UserOption(
+              userid = user.id.get,
+              background = Some("/vassets/images/profile_cover.png"),
+              picture = Some("//graph.facebook.com/v2.1/"+user.fbuserid+"/picture?height=200&width=200"),
+              about = Some("Tell others a little bit about you in one sentence. What is worth your while?"))
+            UserOptions.findByUserid(user.id.get) match {
+              case None =>
+                Ok( partials.html.userProfile( user, rating, defaultOptions ) )
+              case Some(opts) =>
+                val currentOptions = UserOption(
+                  userid = opts.userid,
+                  background = opts.background match {
+                    case None =>
+                      Some("/vassets/images/profile_cover.png")
+                    case Some(b) => Some("/options/pictures/"+b)
+                  },
+                  picture = opts.picture match {
+                    case None =>
+                      Some("/vassets/images/pic_placeholder.png")
+                    case Some(p) => Some("/options/pictures/"+p)
+                  },
+                  about = opts.about match {
+                    case None =>
+                      Some("Tell others a little bit about you in one sentence. What is worth your while?")
+                    case x => x
+                  }
+                )
+                Ok( partials.html.userProfile( user, rating, currentOptions ) )
+            }
           case None =>
-            Ok( partials.html.userProfile( user, rating, defaultOptions ) )
-          case Some(opts) =>
-            val currentOptions = UserOption(
-              userid = opts.userid,
-              background = opts.background match {
-                case None =>
-                  Some("/vassets/images/profile_cover_img.png")
-                case Some(b) => Some("/options/pictures/"+b)
-              },
-              picture = opts.picture match {
-                case None =>
-                  Some("/vassets/images/pic_placeholder.png")
-                case Some(p) => Some("/options/pictures/"+p)
-              },
-              about = opts.about match {
-                case None =>
-                  Some("Tell others a little bit about you in one sentence. What is worth your while?")
-                case x => x
-              }
-            )
-            Ok( partials.html.userProfile( user, rating, currentOptions ) )
+            BadRequest("")
         }
       case None =>
-        BadRequest("")
+        BadRequest("no id param found")
     }
+
   }
 
   def partialTemplates(partial: String) = Action { implicit request =>
@@ -112,14 +118,14 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
       Ok( partials.html.loginPartial() )
     } else if ( partial == "userhome" ) {
       Ok( partials.html.userhome() )
-    } else if ( partial == "userprofile" ) {
+    } /*else if ( partial == "userprofile" ) {
       request.getQueryString("id") match {
         case Some( userid ) =>
           Redirect( routes.Application.userProfile( userid.toLong ) )
         case None =>
           BadRequest("unknown user")
       }
-    } else if (partial == "profile") {
+    } */else if (partial == "profile") {
       request.headers.get("X-Auth-Token") match {
         case Some(_) =>
           Redirect( routes.Application.profileTemplate() )
@@ -166,7 +172,7 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
           val rating = 100*rt._1.toInt
           val defaultOptions = UserOption(
             userid = user.id.get,
-            background = Some("/vassets/images/profile_cover_img.png"),
+            background = Some("/vassets/images/profile_cover.png"),
             picture = Some("/vassets/images/pic_placeholder.png"),
             about = Some("Tell others a little bit about you in one sentence. What is worth your while?"))
           UserOptions.findByUserid(user.id.get) match {
@@ -177,7 +183,7 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
                 userid = opts.userid,
                 background = opts.background match {
                   case None =>
-                    Some("/vassets/images/profile_cover_img.png")
+                    Some("/vassets/images/profile_cover.png")
                   case Some(b) => Some("/options/pictures/"+b)
                 },
                 picture = opts.picture match {

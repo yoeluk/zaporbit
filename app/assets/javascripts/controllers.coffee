@@ -1114,7 +1114,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       description: lst.listing.description,
 
 ]
-.controller "UserProfileCtrl", ["$scope", ($scope) ->
+.controller "UserProfileCtrl", ["$scope", "UserListingService", "$routeParams", "$timeout", ($scope, UserListingService, $routeParams, $timeout) ->
 
   $scope.profileMenus = [
     {
@@ -1144,7 +1144,36 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     else $scope.template = ""
     activeMenu = $scope.profileMenus[index]
 
+  $scope.allListings = undefined
+
+  gotListings = ( lst ) ->
+    $scope.allListings = lst.listings
+    $scope.$broadcast "UserListings", lst.listings
+
+  UserListingService.getData($routeParams.id, gotListings)
+
+  console.log "getData called"
+
 ]
 .controller "UserListingsCtrl", ["$scope", ($scope) ->
+  $scope.lst = {}
+  $scope.$on "UserListings", (event, listings) ->
+    console.log "received listings"
+    $scope.lst.listings = listings
+]
+.controller "ModalUserItemCarouselCtrl", ["$scope", ($scope) ->
 
+  $scope.myInterval = 5000
+  slides = $scope.slides = []
+  $scope.addSlide = (i) ->
+    slides.push
+      image: "/pictures/" + $scope.$parent.lst.pictures[i] + ".jpg"
+      text: []
+
+  if $scope.$parent.lst?
+    i = 0
+    l = $scope.$parent.lst.pictures.length
+    while i < l
+      $scope.addSlide(i)
+      i++
 ]

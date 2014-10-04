@@ -6,6 +6,7 @@
 GET         /                                                       @controllers.Application.index
 GET         /api/downloadpictures/:picture                          @controllers.API.downloadPicture(picture: String)
 GET         /api/listingsbyuser/:page/:orderBy                      @controllers.API.listingsByUser(page: Int, orderBy: Int)
+GET         /api/listingsforuser/:userid/:page/:orderBy             @controllers.API.listingsForUser(userid: Long, page: Int, orderBy: Int)
 GET         /api/offersbyuser/:page/:orderBy                        @controllers.API.offersByUser(page: Int, orderBy: Int)
 GET         /api/deletepicture/:offerid/:picturename                @controllers.API.deletePicture(offerid: Long, picturename: String)
 GET         /api/getrecords/:page                                   @controllers.API.returnUsersRecords(page: Int)
@@ -32,12 +33,13 @@ GET         /partials/:partial                                      @controllers
 GET         /profileTemplate                                        @controllers.Application.profileTemplate()
 GET         /loggedoutTemplate                                      @controllers.Application.loggedoutTemplate()
 GET         /profileprofile                                         @controllers.Application.profileProfile()
-GET         /userprofile/:userid                                    @controllers.Application.userProfile(userid: Long)
+GET         /userprofile                                            @controllers.Application.userProfile
 
 # web Api
 
 GET         /api/youtrack/allissues                                 controllers.Youtrack.allIssues
 GET         /api/youtrack/getstats                                  controllers.Youtrack.getStats
+
 POST        /api/youtrack/createissue                               controllers.Youtrack.createIssue
 
 # PUT/POST requests
@@ -65,6 +67,7 @@ POST        /api/fbauth/deauthorized                                @controllers
 
 # Google Wallet
 GET         /wallet                                                 controllers.Wallet.index
+
 POST        /wallet/response                                        controllers.Wallet.walletResponse
 POST        /wallet/merchant/response                               controllers.Wallet.merchantResponse(sellerid: Long = 21438)
 POST        /merchant/:sellerid                                     controllers.Wallet.merchantResponse(sellerid: Long)

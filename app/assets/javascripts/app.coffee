@@ -38,8 +38,8 @@ angular.module "ZapOrbit", [
     .when "/userhome",
       templateUrl: "/partials/userhome"
       controller: "UserHomeCtrl"
-    .when "/userprofile/:userid",
-      templateUrl: (params) -> "/userprofile/"+params.userid
+    .when "/userprofile",
+      templateUrl: (params) -> "/userprofile?id="+params.id
       controller: "UserProfileCtrl"
 ]
 

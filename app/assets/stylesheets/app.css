@@ -182,12 +182,16 @@ a.issue-title:hover,a.issue-title:focus {
     margin: 10px 0;
 }
 .listing-title > h5 {
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 600;
     line-height: 1.2;
 }
-.listing-title a {
+.listing-title > h5 a {
     color: #000000;
+}
+.listing-title.title-opts{
+    margin-top: 0;
+}
+.title-opts h4 {
+    margin-top: 0;
 }
 .outer-container {
     padding-left: 5px;
@@ -536,7 +540,7 @@ textarea:focus {
 }
 .profile-footer > div > div {
     height: 70%;
-    padding: 0 22px;
+    padding: 0 15px;
     text-align: center;
     color: #548B0C;
 }
@@ -565,17 +569,17 @@ textarea:focus {
     left: 0;
     width: 100%;
     max-height: 0;
-    transition: max-height 0.15s ease-out;
+    transition: max-height 0.1s ease-out;
     overflow: hidden;
     background: #7ECB19;
 }
 .profile-footer > div:nth-child(n+2):hover > div:nth-child(2) {
-    max-height: 5px;
-    transition: max-height 0.25s ease-in;
+    max-height: 4px;
+    transition: max-height 0.1s ease-in;
     transition-delay:0s;
 }
 .profile-footer > div.active > div:nth-child(2) {
-    max-height: 5px;
+    max-height: 4px;
 }
 .profile-footer > div h5 {
     margin: 0;
@@ -680,6 +684,7 @@ a.disable {
     text-decoration: none;
 }
 .new-listing {
+    margin-top: 15px;
     width: 100%;
     text-align: center;
 }
@@ -720,6 +725,9 @@ Bootstrap media query sizes
         display: inline;
     }
     div.center-cropped:nth-child(2) {
+        margin: 0 0 0 10px;
+    }
+    div.center-cropped.user-listing {
         margin: 0 0 0 10px;
     }
     .center-cropped-wrapper {
@@ -764,6 +772,9 @@ Bootstrap media query sizes
     div.center-cropped:nth-child(2) {
         margin: 0 0 0 10px;
     }
+    div.center-cropped.user-listing {
+        margin: 0 0 0 10px;
+    }
     .center-cropped-wrapper {
         overflow-y: hidden;
     }
@@ -805,6 +816,9 @@ Bootstrap media query sizes
     }
     div.center-cropped:nth-child(2) {
         margin: 0 0 0 10px;
+    }
+    div.center-cropped.user-listing {
+        margin: 0 0 0 15px;
     }
     .center-cropped-wrapper {
         overflow-y: hidden;

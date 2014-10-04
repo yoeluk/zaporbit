@@ -290,7 +290,6 @@ angular.module "ZapOrbit.services", []
   listings = undefined
 
   setListings = (lst) ->
-    console.log lst
     listings = lst
 
   listingsForUser = (callback) ->
@@ -319,4 +318,33 @@ angular.module "ZapOrbit.services", []
 
   getListingsForUser: getListingsForUser
   updateListingStatus: updateListingStatus
+]
+.factory "UserListingService", ["$http", "$timeout", ($http, $timeout) ->
+
+  ownListings = undefined
+
+  setListings = (data) ->
+    ownListings = data
+
+  listings = ->
+    ownListings
+
+  getData = (userid, callback) ->
+    $http
+      method: "GET"
+      url: "/api/listingsforuser/"+userid+"/0/1"
+    .success (data, status) ->
+      if data?
+        results =
+          listings: []
+        _.each data, ( listing ) ->
+          if listing.pictures.length > 0
+            t = listing.updated_on.split /[- :]/
+            d = new Date t[0], t[1]-1, t[2], t[3], t[4], t[5]
+            listing.date = d
+            results.listings.push listing
+        setListings results
+        callback ownListings
+
+  getData: getData
 ]

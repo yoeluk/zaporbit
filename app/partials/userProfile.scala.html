@@ -4,7 +4,8 @@
     <div class="row template-header">
         <div class="col-xs-12 col-md-9">
 
-            <div class="row-fluid clearfix profile-wrapper" data-ng-controller="UserProfileCtrl">
+            <div class="row-fluid clearfix profile-wrapper">
+
                 <div class="col-sm-12 col-md-12 profile-frame">
                     <div class="cover" data-img-centred=@options.background.get></div>
                     <div class="profile-profile">
@@ -30,7 +31,7 @@
                                 </div>
                                 <div class="pull-left" data-ng-click="setActive($index)" data-ng-class="isActive($index)" data-ng-repeat="menu in profileMenus track by $index">
                                     <div><h5> {{ menu.name }} </h5></div>
-                                    <div class="indicator"></div>
+                                    <div></div>
                                 </div>
                             </div>
                         </div>
@@ -42,43 +43,60 @@
                                 <h4 class="pull-left"> Listings <span class="glyphicon glyphicon-bullhorn"></span></h4>
                             </div>
 
-                            <div class="alert alert-warning" role="alert" data-ng-if="ownListings.length == 0"> You don't have any listings at present. Need to sale something? Create a listing now. It's quick and simple!  </div>
+                            <div class="alert alert-warning" role="alert" data-ng-if="allListings.length == 0"> We have nothing for sale at present. Check again at a later time for an update.  </div>
 
-                            <div class="panel panel-default" data-ng-repeat="lst in ownListings track by $index">
+                            <div class="panel panel-default" data-ng-repeat="listing in $parent.allListings track by $index">
                                 <div class="panel-body">
-                                    <h4 style="margin: 0"><a href="/#!/listing_item/{{lst.listing.id}}" data-ng-bind-html="lst.listing.title"></a></h4>
-                                    <div class="description-wrapper">
-                                        <p> {{ lst.listing.description }} </p>
-                                    </div>
-                                </div>
-                                <div class="panel-footer" style="font-size: 12px;">
-                                    <div>
-                                        <a class="foot-link" data-ng-class="canList($index)" data-ng-click="updateStatus($index, 'forsale')">
-                                            <span class="glyphicon glyphicon-arrow-up"></span> List </a>
-                                    </div>
-                                    <div>
-                                        <a class="foot-link" data-ng-class="canWithdraw($index)" data-ng-click="updateStatus($index, 'idle')">
-                                            <span class="glyphicon glyphicon-arrow-down"></span> Withdraw </a>
-                                    </div>
-                                    <div>
-                                        <a class="foot-link" data-ng-class="canRelist($index)">
-                                            <span class="glyphicon glyphicon-repeat"></span> Re-list </a>
-                                    </div>
-
-                                    <div>
-                                        <a class="foot-link" data-ng-click="share(lst)">
-                                            <span class="glyphicon glyphicon-share-alt"></span> Share </a>
-                                    </div>
-                                    <div>
-                                        <a class="foot-link" data-ng-class="canUpdate($index)">
-                                            <span class="glyphicon glyphicon-pencil"></span> Update </a>
-                                    </div>
-                                    <div>
-                                        <a class="foot-link" data-ng-class="canDelete($index)">
-                                            <span class="glyphicon glyphicon-trash"></span> Delete </a>
+                                    <div class="listing-item">
+                                        <div data-ng-controller="ModalListingCtrl">
+                                            <div class="clearfix listing-title title-opts">
+                                                <h4><a href="/#!/listing_item/{{listing.id}}" data-ng-bind-html="'» '+listing.title"></a></h4>
+                                            </div>
+                                            <div class="row-fluid center-cropped-wrapper">
+                                                <div data-ng-click="open('lg')" class="center-cropped pull-left" data-img-centred="/pictures/{{listing.pictures[0]}}.jpg"></div>
+                                                <div data-ng-click="open('lg')" class="center-cropped user-listing" data-img-centred="/pictures/{{listing.pictures[1]}}.jpg" data-ng-if="listing.pictures[1]"></div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </script>
+
+                    <script type="text/ng-template" id="modal-template.html">
+                        <div class="modal-header">
+                            <h3 class="modal-title" data-ng-bind-html="lst.listing.title"> </h3>
+                        </div>
+                        <div class="modal-body">
+                            <div data-ng-controller="ModalUserItemCarouselCtrl">
+                                <div style="">
+                                    <carousel interval="myInterval">
+                                        <slide ng-repeat="slide in slides" active="slide.active">
+                                            <div class="fitted-img" style="background-color: #000000">
+                                                <div class="centerer"></div>
+                                                <img data-ng-src="{{slide.image}}" style="">
+                                            </div>
+                                            <div class="carousel-caption">
+                                                <h4> Slide {{$index+1}} </h4>
+                                            </div>
+                                        </slide>
+                                    </carousel>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+
+                                    </div>
+                                    <div class="col-md-6">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item-description">
+                            <p data-ng-bind-html="lst.listing.description"> </p>
+                        </div>
+                        <div class="modal-footer" style="padding-right: 20px;">
+                            <button class="btn btn-default" data-ng-click="cancel()"> OK </button>
                         </div>
                     </script>
 

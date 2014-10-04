@@ -259,6 +259,7 @@ object writers {
           "price" -> item.price,
           "locale" -> item.locale,
           "userid" -> item.userid,
+          "formatted_price" -> Wallet.displayCurrency(item.locale, item.price),
           "pictures" -> item.pictures.get,
           "highlight" -> item.highlight,
           "waggle" -> item.waggle,
@@ -719,6 +720,13 @@ class API(override implicit val env: RuntimeEnvironment[SocialUser]) extends sec
           val pageResult = Offers.list1(page = page, orderBy = orderBy, userId = user.id.get)
           Ok(Json.toJson(pageResult))
         }
+    }
+  }
+
+  def listingsForUser(userid: Long, page: Int, orderBy: Int) = DBAction { implicit rs =>
+    DB.withSession { implicit rs =>
+      val pageResult = Offers.list2(page = page, orderBy = orderBy, userId = userid)
+      Ok(Json.toJson(pageResult))
     }
   }
 

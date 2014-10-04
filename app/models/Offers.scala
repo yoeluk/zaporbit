@@ -81,22 +81,22 @@ object Offers extends DAO {
     offers.filter(_.id === id).firstOption
 
   def listingWithOffer(offer: Offer)(implicit session: Session): Listing =
-  Listing(
-    id = offer.id,
-    title = offer.title,
-    description = offer.description,
-    price = offer.price,
-    locale = offer.locale,
-    pictures = Option((for {
-      p <- pictures.filter(_.offerid === offer.id.get)
-    } yield p.name).list),
-    shop = offer.shop,
-    highlight = offer.highlight,
-    waggle = offer.waggle,
-    telephone = offer.telephone,
-    userid = offer.userid,
-    created_on = offer.created_on,
-    updated_on = offer.updated_on)
+    Listing(
+      id = offer.id,
+      title = offer.title,
+      description = offer.description,
+      price = offer.price,
+      locale = offer.locale,
+      pictures = Option((for {
+        p <- pictures.filter(_.offerid === offer.id.get)
+      } yield p.name).list),
+      shop = offer.shop,
+      highlight = offer.highlight,
+      waggle = offer.waggle,
+      telephone = offer.telephone,
+      userid = offer.userid,
+      created_on = offer.created_on,
+      updated_on = offer.updated_on)
 
   def findListingById(id: Long)(implicit session: Session): Option[Listing] = {
     offers.filter(_.id === id).firstOption match {
@@ -222,6 +222,37 @@ object Offers extends DAO {
         o.created_on.?,
         o.updated_on.?)
     ).sortBy(_._11.desc).drop(offset).take(pageSize)
+    val totalRows = offerCountOfUser(userId)
+    val result = query.list.map( row =>
+      Listing(row._1, row._2, row._3, row._4, row._5,
+        Option((for {
+          p <- pictures if p.offerid === row._1.get
+        } yield p.name).list), row._6, row._7, row._8, row._9, row._10, row._11, row._12))
+    Page(result, page, offset, totalRows)
+  }
+
+  def list2(page: Int = 0,
+            pageSize: Int = 20,
+            orderBy: Int = 1,
+            userId: Long = 1)(implicit session: Session): Page[Listing] = {
+    val offset = pageSize * page
+    val query = (for {
+      o <- offers.filter(_.userid === userId)
+      s <- listingStatuses.filter(_.offerid === o.id).filter(_.status === "forsale")
+    } yield (
+        o.id.?,
+        o.title,
+        o.description,
+        o.price,
+        o.locale,
+        o.shop,
+        o.highlight,
+        o.waggle,
+        o.telephone.?,
+        o.userid,
+        o.created_on.?,
+        o.updated_on.?)
+      ).sortBy(_._11.desc).drop(offset).take(pageSize)
     val totalRows = offerCountOfUser(userId)
     val result = query.list.map( row =>
       Listing(row._1, row._2, row._3, row._4, row._5,
