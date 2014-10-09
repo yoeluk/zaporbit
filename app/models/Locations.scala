@@ -86,6 +86,7 @@ object Locations extends DAO {
         o.description,
         o.price,
         o.locale,
+        o.currency_code,
         o.shop,
         o.highlight,
         o.waggle,
@@ -119,6 +120,7 @@ object Locations extends DAO {
         o.description,
         o.price,
         o.locale,
+        o.currency_code,
         o.shop,
         o.highlight,
         o.waggle,
@@ -141,10 +143,10 @@ object Locations extends DAO {
       ) ++ friendsLQ).sortBy(_._1._11.desc).drop(offset).take(pageSize).list
     val totalRows = this.count(loc.locality, loc.administrativeArea)
     val result = q.map { row =>
-      (Listing(row._1._1, row._1._2, row._1._3, row._1._4, row._1._5,
+      (Listing(row._1._1, row._1._2, row._1._3, row._1._4, row._1._5, row._1._6,
         Option((for {
           p <- pictures if p.offerid === row._1._1.get
-        } yield p.name).list), row._1._6, row._1._7, row._1._8, row._1._9, row._1._10, row._1._11, row._1._12),
+        } yield p.name).list), row._1._7, row._1._8, row._1._9, row._1._10, row._1._11, row._1._12, row._1._13),
         ZOLocation(row._2._1, row._2._2, row._2._3, row._2._4, row._2._5),
         User(row._3._1, row._3._2, row._3._3, row._3._4, row._3._5, row._3._6, row._3._7)
         )}
@@ -180,6 +182,7 @@ object Locations extends DAO {
         o.description,
         o.price,
         o.locale,
+        o.currency_code,
         o.shop,
         o.highlight,
         o.waggle,
@@ -213,6 +216,7 @@ object Locations extends DAO {
         o.description,
         o.price,
         o.locale,
+        o.currency_code,
         o.shop,
         o.highlight,
         o.waggle,
@@ -240,10 +244,10 @@ object Locations extends DAO {
     val totalRows = q.length
     q.drop(offset).take(pageSize)
     val result = q.map { row =>
-      (Listing(row._1._1, row._1._2, row._1._3, row._1._4, row._1._5,
+      (Listing(row._1._1, row._1._2, row._1._3, row._1._4, row._1._5, row._1._6,
         Option((for {
           p <- pictures if p.offerid === row._1._1.get
-        } yield p.name).list), row._1._6, row._1._7, row._1._8, row._1._9, row._1._10, row._1._11, row._1._12),
+        } yield p.name).list), row._1._7, row._1._8, row._1._9, row._1._10, row._1._11, row._1._12, row._1._13),
         ZOLocation(row._2._1, row._2._2, row._2._3, row._2._4, row._2._5),
         User(row._3._1, row._3._2, row._3._3, row._3._4, row._3._5, row._3._6, row._3._7)
         )}
@@ -318,6 +322,7 @@ object Locations extends DAO {
         o.description,
         o.price,
         o.locale,
+        o.currency_code,
         o.shop,
         o.highlight,
         o.waggle,
@@ -350,6 +355,7 @@ object Locations extends DAO {
           o.description,
           o.price,
           o.locale,
+          o.currency_code,
           o.shop,
           o.highlight,
           o.waggle,
@@ -372,10 +378,10 @@ object Locations extends DAO {
       ) ++ friendsLQ).sortBy(_._1._11.desc).drop(testOffset).take(pageSize).list
     val totalRows = this.count(loc.locality, loc.administrativeArea)
     val result = q.map { row =>
-      (Listing(row._1._1, row._1._2, row._1._3, row._1._4, row._1._5,
+      (Listing(row._1._1, row._1._2, row._1._3, row._1._4, row._1._5, row._1._6,
         Option((for {
           p <- pictures if p.offerid === row._1._1.get
-        } yield p.name).list), row._1._6, row._1._7, row._1._8, row._1._9, row._1._10, row._1._11, row._1._12),
+        } yield p.name).list), row._1._7, row._1._8, row._1._9, row._1._10, row._1._11, row._1._12, row._1._13),
         ZOLocation(row._2._1, row._2._2, row._2._3, row._2._4, row._2._5),
         User(row._3._1, row._3._2, row._3._3, row._3._4, row._3._5, row._3._6, row._3._7)
         )}

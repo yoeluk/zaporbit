@@ -1,6 +1,7 @@
 @(user: User, rating: Int, options: UserOption)
 
 <div class="row-fluid clearfix" data-ng-controller="ProfileProfileCtrl">
+
     <div class="col-sm-12 col-md-12 profile-frame">
         <div class="cover" data-img-centred=@options.background.get data-img-override="{{backgroundPicture}}">
             <div class="camera">
@@ -44,12 +45,13 @@
                 </div>
             </div>
         </div>
+
         <script type="text/ng-template" id="own-listings-template">
             <div class="own-listings-wrapper" data-ng-controller="OwnListingsCtrl">
-                <div class="new-listing">
-                    <button class="btn btn-warning"> New Listing </button>
+                <div class="new-listing" data-ng-controller="ModalNewListingCtrl">
+                    <button data-ng-click="open('lg')" class="btn btn-warning"> New Listing </button>
                 </div>
-                <div class="clearfix" style="padding: 0 2px;">
+                <div class="clearfix" style="padding: 0 15px;">
                     <h4 class="pull-left"> Listings <span class="glyphicon glyphicon-bullhorn"></span></h4>
                 </div>
 
@@ -63,33 +65,115 @@
                         </div>
                     </div>
                     <div class="panel-footer" style="font-size: 12px;">
-                        <div>
-                            <a class="foot-link" data-ng-class="canList($index)" data-ng-click="updateStatus($index, 'forsale')">
-                                <span class="glyphicon glyphicon-arrow-up"></span> List </a>
-                        </div>
-                        <div>
-                            <a class="foot-link" data-ng-class="canWithdraw($index)" data-ng-click="updateStatus($index, 'idle')">
-                                <span class="glyphicon glyphicon-arrow-down"></span> Withdraw </a>
-                        </div>
-                        <div>
-                            <a class="foot-link" data-ng-class="canRelist($index)">
-                                <span class="glyphicon glyphicon-repeat"></span> Re-list </a>
-                        </div>
-
-                        <div>
-                            <a class="foot-link" data-ng-click="share(lst)">
-                                <span class="glyphicon glyphicon-share-alt"></span> Share </a>
-                        </div>
-                        <div>
-                            <a class="foot-link" data-ng-class="canUpdate($index)">
-                                <span class="glyphicon glyphicon-pencil"></span> Update </a>
-                        </div>
-                        <div>
-                            <a class="foot-link" data-ng-class="canDelete($index)">
-                                <span class="glyphicon glyphicon-trash"></span> Delete </a>
-                        </div>
+                        <button class="foot-link btn-custom" data-ng-class="canList($index)" data-ng-click="updateStatus($index, 'forsale')">
+                            <i class="fa fa-arrow-up"></i> List
+                        </button>
+                        <button class="foot-link btn-custom" data-ng-class="canWithdraw($index)" data-ng-click="updateStatus($index, 'idle')">
+                            <i class="fa fa-arrow-down"></i> Withdraw
+                        </button>
+                        <button class="foot-link btn-custom" data-ng-class="canRelist($index)">
+                            <i class="fa fa-repeat"></i> Re-list
+                        </button>
+                        <button class="foot-link btn-custom" data-ng-click="share(lst)">
+                            <i class="fa fa-share"></i> Share </button>
+                        <button class="foot-link btn-custom" data-ng-class="canUpdate($index)">
+                            <i class="fa fa-wrench"></i> Update
+                        </button>
+                        <button class="foot-link btn-custom delete-listing" data-ng-class="canDelete($index)">
+                            <i class="glyphicon glyphicon-trash"></i> Delete
+                        </button>
                     </div>
                 </div>
+            </div>
+        </script>
+
+        <script type="text/ng-template" id="new-listing-template.html">
+            <div class="modal-header">
+                <h3 class="modal-title"> New Listing Composer </h3>
+            </div>
+            <div class="modal-body">
+                <div id="msg" class="alert alert-success" data-ng-show="successMsg" data-ng-bind="successMsg"></div>
+                <div id="errorMsg" class="alert alert-danger" data-ng-show="showError" data-ng-bind="errorMsg"></div>
+                <progressbar class="progress-striped active" data-ng-show="inProgress" max="200" value="200" type="info"><i> Submitting... </i></progressbar>
+                <form name="newListing" novalidate class="form-horizontal newListing" role="form">
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control" name="title" data-ng-model="title" id="title" placeholder="Title" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <div
+                            data-ta-text-editor-class="form-content"
+                            data-ta-html-editor-class="form-content"
+                            data-ta-focussed-class="focussed"
+                            data-text-angular
+                            data-placeholder="Your item's description goes here."
+                            data-ng-model="htmlDescription"
+                            ></div>
+                        </div>
+                    </div>
+                    <div style="padding: 5px 0; margin-bottom: 15px;" class="clearfix">
+                        <div class="form-group pull-left" style="margin:0 10px 0 0; padding: 0;">
+                            <label class="custom-select">
+                                <select id="currency" name="currency" data-locale-attr>
+                                    <option value="USD" selected data-locale="en-US"> USD $ </option>
+                                    <option value="CAD" data-locale="en-CA"> CAD $ </option>
+                                    <option value="NZD" data-locale="en-NZ"> NZD $ </option>
+                                    <option value="GBP" data-locale="en-GB"> GBP £ </option>
+                                    <option value="EUR" data-locale="fr-FR"> EUR € </option>
+                                    <option value="CHF" data-locale="de-CH"> CHF Fr </option>
+                                    <option value="SEK" data-locale="sv-SE"> SEK kr </option>
+                                    <option value="NOK" data-locale="nb-NO"> NOK kr </option>
+                                    <option value="DKK" data-locale="da-DK"> DKK kr </option>
+                                    <option value="PLN" data-locale="pl-PL"> PLN zł </option>
+                                    <option value="TRY" data-locale="tr-TR"> TRY &#xf195;</option>
+                                    <!--<option value="ISK" data-locale="is-IS"> ISK kr </option>-->
+                                    <option value="ZAR" data-locale="en-ZA"> ZAR R </option>
+                                    <option value="SAR" data-locale="ar-SA"> SAR ﷼ </option>
+                                    <option value="AED" data-locale="ar-AE"> AED د.إ </option>
+                                    <option value="EGP" data-locale="ar-EG"> EGP ج.م </option>
+                                    <option value="INR" data-locale="hi-IN"> INR ₹ </option>
+                                    <option value="THB" data-locale="th-TH"> THB ฿ </option>
+                                    <option value="JPY" data-locale="ja-JP"> JPY ¥ </option>
+                                    <option value="VND" data-locale="vi-VN"> VND ₫ </option>
+                                    <option value="HKD" data-locale="zh-HK"> HKD $ </option>
+                                    <option value="CNY" data-locale="zh-CN"> CNY ¥ </option>
+                                    <!--<option value="TWD" data-locale="zh-TW"> TWD NT$ </option>-->
+                                    <option value="KRW" data-locale="ko-KR"> KRW ₩ </option>
+                                    <option value="MXN" data-locale="es-MX"> MXN $ </option>
+                                    <option value="BRL" data-locale="pr-BR"> BRL R$ </option>
+                                    <option value="ARS" data-locale="es-AR"> ARS $ </option>
+                                    <option value="CLP" data-locale="es-CL"> CLP $ </option>
+                                    <option value="COP" data-locale="es-CO"> COP $ </option>
+                                    <option value="CRC" data-locale="es-CR"> CRC ₡ </option>
+                                    <!--<option value="UYU" data-locale="es-UY"> UYU $</option>-->
+                                    <option value="UAH" data-locale="uk-UA"> UAH ₴ </option>
+                                    <option value="RUB" data-locale="ru-RU"> RUB &#xf158; </option>
+                                </select>
+                            </label>
+                        </div>
+                        <div class="form-group pull-left" style="margin:0 10px 0 0; padding: 0;">
+                            <input type="number" step="any" data-ng-model="price" id="price" name="price" min="0" placeholder="Price" required>
+                        </div>
+                    </div>
+                    <div class="photo-lane row-fluid clearfix">
+                        <ul data-ui-sortable="sortableOptions" data-ng-model="pictures">
+                            <li data-img-centred="{{pic.src}}" data-ng-repeat="pic in pictures track by $index">
+                                <div class="delete-look" data-sort-events data-index="{{$index}}">
+                                    <button data-ng-click="deletePicture($index)" class="btn btn-danger btn-sm"> Delete </button>
+                                </div>
+                            </li>
+                        </ul>
+                        <div data-img-centred="/vassets/images/add_photo.png" class="btn-file">
+                            <input type="file" data-ng-file-select="isDisabled || onPictureSelect($files)" accept="image/*">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success" data-ng-disabled="inProgress || posted" data-ng-click="submit(newListing)">Submit</button>
+                        <button class="btn btn-warning" data-ng-disabled="disableCancel" data-ng-click="cancel()"> {{ cancelTitle }} </button>
+                    </div>
+                </form>
             </div>
         </script>
         <div class="profile-background">

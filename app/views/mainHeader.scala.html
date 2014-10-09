@@ -16,8 +16,8 @@
                     <li data-ng-class="{ active: isActive('/listings')}"><a data-ng-href="#!/listings"> Listings </a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li data-ng-class="{ active: isActive('/userhome') }" class="user-home-btn">
-                        <a data-ng-href="#!/userhome"> <span data-ng-class="userIcon()" class="tab-icon"></span> {{ userName }} </a>
+                    <li data-ng-class="{ active: isActive('/userhome') }" class="user-home-btn" data-ng-if="userName != 'Offline'">
+                        <a data-ng-href="#!/userhome" data-ta-bind="text" data-ng-model="userName"><span data-ng-class="userIcon()" class="tab-icon"></span></a>
                     </li>
                     <li data-ng-class="{ active: isActive('/support') }"><a data-ng-href="#!/support"> Support </a></li>
                 </ul>

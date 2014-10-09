@@ -170,9 +170,6 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
     $scope.replying = false
 
-    myTrim = (x) ->
-      x.replace(/^\s+|\s+$/gm,'')
-
     getRecords = ->
       $http
         method: "GET"
@@ -381,7 +378,6 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
         $scope.submitted = true
         return if form.$invalid
         $scope.inProgress = true
-        $scope.inProgress = false
         $scope.query =
           address: $scope.city + ", " + $scope.region
         ReverseGeocode.geocodeAddress 1, 1, geocodeCallback, $scope.query
@@ -1158,7 +1154,6 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 .controller "UserListingsCtrl", ["$scope", ($scope) ->
   $scope.lst = {}
   $scope.$on "UserListings", (event, listings) ->
-    console.log "received listings"
     $scope.lst.listings = listings
 ]
 .controller "ModalUserItemCarouselCtrl", ["$scope", ($scope) ->
@@ -1176,4 +1171,107 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     while i < l
       $scope.addSlide(i)
       i++
+]
+.controller "ModalNewListingCtrl", ["$scope", "$modal", ($scope, $modal) ->
+
+  $scope.open = (size) ->
+    modalInstance = $modal.open
+      templateUrl: "new-listing-template.html"
+      controller: "NewListingInstCtrl"
+      size: size
+    modalInstance.result.then ( ->
+    ), ->
+]
+.controller "NewListingInstCtrl", ["$rootScope", "$scope", "$filter", "$http", "$modalInstance", "$timeout", "$upload", "localStorageService", ($rootScope, $scope, $filter, $http, $modalInstance, $timeout, $upload, localStorageService) ->
+
+  Array::move = (from, to) ->
+    @splice to, 0, @splice(from, 1)[0]
+
+  $scope.textAngularOpts = {}
+  $scope.htmlDescription = ''
+  $scope.errorMsg = "We found errors while processing your listing. Please ensure that all all fields are correctly filled and try again."
+  $scope.showError = false
+  $scope.inProgress = false
+
+  localeOpts =
+    locale: 'en-US'
+    currency_code: 'USD'
+
+  $scope.sortableOptions =
+    start: (e, ui) ->
+      $(e.target).data("ui-sortable").floating = true
+
+  $scope.cancelTitle = "Cancel"
+
+  $scope.pictures = []
+
+  $scope.cancel = ->
+    $modalInstance.dismiss "cancel"
+
+  $scope.onPictureSelect = ($files) ->
+    file = $files[0]
+    if file.type == "image/jpeg" || file.type == "image/png" || file.type == "image/jpg"
+      fileReader = new FileReader()
+      fileReader.readAsDataURL file
+      fileReader.onload = (e) ->
+        $timeout ->
+          $scope.pictures.push
+            src: e.target.result
+            file: file
+
+  $scope.deletePicture = (index) ->
+    $timeout ->
+      $scope.$apply ->
+        $scope.pictures.splice index, 1
+
+  $scope.$on "localeOpts", (e, opts) ->
+    localeOpts = opts
+
+  dataIsValid = (form) ->
+    return false if (!form.title.$viewValue || $filter('trim')(form.title.$viewValue) == '' ||
+      !form.price.$viewValue || !$filter('isNumber')(form.price.$viewValue) ||
+      $filter('trim')($scope.htmlDescription) == ''
+    )
+    return true
+
+  $scope.submit = (form) ->
+    $scope.submitted = true
+    console.log form
+    return if !dataIsValid(form)
+    $scope.inProgress = true
+    $scope.disableCancel = true
+    return
+    $http
+      method: "POST"
+      data:
+        "summary": form.summary.$viewValue
+        "description": form.description.$viewValue
+        "email": form.email.$viewValue
+      url: "api/youtrack/createissue"
+    .success (data, status) ->
+      if status == 200
+        $scope.posted = true
+        $scope.inProgress = false
+        $scope.disableCancel = false
+        $scope.cancelTitle = "Dismiss"
+        $scope.successMsg = "Your issue has been successfully submitted. It will be listed here after it is reviewed by an engineer!";
+      else
+        $scope.errorMsg = "Oops, we received your request, but there was an error."
+        $log.error data
+        $scope.disableCancel = false
+      $timeout (->
+        $scope.successMsg = null
+        $scope.errorMsg = null
+        $scope.submitted = false;
+        $modalInstance.close "close"
+      ), 4000
+    .error (data, status, headers, config) ->
+      $scope.progress = data
+      $scope.errorMsg = "There was a network error. Please try again later."
+      $log.error data
+      $timeout (->
+        $scope.errorMsg = null
+        $scope.submitted = false;
+        $modalInstance.close "close"
+      ), 5000
 ]

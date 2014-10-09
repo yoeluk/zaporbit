@@ -19,3 +19,11 @@ angular.module "ZapOrbit.filters", []
       sym = $locale.NUMBER_FORMATS.CURRENCY_SYM
       $filter("currency") num, "<span>" + sym + "</span>"
 ]
+.filter "trim", [ ->
+  (x) ->
+    x.replace(/^\s+|\s+$/gm,'')
+]
+.filter "isNumber", [ ->
+  (n) ->
+    ( !isNaN(parseInt(n)) || !isNaN(parseFloat(n)) ) && isFinite(n)
+]

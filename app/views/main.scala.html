@@ -8,27 +8,45 @@
         <meta charset="UTF-8">
         <meta content="IE=edge" http-equiv="X-UA-Compatible">
         <meta content="width=device-width, initial-scale=1" name="viewport">
-        <meta content="ZapOrbit App" name="description">
+        <meta content="Buy & Sell Safer Locally Online!" name="description">
         <meta content="ZapOrbit" name="author">
         <title>@title</title>
-
         <link href="@StaticWebJarAssets.getUrl(WebJarAssets.locate("bootstrap.css"))" rel="stylesheet">
         <link href="@StaticWebJarAssets.getUrl(WebJarAssets.locate("bootstrap-theme.css"))" rel="stylesheet">
-        <link href="@routes.Assets.versioned("stylesheets/customNavbar.css")" rel="stylesheet">
-        <link href="@routes.Assets.versioned("stylesheets/app.css")" rel="stylesheet">
+        <link href="@StaticWebJarAssets.getUrl(WebJarAssets.locate("font-awesome.min.css"))" rel='stylesheet'>
+        <!--<link href="StaticWebJarAssets.getUrl(WebJarAssets.locate("textAngular.min.css"))" rel='stylesheet'>-->
+        <link href="@routes.Assets.versioned("concated/main.css")" rel="stylesheet">
         <link href="@routes.Assets.versioned("images/favicon.png")" rel="shortcut icon" type="image/png">
-        <link href='//fonts.googleapis.com/css?family=Open+Sans:400,400italic,600,600italic,700,700italic' rel='stylesheet' type='text/css'>
     </head>
     <body data-ng-controller="AppCtrl">
         <div id="fb-root"></div>
-        <script>(function(d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) return;
-            js = d.createElement(s); js.id = id;
-            js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&appId=707572852626545&version=v2.0";
-            //js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&appId=754890951228068&version=v2.0";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));</script>
+        <script type="text/javascript">
+            (function(d, s, id) {
+                var js, fjs = d.getElementsByTagName(s)[0];
+                if (d.getElementById(id)) return;
+                js = d.createElement(s); js.id = id;
+                js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&appId=707572852626545&version=v2.0";
+                //js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&appId=754890951228068&version=v2.0";
+                fjs.parentNode.insertBefore(js, fjs);
+            }(document, 'script', 'facebook-jssdk'));
+            WebFontConfig = {
+                google: {
+                families: [
+                    'Open+Sans:400,600italic,600,400italic,300italic,300:latin',
+                    'Ubuntu:500:latin'
+                    ]
+                }
+            };
+            (function() {
+                var wf = document.createElement('script');
+                wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+                '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+                wf.type = 'text/javascript';
+                wf.async = 'true';
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(wf, s);
+            })();
+        </script>
 
         @mainHeader()
 
@@ -45,26 +63,22 @@
         <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
         <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("jquery.min.js"))"></script>
         <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("angular-file-upload-shim.min.js"))"></script>
-
         <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("angular.min.js"))"></script>
         <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("angular-route.min.js"))"></script>
         <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("angular-resource.min.js"))"></script>
-        <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("angular-sanitize.min.js"))"></script>
+        <!--<script src="StaticWebJarAssets.getUrl(WebJarAssets.locate("angular-sanitize.min.js"))"></script>-->
+        <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("angular-animate.min.js"))"></script>
         <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("lodash.underscore.min.js"))"></script>
         <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("angular-google-maps.min.js"))"></script>
-        <!--<script src="StaticWebJarAssets.getUrl(WebJarAssets.locate("lz-string.min.js"))"></script>-->
+        <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("jquery-ui.min.js"))"></script>
+        <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("sortable.min.js"))"></script>
         <script src="@StaticWebJarAssets.getUrl2(WebJarAssets.locate("ui-bootstrap.min.js"), "0.11.0-2")"></script>
         <script src="@StaticWebJarAssets.getUrl2(WebJarAssets.locate("ui-bootstrap-tpls.min.js"), "0.11.0-2")"></script>
         <script src="@StaticWebJarAssets.getUrl2(WebJarAssets.locate("moment.min.js"), "2.6.0-2")"></script>
         <script src="@StaticWebJarAssets.getUrl2(WebJarAssets.locate("angular-moment.min.js"), "0.6.2-2")"></script>
-
-        <script src="@routes.Assets.versioned("javascripts/angular-local-storage.js")"></script>
         <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("angular-file-upload.min.js"))"></script>
-
-        <script src="@routes.Assets.versioned("javascripts/app.js")"></script>
-        <script src="@routes.Assets.versioned("javascripts/services.js")"></script>
-        <script src="@routes.Assets.versioned("javascripts/controllers.js")"></script>
-        <script src="@routes.Assets.versioned("javascripts/filters.js")"></script>
-        <script src="@routes.Assets.versioned("javascripts/directives.js")"></script>
+        <script src='http://cdnjs.cloudflare.com/ajax/libs/textAngular/1.2.2/textAngular-sanitize.min.js'></script>
+        <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("textAngular.min.js"))"></script>
+        <script src="@routes.Assets.versioned("concated/all.js")"></script>
     </body>
 </html>

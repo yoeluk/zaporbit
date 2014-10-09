@@ -4,7 +4,7 @@
 angular.module "ZapOrbit", [
   "ngRoute",
   "ngResource",
-  "ngSanitize",
+  "ngAnimate",
   "ZapOrbit.filters",
   "ZapOrbit.services",
   "ZapOrbit.directives",
@@ -13,10 +13,15 @@ angular.module "ZapOrbit", [
   "google-maps",
   "angularMoment",
   "LocalStorageModule",
-  'angularFileUpload'
+  'angularFileUpload',
+  'ui.sortable',
+  'textAngular'
+]
+.run ["$rootScope", ($rootScope) ->
+
 ]
 .constant "pageSize", 25
-.config ["$locationProvider", "$routeProvider", "$httpProvider", ($locationProvider, $routeProvider, $httpProvider) ->
+.config ["$locationProvider", "$routeProvider", "$httpProvider", "$provide", ($locationProvider, $routeProvider, $httpProvider, $provide) ->
   $locationProvider
     .html5Mode false
     .hashPrefix "!"
@@ -41,8 +46,63 @@ angular.module "ZapOrbit", [
     .when "/userprofile",
       templateUrl: (params) -> "/userprofile?id="+params.id
       controller: "UserProfileCtrl"
-]
 
+  $provide.decorator "taOptions", ["$delegate", (taOptions) ->
+      # $delegate is the taOptions we are decorating
+      # here we override the default toolbars and classes specified in taOptions.
+      taOptions.toolbar = [
+        [
+          "h1"
+          "h2"
+          "h3"
+          "quote"
+        ]
+        [
+          "bold"
+          "italics"
+          "underline"
+          "ul"
+          "ol"
+          "redo"
+          "undo"
+        ]
+        [
+          "justifyLeft"
+          "justifyCenter"
+          "justifyRight"
+        ]
+        [
+          "html"
+          "insertImage"
+          "insertLink"
+          "unlink"
+        ]
+      ]
+      taOptions.classes =
+        focussed: "focussed"
+        toolbar: "btn-toolbar"
+        toolbarGroup: "btn-group"
+        toolbarButton: "btn btn-default"
+        toolbarButtonActive: "active"
+        disabled: "disabled"
+        textEditor: "form-control"
+        htmlEditor: "form-control"
+      return taOptions
+  ]
+
+  $provide.decorator "taOptions", ["taRegisterTool", "$delegate", (taRegisterTool, taOptions) ->
+    # $delegate is the taOptions we are decorating
+    # register the tool with textAngular
+    taRegisterTool "colourRed",
+      iconclass: "fa fa-square red"
+      action: ->
+        @$editor().wrapSelection "forecolor", "red"
+
+    # add the button to the default toolbar definition
+    taOptions.toolbar[1].push "colourRed"
+    return taOptions
+  ]
+]
 angular.module 'infinite-scroll', []
 .directive 'infiniteScroll', ['$rootScope', '$window', '$timeout', ($rootScope, $window, $timeout) ->
 

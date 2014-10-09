@@ -80,7 +80,7 @@ a.issue-title:hover,a.issue-title:focus {
     border-top-width: 0 !important;
 }
 .template-header {
-    margin-top: 20px;
+    margin-top: 10px;
     padding-left: 2px;
 }
 .modal-footer {
@@ -92,6 +92,13 @@ a.issue-title:hover,a.issue-title:focus {
 }
 .form-group .col-sm-6 {
     padding-left: 35px;
+}
+form textarea {
+    width: 100%;
+    max-width: 100%;
+}
+form label.col-sm-1{
+    padding-right: 0;
 }
 .right-edge {
     left: auto;
@@ -149,13 +156,17 @@ a.issue-title:hover,a.issue-title:focus {
 .price-wrapper {
     position: relative;
     margin-top: 10px;
-    margin-right: 5px;
+    margin-right: 0;
+    text-align: right;
 }
 .price-wrapper > label {
     font-size: 12px;
     font-weight: 400;
     letter-spacing: 1px;
     padding: 3px 5px 3px 7px;
+    visibility:visible;
+    opacity:1;
+    transition-delay:0s;
 }
 .price-wrapper > a {
     position: absolute;
@@ -170,8 +181,13 @@ a.issue-title:hover,a.issue-title:focus {
     opacity:1;
     transition-delay:0s;
 }
+.price-wrapper:hover > label {
+    visibility:hidden;
+    opacity:0;
+    transition:visibility 0s linear 0.2s,opacity 0.2s linear;
+}
 .item-time {
-    margin-right: 5px;
+    margin-right: 0;
 }
 .listing {
     overflow: hidden;
@@ -378,7 +394,7 @@ form.form-search:before {
 .btn-buy {
     position: absolute;
     top: 0;
-    right: 0;
+    right: 5px;
     z-index: 10;
     display: block;
     padding: 5px 8px;
@@ -396,11 +412,34 @@ form.form-search:before {
     border-color: #92d13d;
 }
 #searchBar,
+input,
+textarea {
+    border: 2px solid #ccc!important;
+}
+#searchBar,
 input:focus,
 textarea:focus {
     border-color: #92d13d!important;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.055) inset, 0 0 8px rgba(84, 139, 12, 0.5)!important;
     outline: 0 none;
+}
+::-webkit-input-placeholder, input:-moz-placeholder {
+    color: #777;
+}
+input[type="number"] {
+    font: inherit;
+    font-size: 14px;
+    padding: 5px 5px 5px 10px;
+    border-radius: 4px;
+}
+input[type="number"]:focus {
+    border: 2px solid #92d13d!important;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.055) inset, 0 0 8px rgba(84, 139, 12, 0.5)!important;
+}
+input[name="title"] {
+    font-size: 16px;
+    font-weight: 600;
+    height: auto;
 }
 .stars {
     width: 90px;
@@ -503,6 +542,9 @@ textarea:focus {
 }
 .profile-stars-wrapper > .stars {
     margin: auto;
+}
+.listing-item > .profile {
+    padding-right: 5px;
 }
 .about {
     position: absolute;
@@ -657,6 +699,7 @@ textarea:focus {
     background-color: #f5f5f5;
 }
 .description-wrapper > p {
+    font-size: 14px;
     margin: 0;
     max-height: 35px;
     text-overflow: ellipsis;
@@ -671,20 +714,13 @@ textarea:focus {
     zoom: 1; /* Trigger hasLayout */
     width: 16%;
 }
-a.foot-link > span {
-    margin-right: 5px;
-}
-
-.panel-footer a {
-    cursor: pointer;
-}
 a.disable {
     cursor: default;
     color: gray;
     text-decoration: none;
 }
 .new-listing {
-    margin-top: 15px;
+    margin-top: 5px;
     width: 100%;
     text-align: center;
 }
@@ -975,10 +1011,11 @@ img.resize{
     min-height: 50px;
     margin: 10px 0;
     padding: 15px;
-    border: 1px solid #ddd;
+    border: 2px solid #ddd;
     outline: none;
     overflow-y: scroll;
     word-wrap: break-word;
+    border-radius: 4px;
 }
 .message-reply:focus {
     border-color: #92d13d;
@@ -1149,4 +1186,134 @@ img.resize{
     overflow-y: scroll;
     overflow-x: hidden;
     padding-bottom: 2px;
+}
+.photo-lane {
+    min-height: 130px;
+    width: 100%;
+    padding: 5px 15px 15px 15px;
+    background-color: #f0f0f0;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1) inset;
+    overflow-x: scroll;
+    overflow-y: hidden;
+}
+.photo-lane > ul {
+    padding-left: 0;
+    margin: 0;
+}
+.photo-lane > ul > li {
+    list-style: none outside none;
+    float: left;
+    margin: 10px 10px 0 0;
+    height: 100px;
+    width: 100px;
+}
+.photo-lane > div {
+    position: relative;
+    float: left;
+    margin: 10px 0 0 0;
+    height: 100px;
+    width: 100px;
+    cursor: pointer;
+}
+.photo-lane div.btn-file {
+    right: 0;
+    top: 0;
+    cursor: pointer;
+}
+.photo-lane > ul > li > div.delete-look {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-height: 0;
+    transition: max-height 0.1s ease-out;
+    background-color: rgba(255, 255, 255, 0.3);
+    overflow: hidden;
+    text-align: center;
+    cursor: move;
+}
+.photo-lane > ul > li:hover > div.delete-look {
+    max-height: 100%;
+    transition: max-height 0.1s ease-in;
+    transition-delay:0s;
+}
+div.delete-look > button {
+    position: absolute;
+    top: 37px;
+    left: 22px;
+}
+label.custom-select {
+    position: relative;
+    display: inline-block;
+    min-height: 34px;
+    margin: 0;
+    background: none;
+}
+.custom-select > select {
+    -webkit-appearance: menulist-button;
+    height: 34px;
+    display: inline-block;
+    padding: 4px 3px 3px 5px;
+    margin: 0;
+    font-family: 'FontAwesome', 'Ubuntu', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    outline:none;
+    line-height: 19px;
+    background: #fff;
+    color: #666666;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+}
+select > option {
+    font-family: 'FontAwesome', 'Ubuntu', sans-serif;
+}
+.form-content {
+    border: 2px solid #ccc;
+    min-height: 250px;
+    outline: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-size: 14px;
+}
+.form-content:focus {
+    border: 2px solid #92d13d;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.055) inset, 0 0 8px rgba(84, 139, 12, 0.5)!important;
+}
+.fa-square.red {
+    color: red;
+}
+.foot-link.delete-listing:hover {
+    color: #ff0000;
+}
+.btn-custom {
+    padding: 2px 6px 3px 6px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    border: 1px solid #f0f0f0;
+    outline: none;
+    display: inline-block;
+}
+div.panel-footer:hover > .btn-custom {
+    background-color: #ffffff;
+    border-top-color: #f0f0f0;
+    border-bottom-color: #dddddd;
+}
+.btn-custom:hover {
+    color: #548B0C;
+}
+.btn-custom:active {
+    background-color: #f5f5f5!important;
+    border-top-color: #ffffff!important;
+}
+.own-listings-wrapper .panel-footer {
+    padding: 8px 15px;
+    border-top: 1px solid #f0f0f0;
+    text-align: justify;
+    height: 44px;
+    overflow: hidden;
+}
+.own-listings-wrapper .panel-footer:after {
+    content: '';
+    width: 100%; /* Ensures there are at least 2 lines of text, so justification works */
+    display: inline-block;
 }

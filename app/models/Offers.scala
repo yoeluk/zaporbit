@@ -40,6 +40,7 @@ case class Listing(id: Option[Long] = None,
                    description: String,
                    price: Double,
                    locale: String,
+                   currency_code: String,
                    pictures: Option[List[String]],
                    shop: String,
                    highlight: Boolean,
@@ -87,6 +88,7 @@ object Offers extends DAO {
       description = offer.description,
       price = offer.price,
       locale = offer.locale,
+      currency_code = offer.currency_code,
       pictures = Option((for {
         p <- pictures.filter(_.offerid === offer.id.get)
       } yield p.name).list),
@@ -107,6 +109,7 @@ object Offers extends DAO {
           o.description,
           o.price,
           o.locale,
+          o.currency_code,
           Option((for {
             p <- pictures.filter(_.offerid === o.id.get)
           } yield p.name).list),
@@ -165,6 +168,7 @@ object Offers extends DAO {
         o.description,
         o.price,
         o.locale,
+        o.currency_code,
         o.shop,
         o.highlight,
         o.waggle,
@@ -183,11 +187,11 @@ object Offers extends DAO {
     val totalRows = count(filter)
     val result = query.list.map {
       row => {(
-        Listing(row._1, row._2, row._3, row._4, row._5,
+        Listing(row._1, row._2, row._3, row._4, row._5, row._6,
           Option((for {
             p <- pictures if p.offerid === row._1.get
-              } yield p.name).list), row._6, row._7, row._8, row._9, row._10, row._11, row._12),
-        User(row._13, row._14, row._15, row._16, row._17, row._18, row._19)
+              } yield p.name).list), row._7, row._8, row._9, row._10, row._11, row._12, row._13),
+        User(row._14, row._15, row._16, row._17, row._18, row._19, row._20)
         )}
     }
     Page(result, page, offset, totalRows)
@@ -214,6 +218,7 @@ object Offers extends DAO {
         o.description,
         o.price,
         o.locale,
+        o.currency_code,
         o.shop,
         o.highlight,
         o.waggle,
@@ -224,10 +229,10 @@ object Offers extends DAO {
     ).sortBy(_._11.desc).drop(offset).take(pageSize)
     val totalRows = offerCountOfUser(userId)
     val result = query.list.map( row =>
-      Listing(row._1, row._2, row._3, row._4, row._5,
+      Listing(row._1, row._2, row._3, row._4, row._5, row._6,
         Option((for {
           p <- pictures if p.offerid === row._1.get
-        } yield p.name).list), row._6, row._7, row._8, row._9, row._10, row._11, row._12))
+        } yield p.name).list), row._7, row._8, row._9, row._10, row._11, row._12, row._13))
     Page(result, page, offset, totalRows)
   }
 
@@ -245,6 +250,7 @@ object Offers extends DAO {
         o.description,
         o.price,
         o.locale,
+        o.currency_code,
         o.shop,
         o.highlight,
         o.waggle,
@@ -255,10 +261,10 @@ object Offers extends DAO {
       ).sortBy(_._11.desc).drop(offset).take(pageSize)
     val totalRows = offerCountOfUser(userId)
     val result = query.list.map( row =>
-      Listing(row._1, row._2, row._3, row._4, row._5,
+      Listing(row._1, row._2, row._3, row._4, row._5, row._6,
         Option((for {
           p <- pictures if p.offerid === row._1.get
-        } yield p.name).list), row._6, row._7, row._8, row._9, row._10, row._11, row._12))
+        } yield p.name).list), row._7, row._8, row._9, row._10, row._11, row._12, row._13))
     Page(result, page, offset, totalRows)
   }
 

@@ -33,7 +33,7 @@
                     <h4 class="modal-title"> @listing.title </h4>
                 </div>
                 <div class="modal-body">
-                    <div data-ng-controller="ItemCarouselCtrl">
+                    <div data-ng-controller="ItemCarouselCtrl" data-set-ng-animate="false">
                         <div style="">
                             <carousel interval="myInterval">
                                 @for((pic, i) <- pictures.zipWithIndex) {

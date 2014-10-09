@@ -241,7 +241,7 @@ angular.module "ZapOrbit.directives", []
 .directive "scrollTop", ["$window", ($window) ->
   link: (scope, element, attrs) ->
     angular.element($window).bind "scroll", ->
-      if @pageYOffset >= 100
+      if @pageYOffset >= 90
         scope.fixedToTop = true
         scope.userHome = true
       else
@@ -269,17 +269,6 @@ angular.module "ZapOrbit.directives", []
       if index == parseInt(attrs.index)
         ngModel.$setViewValue ""
         ngModel.$render()
-]
-.directive "scrollWidth", ["$window", ($window) ->
-  link: (scope, element, attrs) ->
-    angular.element(element).bind "scroll", ->
-      if @pageYOffset >= 100
-        scope.fixedToTop = true
-        scope.userHome = true
-      else
-        scope.fixedToTop = false
-        scope.userHome = false
-      scope.$apply()
 ]
 .directive "myDescription", ["$timeout", ($timeout) ->
   restrict: "A"
@@ -313,4 +302,38 @@ angular.module "ZapOrbit.directives", []
 
     scope.$on "activate", (e) ->
       element.get(0).focus()
+]
+.directive "setNgAnimate", ["$animate", ($animate) ->
+  link: ($scope, $element, $attrs) ->
+    $scope.$watch (->
+      $scope.$eval $attrs.setNgAnimate, $scope
+    ), (valnew, valold) ->
+      $animate.enabled !!valnew, $element
+]
+.directive "sortEvents", ["$timeout", ($timeout) ->
+  restrict: "A"
+  link: (scope, element, attrs) ->
+
+    element.bind "mousedown", (e) ->
+      if e.target.tagName != 'BUTTON'
+        element.parent().css( "outline" : "1px dashed #555555" )
+        element.css( "background-color" : "rgba(255, 255, 255, 0)" )
+        element.find('button').css( "display" : "none" )
+
+    element.bind "mouseup", (e) ->
+      if e.target.tagName != 'BUTTON'
+        element.parent().css( "outline" : "none" )
+        element.find('button').css( "display" : "block" )
+        element.css( "background-color" : "rgba(255, 255, 255, 0.3)" )
+]
+.directive "localeAttr", [ ->
+  link: (scope, element, attrs) ->
+
+    element.bind "change", (e) ->
+      element.children().each (i) ->
+        if $(this).attr('value') == element.val()
+          locale = $(this).attr('data-locale')
+          scope.$broadcast "localeOpts",
+            locale: locale
+            currency_code: element.val()
 ]

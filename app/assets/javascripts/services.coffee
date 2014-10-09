@@ -348,3 +348,20 @@ angular.module "ZapOrbit.services", []
 
   getData: getData
 ]
+.factory "NewListingService", ["$http", "$timeout", "localStorageService", ($http, $timeout, localStorageService) ->
+
+  newListing = (listing, pictures) ->
+
+    browserLoc = localStorageService.get('loc')
+
+    location:
+      street: browserLoc.s
+      locality: browserLoc.c
+      administrativeArea: browserLoc.r
+      latitude: browserLoc.lt
+      longitude: browserLoc.ln
+
+
+
+  newListing: newListing
+]
