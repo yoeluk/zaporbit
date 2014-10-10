@@ -350,18 +350,33 @@ angular.module "ZapOrbit.services", []
 ]
 .factory "NewListingService", ["$http", "$timeout", "localStorageService", ($http, $timeout, localStorageService) ->
 
-  newListing = (listing, pictures) ->
+  newListing = (listing, pictures, callback) ->
 
     browserLoc = localStorageService.get('loc')
 
-    location:
-      street: browserLoc.s
-      locality: browserLoc.c
-      administrativeArea: browserLoc.r
-      latitude: browserLoc.lt
-      longitude: browserLoc.ln
-
-
+    $http
+      method: 'POST'
+      url: '/api/newlisting'
+      data:
+        offer:
+          title: listing.title
+          description: listing.description
+          price: listing.price
+          shop: if listing.shop? then listing.shop else "none"
+          locale: listing.locale
+          currency_code: listing.currency_code
+          highlight: if listing.highlight? then listing.highlight else false
+          waggle: if listing.waggle? then listing.waggle else false
+          userid: if listing.userid? then listing.userid else 0
+        location:
+          street: browserLoc.s
+          locality: browserLoc.c
+          administrativeArea: browserLoc.r
+          latitude: browserLoc.lt
+          longitude: browserLoc.ln
+        pictures: pictures
+    .success (data, status) ->
+      callback(data)
 
   newListing: newListing
 ]

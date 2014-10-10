@@ -540,6 +540,15 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
       if navigator.geolocation && !LocationService.coords()
         LocationService.location showLocation, displayError, $scope
+
+      $scope.formattedPrice = (index) ->
+        if $scope.allListings? and $scope.allListings[index]?
+          listing = $scope.allListings[index].listing
+          if listing.currency_code == "TRY"
+              listing.price + " &#xf195; " + listing.currency_code
+#          else if listing.currency_code == "RUB"
+#            listing.price + " &#xf158;"
+          else listing.formatted_price + " " + listing.currency_code
 ]
 .controller "SearchCtrl", ["$scope", "ListingService", ($scope, ListingService) ->
 
@@ -567,7 +576,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
   getStats = ->
     $http
       method: "GET"
-      url: "api/youtrack/getstats"
+      url: "/api/youtrack/getstats"
       context: this
     .success (data, status) ->
       if status == 200
@@ -582,7 +591,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
   $scope.getIssues = getIssues = ->
     $http
       method: "GET"
-      url: "api/youtrack/allissues"
+      url: "/api/youtrack/allissues"
       context: this
     .success (data, status) ->
       if status == 200
@@ -634,7 +643,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
         "summary": form.summary.$viewValue
         "description": form.description.$viewValue
         "email": form.email.$viewValue
-      url: "api/youtrack/createissue"
+      url: "/api/youtrack/createissue"
     .success (data, status) ->
       if status == 200
         $scope.posted = true
@@ -694,13 +703,13 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
   $scope.close = ->
     $modalInstance.dismiss "close"
 ]
-.controller "ModalItemCarouselCtrl", ["$scope", ($scope) ->
+.controller "ModalItemCarouselCtrl", ["$scope", "$filter", ($scope, $filter) ->
 
   $scope.myInterval = 5000
   slides = $scope.slides = []
   $scope.addSlide = (i) ->
     slides.push
-      image: "/pictures/" + $scope.$parent.lst.listing.pictures[i] + ".jpg"
+      image: "/pictures/" + $filter('appendExt')($scope.$parent.lst.listing.pictures[i])
       text: []
 
   if $scope.$parent.lst?
@@ -726,6 +735,11 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     i++
 ]
 .controller "ListingCtrl", ["$scope", ($scope) ->
+
+  $scope.htmlDescription = ""
+
+  $scope.$on "description", (e, description) ->
+    $scope.htmlDescription = description
 
 ]
 .controller "ProfileCtrl", ["$scope", "$timeout", "FacebookLogin", "$log", "SocialService", "$window", ($scope, $timeout, FacebookLogin, $log, SocialService, $window) ->
@@ -989,7 +1003,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
           prop: prop
         fileReader.onload = (e) ->
           $upload.http
-            url: 'api/saveOptionsPictures/'+fileName
+            url: '/api/saveOptionsPictures/'+fileName
             method: 'POST'
             data: e.target.result
             headers:
@@ -1018,7 +1032,9 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       method: 'POST'
       data: data
     .success (data, status, headers) ->
-      console.log data
+      ''
+    .error (error) ->
+      console.log error
 
   $scope.isEditing = ->
     if Object.getOwnPropertyNames(updateData).length > 0 then true else false
@@ -1078,10 +1094,11 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       else {disable: true}
 
   $scope.canRelist = (index) ->
-    if $scope.ownListings?
-      lst = $scope.ownListings[index]
-      if lst.listingStatus.status == 'sold' then {}
-      else {disable: true}
+    return {disable: true}
+#    if $scope.ownListings?
+#      lst = $scope.ownListings[index]
+#      if lst.listingStatus.status == 'sold' then {}
+#      else {disable: true}
 
   $scope.canShare = (index) ->
     {disable: true}
@@ -1148,21 +1165,19 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
   UserListingService.getData($routeParams.id, gotListings)
 
-  console.log "getData called"
-
 ]
 .controller "UserListingsCtrl", ["$scope", ($scope) ->
   $scope.lst = {}
   $scope.$on "UserListings", (event, listings) ->
     $scope.lst.listings = listings
 ]
-.controller "ModalUserItemCarouselCtrl", ["$scope", ($scope) ->
+.controller "ModalUserItemCarouselCtrl", ["$scope", "$filter", ($scope, $filter) ->
 
   $scope.myInterval = 5000
   slides = $scope.slides = []
   $scope.addSlide = (i) ->
     slides.push
-      image: "/pictures/" + $scope.$parent.lst.pictures[i] + ".jpg"
+      image: "/pictures/" + $filter('appendExt')($scope.$parent.lst.pictures[i])
       text: []
 
   if $scope.$parent.lst?
@@ -1179,99 +1194,124 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       templateUrl: "new-listing-template.html"
       controller: "NewListingInstCtrl"
       size: size
+      backdrop: 'static'
     modalInstance.result.then ( ->
     ), ->
 ]
-.controller "NewListingInstCtrl", ["$rootScope", "$scope", "$filter", "$http", "$modalInstance", "$timeout", "$upload", "localStorageService", ($rootScope, $scope, $filter, $http, $modalInstance, $timeout, $upload, localStorageService) ->
+.controller "NewListingInstCtrl", ["$rootScope", "$scope", "$filter", "$http", "$modalInstance", "$timeout", "$upload", "NewListingService"
+  ($rootScope, $scope, $filter, $http, $modalInstance, $timeout, $upload, NewListingService) ->
 
-  Array::move = (from, to) ->
-    @splice to, 0, @splice(from, 1)[0]
+    Array::move = (from, to) ->
+      @splice to, 0, @splice(from, 1)[0]
 
-  $scope.textAngularOpts = {}
-  $scope.htmlDescription = ''
-  $scope.errorMsg = "We found errors while processing your listing. Please ensure that all all fields are correctly filled and try again."
-  $scope.showError = false
-  $scope.inProgress = false
+    $scope.textAngularOpts = {}
+    $scope.htmlDescription = ''
+    $scope.errorMsg = "We found errors while processing your listing. Please ensure that all all fields are correctly filled and try again."
+    $scope.showError = false
+    $scope.inProgress = false
+    $scope.uploadProgress = 0
+    $scope.progMessage = ""
+    $scope.pictureNames = []
+    $scope.picturesProg = {}
+    $scope.cancelTitle = "Cancel"
+    $scope.posted = false
+    $scope.pictures = []
 
-  localeOpts =
-    locale: 'en-US'
-    currency_code: 'USD'
+    localeOpts =
+      locale: 'en-US'
+      currency_code: 'USD'
 
-  $scope.sortableOptions =
-    start: (e, ui) ->
-      $(e.target).data("ui-sortable").floating = true
+    $scope.sortableOptions =
+      start: (e, ui) ->
+        $(e.target).data("ui-sortable").floating = true
 
-  $scope.cancelTitle = "Cancel"
+    $scope.cancel = ->
+      $modalInstance.dismiss "cancel"
 
-  $scope.pictures = []
+    $scope.onPictureSelect = ($files) ->
+      file = $files[0]
+      if file.type == "image/jpeg" || file.type == "image/png" || file.type == "image/jpg"
+        fileReader = new FileReader()
+        fileReader.readAsDataURL file
+        fileReader.onload = (e) ->
+          $timeout ->
+            $scope.pictures.push
+              src: e.target.result
+              file: file
 
-  $scope.cancel = ->
-    $modalInstance.dismiss "cancel"
+    $scope.deletePicture = (index) ->
+      $timeout ->
+        $scope.$apply ->
+          $scope.pictures.splice index, 1
 
-  $scope.onPictureSelect = ($files) ->
-    file = $files[0]
-    if file.type == "image/jpeg" || file.type == "image/png" || file.type == "image/jpg"
-      fileReader = new FileReader()
-      fileReader.readAsDataURL file
-      fileReader.onload = (e) ->
-        $timeout ->
-          $scope.pictures.push
-            src: e.target.result
-            file: file
+    $scope.$on "localeOpts", (e, opts) ->
+      localeOpts = opts
 
-  $scope.deletePicture = (index) ->
-    $timeout ->
-      $scope.$apply ->
-        $scope.pictures.splice index, 1
+    dataIsValid = (form) ->
+      return false if (!form.title.$viewValue || $filter('trim')(form.title.$viewValue) == '' ||
+        !form.price.$viewValue || !$filter('isNumber')(form.price.$viewValue) ||
+        $filter('trim')($scope.htmlDescription) == '')
+      return true
 
-  $scope.$on "localeOpts", (e, opts) ->
-    localeOpts = opts
+    $scope.submit = (form) ->
+      $scope.submitted = true
+      console.log form
+      return if !dataIsValid form
+      $scope.inProgress = true
+      $scope.disableCancel = true
+      if $scope.pictures.length
+        doPictureUploading $scope.pictures, form
+      return
 
-  dataIsValid = (form) ->
-    return false if (!form.title.$viewValue || $filter('trim')(form.title.$viewValue) == '' ||
-      !form.price.$viewValue || !$filter('isNumber')(form.price.$viewValue) ||
-      $filter('trim')($scope.htmlDescription) == ''
-    )
-    return true
+    doPictureUploading = (pictures, form) ->
+      length = pictures.length
+      $scope.uploadProgress = 5
+      _.each pictures, (p, i) ->
+        $scope.picturesProg[i] = 0
+      _.each pictures, (pic, i) ->
+        file = pic.file
+        fileReader = new FileReader()
+        fileReader.readAsArrayBuffer file
+        #bufView = new Uint16Array buf
+        parts = file.name.split "."
+        fileName = $filter('pictureName')(24) + "." + parts[1]
+        fileReader.onload = (e) ->
+          $upload.http
+            url: '/api/uploadpictures/'+fileName
+            method: 'POST'
+            data: e.target.result
+            headers:
+              'Content-Type': file.type
+              'Content-Disposition':
+                filename: fileName
 
-  $scope.submit = (form) ->
-    $scope.submitted = true
-    console.log form
-    return if !dataIsValid(form)
-    $scope.inProgress = true
-    $scope.disableCancel = true
-    return
-    $http
-      method: "POST"
-      data:
-        "summary": form.summary.$viewValue
-        "description": form.description.$viewValue
-        "email": form.email.$viewValue
-      url: "api/youtrack/createissue"
-    .success (data, status) ->
-      if status == 200
-        $scope.posted = true
-        $scope.inProgress = false
-        $scope.disableCancel = false
-        $scope.cancelTitle = "Dismiss"
-        $scope.successMsg = "Your issue has been successfully submitted. It will be listed here after it is reviewed by an engineer!";
-      else
-        $scope.errorMsg = "Oops, we received your request, but there was an error."
-        $log.error data
-        $scope.disableCancel = false
-      $timeout (->
-        $scope.successMsg = null
-        $scope.errorMsg = null
-        $scope.submitted = false;
-        $modalInstance.close "close"
-      ), 4000
-    .error (data, status, headers, config) ->
-      $scope.progress = data
-      $scope.errorMsg = "There was a network error. Please try again later."
-      $log.error data
-      $timeout (->
-        $scope.errorMsg = null
-        $scope.submitted = false;
-        $modalInstance.close "close"
-      ), 5000
+          .progress (evt) ->
+            $scope.picturesProg[i] = parseInt (100.0 * evt.loaded / evt.total)
+            sum = 0
+            _.each pictures, (p, ii) ->
+              sum += ($scope.picturesProg[ii] / length)
+            $scope.uploadProgress = sum
+
+          .success (data, status) ->
+            $scope.pictureNames.push fileName
+            if $scope.uploadProgress > 99
+              console.log $scope.pictureNames
+              $scope.progMessage = "Creating listing..."
+              NewListingService.newListing
+                title: $filter('trim')(form.title.$viewValue)
+                description: $filter('trim')($scope.htmlDescription)
+                price: parseFloat form.price.$viewValue
+                locale: localeOpts.locale
+                currency_code: localeOpts.currency_code
+              , $scope.pictureNames, newListingCallback
+
+    newListingCallback = (data) ->
+      console.log data
+      $scope.pictureNames = []
+      $scope.posted = true
+      $scope.inProgress = false
+      $scope.disableCancel = false
+      $scope.cancelTitle = "Dismiss"
+      $scope.progMessage = ''
+
 ]

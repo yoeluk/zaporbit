@@ -75,9 +75,9 @@ Closure.flags := Seq("--formatting=PRETTY_PRINT", "--accept_const_keyword")
 // Asset pipeline tasks
 pipelineStages in Assets := Seq(concat)
 
-//excludeFilter in closure := "angular*.js"
+includeFilter in closure := "all.js"
 
-pipelineStages := Seq(digest, gzip)
+pipelineStages := Seq(closure, digest, gzip)
 
 includeFilter in (Assets, LessKeys.less) := "star-rating.less"
 

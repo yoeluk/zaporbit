@@ -314,11 +314,13 @@ object Offers extends DAO {
     val pics = (for {
       p <- pictures.filter(_.offerid inSet oids)
     } yield
-      p.offerid -> p.name
-      ).toMap
+      (p.offerid, p.name)
+      ).list.groupBy(_._1).toMap
 
     val resOffers = ofrs.map { o =>
-      (o, OfferStatus(status.getOrElse(o.id.get, "none")), OfferPicture(pics.getOrElse(o.id.get, "none")))
+      val picName = pics.getOrElse(o.id.get, List((0.toLong, "none"))).head._2
+      if (picName.split("\\.").length > 1) (o, OfferStatus(status.getOrElse(o.id.get, "none")), OfferPicture( picName ))
+      else (o, OfferStatus(status.getOrElse(o.id.get, "none")), OfferPicture( picName +".jpg" ))
     }
     Page(resOffers, page, offset, totalRows)
   }

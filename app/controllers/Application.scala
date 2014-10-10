@@ -212,7 +212,9 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
       case None =>
         "//graph.facebook.com/v2.1/{{lst.user.fbuserid}}/picture?height=200&width=200"
       case Some(opts) =>
-        "/options/pictures/"+opts.picture.get
+        val parts = opts.picture.get.split("\\.")
+        if (parts.length > 1) "/options/pictures/" + opts.picture.get
+        else "/options/pictures/" + opts.picture.get + ".jpg"
     }
   }
 

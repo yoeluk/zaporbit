@@ -61,7 +61,7 @@
                     <div class="panel-body">
                         <h4 style="margin: 0"><a href="/#!/listing_item/{{lst.listing.id}}" data-ng-bind-html="lst.listing.title"></a></h4>
                         <div class="description-wrapper">
-                            <p> {{ lst.listing.description }} </p>
+                            <p data-ta-bind="text" data-ng-model="lst.listing.description">  </p>
                         </div>
                     </div>
                     <div class="panel-footer" style="font-size: 12px;">
@@ -79,7 +79,7 @@
                         <button class="foot-link btn-custom" data-ng-class="canUpdate($index)">
                             <i class="fa fa-wrench"></i> Update
                         </button>
-                        <button class="foot-link btn-custom delete-listing" data-ng-class="canDelete($index)">
+                        <button class="foot-link btn-custom delete-listing" data-delete-listener="false" data-ng-class="canDelete($index)">
                             <i class="glyphicon glyphicon-trash"></i> Delete
                         </button>
                     </div>
@@ -94,7 +94,7 @@
             <div class="modal-body">
                 <div id="msg" class="alert alert-success" data-ng-show="successMsg" data-ng-bind="successMsg"></div>
                 <div id="errorMsg" class="alert alert-danger" data-ng-show="showError" data-ng-bind="errorMsg"></div>
-                <progressbar class="progress-striped active" data-ng-show="inProgress" max="200" value="200" type="info"><i> Submitting... </i></progressbar>
+                <progressbar class="progress-striped active" data-ng-show="inProgress" max="100" value="100" type="info"><i> {{progMessage}} </i></progressbar>
                 <form name="newListing" novalidate class="form-horizontal newListing" role="form">
                     <div class="form-group">
                         <div class="col-sm-12">
@@ -118,38 +118,38 @@
                             <label class="custom-select">
                                 <select id="currency" name="currency" data-locale-attr>
                                     <option value="USD" selected data-locale="en-US"> USD $ </option>
-                                    <option value="CAD" data-locale="en-CA"> CAD $ </option>
-                                    <option value="NZD" data-locale="en-NZ"> NZD $ </option>
-                                    <option value="GBP" data-locale="en-GB"> GBP £ </option>
-                                    <option value="EUR" data-locale="fr-FR"> EUR € </option>
-                                    <option value="CHF" data-locale="de-CH"> CHF Fr </option>
-                                    <option value="SEK" data-locale="sv-SE"> SEK kr </option>
-                                    <option value="NOK" data-locale="nb-NO"> NOK kr </option>
-                                    <option value="DKK" data-locale="da-DK"> DKK kr </option>
-                                    <option value="PLN" data-locale="pl-PL"> PLN zł </option>
-                                    <option value="TRY" data-locale="tr-TR"> TRY &#xf195;</option>
-                                    <!--<option value="ISK" data-locale="is-IS"> ISK kr </option>-->
-                                    <option value="ZAR" data-locale="en-ZA"> ZAR R </option>
-                                    <option value="SAR" data-locale="ar-SA"> SAR ﷼ </option>
-                                    <option value="AED" data-locale="ar-AE"> AED د.إ </option>
-                                    <option value="EGP" data-locale="ar-EG"> EGP ج.م </option>
-                                    <option value="INR" data-locale="hi-IN"> INR ₹ </option>
-                                    <option value="THB" data-locale="th-TH"> THB ฿ </option>
-                                    <option value="JPY" data-locale="ja-JP"> JPY ¥ </option>
-                                    <option value="VND" data-locale="vi-VN"> VND ₫ </option>
-                                    <option value="HKD" data-locale="zh-HK"> HKD $ </option>
-                                    <option value="CNY" data-locale="zh-CN"> CNY ¥ </option>
-                                    <!--<option value="TWD" data-locale="zh-TW"> TWD NT$ </option>-->
-                                    <option value="KRW" data-locale="ko-KR"> KRW ₩ </option>
-                                    <option value="MXN" data-locale="es-MX"> MXN $ </option>
-                                    <option value="BRL" data-locale="pr-BR"> BRL R$ </option>
-                                    <option value="ARS" data-locale="es-AR"> ARS $ </option>
-                                    <option value="CLP" data-locale="es-CL"> CLP $ </option>
-                                    <option value="COP" data-locale="es-CO"> COP $ </option>
-                                    <option value="CRC" data-locale="es-CR"> CRC ₡ </option>
-                                    <!--<option value="UYU" data-locale="es-UY"> UYU $</option>-->
-                                    <option value="UAH" data-locale="uk-UA"> UAH ₴ </option>
-                                    <option value="RUB" data-locale="ru-RU"> RUB &#xf158; </option>
+                                    <option value="CAD" data-locale="en_CA"> CAD $ </option>
+                                    <option value="NZD" data-locale="en_NZ"> NZD $ </option>
+                                    <option value="GBP" data-locale="en_GB"> GBP £ </option>
+                                    <option value="EUR" data-locale="fr_FR"> EUR € </option>
+                                    <option value="CHF" data-locale="de_CH"> CHF Fr </option>
+                                    <option value="SEK" data-locale="sv_SE"> SEK kr </option>
+                                    <option value="NOK" data-locale="nb_NO"> NOK kr </option>
+                                    <option value="DKK" data-locale="da_DK"> DKK kr </option>
+                                    <option value="PLN" data-locale="pl_PL"> PLN zł </option>
+                                    <option value="TRY" data-locale="tr_TR"> TRY &#xf195;</option>
+                                    <!--<option value="ISK" data-locale="is_IS"> ISK kr </option>-->
+                                    <option value="ZAR" data-locale="en_ZA"> ZAR R </option>
+                                    <option value="SAR" data-locale="ar_SA"> SAR ﷼ </option>
+                                    <option value="AED" data-locale="ar_AE"> AED د.إ </option>
+                                    <option value="EGP" data-locale="ar_EG"> EGP ج.م </option>
+                                    <option value="INR" data-locale="hi_IN"> INR ₹ </option>
+                                    <option value="THB" data-locale="th_TH"> THB ฿ </option>
+                                    <option value="JPY" data-locale="ja_JP"> JPY ¥ </option>
+                                    <option value="VND" data-locale="vi_VN"> VND ₫ </option>
+                                    <option value="HKD" data-locale="zh_HK"> HKD $ </option>
+                                    <option value="CNY" data-locale="zh_CN"> CNY ¥ </option>
+                                    <!--<option value="TWD" data-locale="zh_TW"> TWD NT$ </option>-->
+                                    <option value="KRW" data-locale="ko_KR"> KRW ₩ </option>
+                                    <option value="MXN" data-locale="es_MX"> MXN $ </option>
+                                    <option value="BRL" data-locale="pr_BR"> BRL R$ </option>
+                                    <option value="ARS" data-locale="es_AR"> ARS $ </option>
+                                    <option value="CLP" data-locale="es_CL"> CLP $ </option>
+                                    <option value="COP" data-locale="es_CO"> COP $ </option>
+                                    <option value="CRC" data-locale="es_CR"> CRC ₡ </option>
+                                    <!--<option value="UYU" data-locale="es_UY"> UYU $</option>-->
+                                    <option value="UAH" data-locale="uk_UA"> UAH ₴ </option>
+                                    <option value="RUB" data-locale="ru_RU"> RUB &#xf158; </option>
                                 </select>
                             </label>
                         </div>

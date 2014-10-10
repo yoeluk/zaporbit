@@ -1,4 +1,4 @@
-@(listing: Listing, pictures:List[String], loc: Location, user: User, rating: Float, currency: String, token: Option[String], pictureUrl: String, ext: String = ".jpg")
+@(listing: Listing, pictures:List[String], loc: Location, user: User, rating: Float, currency: String, token: Option[String], pictureUrl: String)
 <script src="https://wallet.google.com/inapp/lib/buy.js"></script>
 <script type="text/javascript" language="javascript">
     // Success handler
@@ -40,7 +40,7 @@
                                     <slide active="slides[@i].active">
                                         <div class="fitted-img main-item" style="background-color: #000000">
                                             <div class="centerer"></div>
-                                            <img data-ng-src="/pictures/@pic@ext" style="">
+                                            <img data-ng-src="/pictures/@{if(pic.split("\\.").length > 1) pic else pic.split("\\.")(0)+".jpg"}">
                                         </div>
                                         <div class="carousel-caption">
                                             <h4> Slide @(i+1) </h4>
@@ -60,14 +60,9 @@
                     </div>
                 </div>
                 <div class="item-description">
-                    <h5>
-                        @listing.description
-                    </h5>
+                    <h5 data-ta-bind="text" data-ng-model="htmlDescription" data-html-description="@listing.description"></h5>
                 </div>
                 <div class="modal-footer" style="padding-right: 20px;">
-
-
-
 
                 </div>
             </div>

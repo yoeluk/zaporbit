@@ -854,35 +854,44 @@ class API(override implicit val env: RuntimeEnvironment[SocialUser]) extends sec
    * inserts a new listing item (offer + pictures)
    * @return
    */
-  def receiveListing = DBAction(parse.json(maxLength = 1024)) { implicit rs =>
-    (rs.request.body \ "location").validate[Location].map { location =>
-      (rs.request.body \ "offer").validate[Offer] match {
-        case JsSuccess(pseudOffer, _) =>
-          val insertedOfferId = Offers.insertReturningId(pseudOffer)
-          for {
-            (name, i) <- (rs.request.body \ "pictures").as[Seq[JsString]].zipWithIndex if i < 6
-          } yield Json.obj(
-            "name" -> name.as[String],
-            "offerid" -> insertedOfferId
-          ).validate[Picture].map { picture =>
-            Pictures.insert(picture)
+  def receiveListing = SecuredAction(parse.json) { implicit request =>
+    request.user.main match {
+      case user =>
+        DB.withSession { implicit s =>
+          (request.body \ "location").validate[Location] match {
+            case JsSuccess(location, _) =>
+              (request.body \ "offer").validate[Offer] match {
+                case JsSuccess(pseudOffer, _) =>
+                  val newOffer = pseudOffer.copy(userid = user.id.get)
+                  val insertedOfferId = Offers.insertReturningId(newOffer)
+                  for {
+                    (name, i) <- (request.body \ "pictures").as[Seq[JsString]].zipWithIndex if i < 6
+                  } yield Json.obj(
+                    "name" -> name.as[String],
+                    "offerid" -> insertedOfferId
+                  ).validate[Picture].map { picture =>
+                    Pictures.insert(picture)
+                  }
+                  val newLocation = location.copy(offerid = Some(insertedOfferId))
+                  Locations.insert(newLocation)
+                  Ok(Json.obj(
+                    "status" -> "OK",
+                    "listingid" -> JsNumber(insertedOfferId)
+                  ))
+                case JsError(e) =>
+                  //println(JsError.toFlatJson(e))
+                  BadRequest(Json.obj(
+                    "status" -> "KO",
+                    "message" -> "invalid listing json"))
+              }
+            case JsError(e) =>
+              //println(JsError.toFlatJson(e))
+              BadRequest(Json.obj(
+                "status" -> "KO",
+                "message" -> "invalid location json"))
           }
-          val newLocation = location.copy(offerid = Some(insertedOfferId))
-          Locations.insert(newLocation)
-          Ok(Json.obj(
-            "status" -> "OK",
-            "listingid" -> JsNumber(insertedOfferId)
-          ))
-        case JsError(e) =>
-          println(JsError.toFlatJson(e))
-          BadRequest(Json.obj(
-              "status" -> "KO",
-              "message" -> "invalid listing json")
-          )
-      }
-    }.getOrElse(BadRequest(Json.obj(
-      "status" -> "KO",
-      "message" -> "invalid location")))
+        }
+    }
   }
   /**
    * this method is called every time a user login (it inserts user if doesn't exists else updates user)

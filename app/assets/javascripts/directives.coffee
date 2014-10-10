@@ -337,3 +337,34 @@ angular.module "ZapOrbit.directives", []
             locale: locale
             currency_code: element.val()
 ]
+.directive "deleteListener", ["$document", "$timeout", ($document, $timeout) ->
+  link: (scope, element, attrs) ->
+
+    bodyClickCallback = (e) ->
+      console.log 'removing confirm class'
+      console.log e
+      element.removeClass "confirm"
+      element.data 'delete-listener', false
+      angular.element($document[0].body).unbind "click", bodyClickCallback
+      if e.target == element
+        console.log "same element"
+
+    clickCallback = (e) ->
+      if !element.data('delete-listener')
+        element.data 'delete-listener', true
+        element.addClass "confirm"
+        console.log 'adding confirm class'
+        $timeout ->
+          angular.element($document[0].body).bind "click", bodyClickCallback
+        , 50
+      else
+        console.log "deleting listing"
+
+    element.bind "click", clickCallback
+]
+.directive "htmlDescription", [ ->
+  restrict: "A"
+  link: (scope, element, attrs) ->
+
+    scope.$broadcast 'description', element.data 'html-description'
+]

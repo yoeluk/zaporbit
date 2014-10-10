@@ -34,7 +34,6 @@ object ListingStatuses extends DAO {
   def update(offerid: Long, status: String)(implicit  session: Session): Unit = {
     listingStatuses.filter(_.offerid === offerid).firstOption match {
       case Some(st) =>
-        println(st.offerid)
         val query = listingStatuses.filter(_.offerid === offerid)
         query.map { row =>
           row.status
