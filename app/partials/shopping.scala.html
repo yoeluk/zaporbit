@@ -56,7 +56,7 @@
 
             <alert ng-repeat="alert in alerts track by $index" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
 
-            <div class="panel panel-default" data-ng-if="(paging && paging.total > 0) || filterStr" data-ng-controller="SearchCtrl">
+            <div class="panel panel-default panel-search" data-ng-if="(paging && paging.total > 0) || filterStr" data-ng-controller="SearchCtrl">
                 <div class="panel-body searchPanel">
                     <div class="search-wrapper">
                         <form name="search" class="" role="form">
@@ -98,12 +98,12 @@
 
             <script type="text/ng-template" id="modal-template.html">
                 <div class="modal-header">
-                    <h3 class="modal-title" data-ta-bind="text" data-ng-model="lst.listing.title"> </h3>
+                    <h3 class="modal-title" data-ta-bind data-ng-model="lst.listing.title"> </h3>
                 </div>
                 <div class="modal-body">
-                    <div data-ng-controller="ModalItemCarouselCtrl" data-set-ng-animate="false">
+                    <div data-ng-controller="ModalItemCarouselCtrl">
                         <div style="">
-                            <carousel interval="myInterval">
+                            <carousel interval="myInterval" disable-ng-animate>
                                 <slide ng-repeat="slide in slides" active="slide.active">
                                     <div class="fitted-img" style="background-color: #000000">
                                         <div class="centerer"></div>
@@ -126,7 +126,7 @@
                     </div>
                 </div>
                 <div class="item-description">
-                    <p data-ta-bind="text" data-ng-model="lst.listing.description"> </p>
+                    <div data-ta-bind data-ng-model="lst.listing.description"> </div>
                 </div>
                 <div class="modal-footer" style="padding-right: 20px;">
                     <button class="btn btn-default" data-ng-click="cancel()"> OK </button>
@@ -142,12 +142,12 @@
                         <div data-ng-include="'/credentialtemplate/'+lst.user.id"></div>
                         <span class="pull-right price-wrapper">
                             <label class="label label-info"> {{ lst.listing.formatted_price }} {{ lst.listing.currency_code }} </label>
-                            <a class="btn btn-info buy-now" href="/#!/listing_item/{{lst.listing.id}}"> Buy Now </a>
+                            <a class="btn btn-info buy-now" href="/#!/listing_item/{{lst.listing.id}}"><i class="fa fa-google-wallet"></i> Buy Now </a>
                         </span>
                     </div>
                     <div data-ng-controller="ModalListingCtrl">
                         <div class="clearfix listing-title">
-                            <h5>» <a href="javascript:;" data-ng-click="open('lg')" data-ta-bind="text" data-ng-model="lst.listing.title"></a></h5>
+                            <h5>» <a href="javascript:;" data-ng-click="open('lg')" data-ta-bind data-ng-model="lst.listing.title"></a></h5>
                         </div>
                         <div class="row-fluid center-cropped-wrapper">
                             <div data-ng-click="open('lg')" class="center-cropped pull-left" data-img-centred="/pictures/{{lst.listing.pictures[0] | appendExt}}"></div>

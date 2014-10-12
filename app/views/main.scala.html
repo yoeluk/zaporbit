@@ -2,17 +2,23 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/html" data-ng-app="ZapOrbit">
+<html xmlns="http://www.w3.org/1999/xhtml" data-ng-app="ZapOrbit" data-ng-controller="AppCtrl">
     <head>
         <base href="/">
         <meta charset="UTF-8">
         <meta content="IE=edge" http-equiv="X-UA-Compatible">
-        <meta content="width=device-width, initial-scale=1" name="viewport">
-        <meta content="Buy & Sell Safer Locally Online. Find a Bargain Today!" name="description">
+        <meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=2.0, target-densitydpi=device-dpi" name="viewport">
+        <meta content="Buy and sell more and safer locally online!" name="description">
         <meta content="YRGD @@ ZapOrbit" name="author">
         <meta name="contact" content="hq@@zaporbit.com">
         <meta name="copyright" content="YRGD @@ ZapOrbit. All rights reserved">
         <meta name="keywords" content="zaporbit,zaporbit.com,selling,bargain,sale">
+
+        <meta property="og:url" content="https://zaporbit.com" />
+        <meta property="og:title" content="ZapOrbit" />
+        <meta property="og:description" content="Buy and sell more and safer locally online!" />
+        <meta property="og:image" content="https://zaporbit.com/assets/images/appicon.png" />
+
         <title>@title</title>
         <link href="@StaticWebJarAssets.getUrl(WebJarAssets.locate("bootstrap.css"))" rel="stylesheet">
         <link href="@StaticWebJarAssets.getUrl(WebJarAssets.locate("bootstrap-theme.css"))" rel="stylesheet">
@@ -20,8 +26,8 @@
         <link href="@routes.Assets.versioned("concated/main.css")" rel="stylesheet">
         <link href="@routes.Assets.versioned("images/favicon.png")" rel="shortcut icon" type="image/png">
     </head>
-    <body data-ng-controller="AppCtrl">
-        <div id="fb-root"></div>
+    <body>
+        <div id="fb-root" style="position:fixed; z-index:1001;"></div>
         <script type="text/javascript">
             (function(d, s, id) {
                 var js, fjs = d.getElementsByTagName(s)[0];
@@ -62,25 +68,23 @@
             </div>
         </div>
 
-        <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+        <script src="//maps.googleapis.com/maps/api/js?sensor=false"></script>
         <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("jquery.min.js"))"></script>
         <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("angular-file-upload-shim.min.js"))"></script>
         <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("angular.min.js"))"></script>
         <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("angular-route.min.js"))"></script>
-        <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("angular-resource.min.js"))"></script>
-        <!--<script src="StaticWebJarAssets.getUrl(WebJarAssets.locate("angular-sanitize.min.js"))"></script>-->
         <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("angular-animate.min.js"))"></script>
+        <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("angular-resource.min.js"))"></script>
         <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("lodash.underscore.min.js"))"></script>
         <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("angular-google-maps.min.js"))"></script>
         <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("jquery-ui.min.js"))"></script>
         <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("sortable.min.js"))"></script>
-        <script src="@StaticWebJarAssets.getUrl2(WebJarAssets.locate("ui-bootstrap.min.js"), "0.11.0-2")"></script>
-        <script src="@StaticWebJarAssets.getUrl2(WebJarAssets.locate("ui-bootstrap-tpls.min.js"), "0.11.0-2")"></script>
-        <script src="@StaticWebJarAssets.getUrl2(WebJarAssets.locate("moment.min.js"), "2.6.0-2")"></script>
-        <script src="@StaticWebJarAssets.getUrl2(WebJarAssets.locate("angular-moment.min.js"), "0.6.2-2")"></script>
+        <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("ui-bootstrap.min.js"))"></script>
+        <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("ui-bootstrap-tpls.min.js"))"></script>
+        <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("moment.min.js"))"></script>
+        <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("angular-moment.min.js"))"></script>
         <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("angular-file-upload.min.js"))"></script>
         <script src='//cdnjs.cloudflare.com/ajax/libs/textAngular/1.2.2/textAngular-sanitize.min.js'></script>
-        <script src="@StaticWebJarAssets.getUrl(WebJarAssets.locate("textAngular.min.js"))"></script>
         <script src="@routes.Assets.versioned("concated/all.js")"></script>
     </body>
 </html>

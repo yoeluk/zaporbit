@@ -2,7 +2,7 @@
 
 <div class="row-fluid clearfix" data-ng-controller="ProfileProfileCtrl">
 
-    <div class="col-sm-12 col-md-12 profile-frame">
+    <div class="col-md-12 profile-frame profile-small">
         <div class="cover" data-img-centred=@options.background.get data-img-override="{{backgroundPicture}}">
             <div class="camera">
                 <a href='javascript:;' class="glyphicon glyphicon-camera btn-file">
@@ -10,7 +10,7 @@
                 </a>
             </div>
         </div>
-        <div class="profile-profile">
+        <div class="profile-profile profile-small">
             <div class="inner-profile">
 
                 <div class="picture-wrapper">
@@ -47,7 +47,7 @@
         </div>
 
         <script type="text/ng-template" id="own-listings-template">
-            <div class="own-listings-wrapper" data-ng-controller="OwnListingsCtrl">
+            <div class="own-listings-wrapper profile-small" data-ng-controller="OwnListingsCtrl">
                 <div class="new-listing" data-ng-controller="ModalNewListingCtrl">
                     <button data-ng-click="open('lg')" class="btn btn-warning"> New Listing </button>
                 </div>
@@ -57,29 +57,30 @@
 
                 <div class="alert alert-warning" role="alert" data-ng-if="ownListings.length == 0"> You don't have any listings at present. Need to sale something? Create a listing now. It's quick and simple!  </div>
 
-                <div class="panel panel-default" data-ng-repeat="lst in ownListings track by $index">
+                <div class="panel panel-default" data-ng-class="{animate:true}" data-ng-repeat="lst in ownListings track by lst.listing.id">
                     <div class="panel-body">
-                        <h4 style="margin: 0"><a href="/#!/listing_item/{{lst.listing.id}}" data-ng-bind-html="lst.listing.title"></a></h4>
+                        <h4 style="margin: 0"><a href="/#!/listing_item/{{lst.listing.id}}" data-ng-bind="lst.listing.title"></a></h4>
                         <div class="description-wrapper">
-                            <p data-ta-bind="text" data-ng-model="lst.listing.description">  </p>
+                            <p class="html-description" data-ta-bind data-ng-model="lst.listing.description">  </p>
                         </div>
                     </div>
                     <div class="panel-footer" style="font-size: 12px;">
                         <button class="foot-link btn-custom" data-ng-class="canList($index)" data-ng-click="updateStatus($index, 'forsale')">
-                            <i class="fa fa-arrow-up"></i> List
+                            <i class="fa fa-arrow-up"></i> Post
                         </button>
                         <button class="foot-link btn-custom" data-ng-class="canWithdraw($index)" data-ng-click="updateStatus($index, 'idle')">
                             <i class="fa fa-arrow-down"></i> Withdraw
                         </button>
                         <button class="foot-link btn-custom" data-ng-class="canRelist($index)">
-                            <i class="fa fa-repeat"></i> Re-list
+                            <i class="fa fa-repeat"></i> Re-post
                         </button>
                         <button class="foot-link btn-custom" data-ng-click="share(lst)">
-                            <i class="fa fa-share"></i> Share </button>
+                            <i class="fa fa-share"></i> Share
+                        </button>
                         <button class="foot-link btn-custom" data-ng-class="canUpdate($index)">
                             <i class="fa fa-wrench"></i> Update
                         </button>
-                        <button class="foot-link btn-custom delete-listing" data-delete-listener="false" data-ng-class="canDelete($index)">
+                        <button class="foot-link btn-custom delete-listing" data-delete-listener="false" data-index='{{$index}}' data-ng-class="canDelete($index)">
                             <i class="glyphicon glyphicon-trash"></i> Delete
                         </button>
                     </div>
@@ -104,12 +105,12 @@
                     <div class="form-group">
                         <div class="col-sm-12">
                             <div
+                            data-text-angular
                             data-ta-text-editor-class="form-content"
                             data-ta-html-editor-class="form-content"
                             data-ta-focussed-class="focussed"
-                            data-text-angular
+                            data-ng-model="htmldescription"
                             data-placeholder="Your item's description goes here."
-                            data-ng-model="htmlDescription"
                             ></div>
                         </div>
                     </div>
@@ -171,7 +172,7 @@
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-success" data-ng-disabled="inProgress || posted" data-ng-click="submit(newListing)">Submit</button>
-                        <button class="btn btn-warning" data-ng-disabled="disableCancel" data-ng-click="cancel()"> {{ cancelTitle }} </button>
+                        <button class="btn btn-warning" data-ng-disabled="disableCancel" data-ng-click="dismiss()"> {{ cancelTitle }} </button>
                     </div>
                 </form>
             </div>

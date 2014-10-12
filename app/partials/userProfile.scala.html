@@ -45,7 +45,7 @@
 
                             <div class="alert alert-warning" role="alert" data-ng-if="allListings.length == 0"> We have nothing for sale at present. Check again at a later time for an update.  </div>
 
-                            <div class="panel panel-default" data-ng-repeat="listing in $parent.allListings track by $index">
+                            <div class="panel panel-default" data-ng-class="{animate:true}" data-ng-repeat="listing in $parent.allListings track by listing.id">
                                 <div class="panel-body">
                                     <div class="listing-item">
                                         <div data-ng-controller="ModalListingCtrl">
@@ -68,9 +68,9 @@
                             <h3 class="modal-title" data-ng-bind-html="lst.listing.title"> </h3>
                         </div>
                         <div class="modal-body">
-                            <div data-ng-controller="ModalUserItemCarouselCtrl" data-set-ng-animate="false">
+                            <div data-ng-controller="ModalUserItemCarouselCtrl">
                                 <div style="">
-                                    <carousel interval="myInterval">
+                                    <carousel interval="myInterval" disable-ng-animate>
                                         <slide ng-repeat="slide in slides" active="slide.active">
                                             <div class="fitted-img" style="background-color: #000000">
                                                 <div class="centerer"></div>

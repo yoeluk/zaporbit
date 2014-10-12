@@ -33,9 +33,9 @@
                     <h4 class="modal-title"> @listing.title </h4>
                 </div>
                 <div class="modal-body">
-                    <div data-ng-controller="ItemCarouselCtrl" data-set-ng-animate="false">
-                        <div style="">
-                            <carousel interval="myInterval">
+                    <div data-ng-controller="ItemCarouselCtrl">
+                        <div>
+                            <carousel interval="myInterval" disable-ng-animate>
                                 @for((pic, i) <- pictures.zipWithIndex) {
                                     <slide active="slides[@i].active">
                                         <div class="fitted-img main-item" style="background-color: #000000">
@@ -60,14 +60,14 @@
                     </div>
                 </div>
                 <div class="item-description">
-                    <h5 data-ta-bind="text" data-ng-model="htmlDescription" data-html-description="@listing.description"></h5>
+                    <h5 data-ta-bind data-ng-model="htmlAttrDescription" data-html-attr-description="@listing.description"></h5>
                 </div>
                 <div class="modal-footer" style="padding-right: 20px;">
 
                 </div>
             </div>
             <div class="col-xs-6 col-md-4">
-                <div data-scroll data-ng-class="{posFixed: fixedToTop}" class="btn-block">
+                <div data-scroll-top data-ng-class="{posFixed: fixedToTop}" class="btn-block">
                     <div class="" style="margin-bottom: 10px; border-bottom: 1px solid rgb(229, 229, 229)">
                         <h5> Seller </h5>
                     </div>

@@ -8,13 +8,15 @@ import play.api.db.slick.Config.driver.simple._
 
 case class Friend(id: Option[Long] = None,
                     userid: Long,
-                    friendid: Long)
+                    friendid: Long,
+                    friendfbid: String)
 
 class Friends(tag: Tag) extends Table[Friend](tag, "Friends") {
   def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
   def userid = column[Long]("userid", O.NotNull)
   def friendid = column[Long]("friendid", O.NotNull)
-  def * = (id.?, userid, friendid) <> (Friend.tupled, Friend.unapply _)
+  def friendfbid = column[String]("friendfbid", O.NotNull)
+  def * = (id.?, userid, friendid, friendfbid) <> (Friend.tupled, Friend.unapply _)
   def user = foreignKey("fk_friend_user", userid, TableQuery[Users])(_.id)
 }
 
@@ -22,13 +24,13 @@ object Friends extends DAO {
 
   /**
    *
-   * @param friendid
+   * @param friendfbid
    * @param session
    * @return
    */
-  def findFollowersForFriend(friendid: Long)(implicit session: Session): List[User] =
+  def findFollowersForFriend(friendfbid: String)(implicit session: Session): List[User] =
     (for {
-       l <- friends.filter(_.friendid === friendid)
+       l <- friends.filter(_.friendfbid === friendfbid)
        f <- l.user
      } yield f).list
 
@@ -57,8 +59,13 @@ object Friends extends DAO {
    * @param session
    * @return
    */
-  def insertAll(newFollowings: Seq[Friend])(implicit session: Session): Unit =
-    friends.insertAll(newFollowings : _*)
+  def insertAllNewFollowings(newFollowings: Seq[Option[Friend]])(implicit session: Session): Unit = {
+    val nff = for {
+      f <- newFollowings if f != None
+    } yield f.get
+    friends.insertAll(nff : _*)
+  }
+
 
   /**
    *
@@ -67,17 +74,20 @@ object Friends extends DAO {
    * @param session
    * @return
    */
-  def updateFollowingForUser(userid: Long, newFollowings: List[Friend])(implicit session: Session) = {
+  def updateFollowingForUser(userid: Long, newFollowings: List[Option[Friend]])(implicit session: Session) = {
     this.findFollowingForUser(userid) match {
       case Nil =>
-        this.insertAll(newFollowings)
+        this.insertAllNewFollowings(newFollowings)
       case existingFriends =>
-        val newFollowingsIds = newFollowings.map(f => f.friendid).toSet
-        val existingFriendsIds = existingFriends.map(f => f.friendid).toVector
+        val nff = for {
+          f <- newFollowings if f != None
+        } yield f.get
+        val newFollowingsIds = nff.map(f => f.friendfbid).toSet
+        val existingFriendsIds = existingFriends.map(f => f.friendfbid).toVector
         val newFollowingList = for {
-          fr <- newFollowings.filterNot(x => existingFriendsIds.contains(x.friendid))
+          fr <- nff.filterNot(x => existingFriendsIds.contains(x.friendfbid))
         } yield fr
-        this.insertAll(newFollowingList)
+        friends.insertAll(newFollowingList : _*)
         this.purgeUnfollowings(userid, newFollowingsIds)
     }
   }
@@ -89,10 +99,10 @@ object Friends extends DAO {
    * @param session
    * @return
    */
-  def purgeUnfollowings(userid: Long, existingFriendsIds: Set[Long])(implicit session: Session) =
+  def purgeUnfollowings(userid: Long, existingFriendsIds: Set[String])(implicit session: Session) =
     (for {
       fl <- friends.filter(_.userid === userid)
-        .filterNot(_.friendid inSet existingFriendsIds)
+        .filterNot(_.friendfbid inSet existingFriendsIds)
     } yield fl).delete
 
 

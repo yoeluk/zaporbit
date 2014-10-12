@@ -30,20 +30,17 @@ libraryDependencies ++= {
     "com.google.collections" % "google-collections" % "1.0",
     "joda-time" % "joda-time" % "2.1",
     "com.googlecode.json-simple" % "json-simple" % "1.1.1",
-    "org.webjars" %% "webjars-play" % "2.3.0",
+    "org.webjars" %% "webjars-play" % "2.3.0-2",
     "org.webjars" % "jquery" % "2.1.1",
     "org.webjars" % "jquery-ui" % "1.11.1",
     "org.webjars" % "bootstrap" % "3.2.0",
-    "org.webjars" % "angularjs" % "1.3.0-rc.3",
+    "org.webjars" % "angularjs" % "1.3.0-rc.4",
     "org.webjars" % "angular-ui-bootstrap" % "0.11.2" exclude("org.webjars", "angularjs"),
-    "org.webjars" % "textAngular" % "1.2.0" exclude("org.webjars", "angularjs"),
-    //"org.webjars" % "holderjs" % "2.3.0",
-    //"org.webjars" % "lz-string" % "1.3.3",
-    "org.webjars" % "angular-moment" % "0.6.2-2" exclude("org.webjars", "angularjs"),
+    "org.webjars" % "angular-moment" % "0.8.2" exclude("org.webjars", "angularjs"),
     "org.webjars" % "angular-google-maps" % "1.2.2" exclude("org.webjars", "angularjs"),
     "org.webjars" % "angular-ui-sortable" % "0.12.11-1" exclude("org.webjars", "jquery-ui"),
     "org.webjars" % "font-awesome" % "4.2.0",
-    "org.webjars" % "angular-file-upload" % "1.6.7",
+    "org.webjars" % "angular-file-upload" % "1.6.12",
     cache,
     filters,
     ws
@@ -52,10 +49,13 @@ libraryDependencies ++= {
 
 Concat.groups := Seq(
   "main.css" -> group(Seq(
+    "stylesheets/animations.css",
     "stylesheets/customNavbar.css",
     "stylesheets/app.css"
   )),
   "all.js" -> group(Seq(
+    "javascripts/textAngular/1.2.2/textAngularSetup.js",
+    "javascripts/textAngular/1.2.2/textAngular.js",
     "javascripts/angular-local-storage.js",
     "javascripts/app.js",
     "javascripts/services.js",
@@ -63,7 +63,6 @@ Concat.groups := Seq(
     "javascripts/filters.js",
     "javascripts/directives.js"
   ))
-  //"style-group2.css" -> group((sourceDirectory.value / "assets" / "style") * "*.css")
 )
 
 Concat.parentDir := "concated"

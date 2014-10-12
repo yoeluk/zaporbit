@@ -17,9 +17,6 @@ angular.module "ZapOrbit", [
   'ui.sortable',
   'textAngular'
 ]
-.run ["$rootScope", ($rootScope) ->
-
-]
 .constant "pageSize", 25
 .config ["$locationProvider", "$routeProvider", "$httpProvider", "$provide", ($locationProvider, $routeProvider, $httpProvider, $provide) ->
   $locationProvider
@@ -46,7 +43,6 @@ angular.module "ZapOrbit", [
     .when "/userprofile",
       templateUrl: (params) -> "/userprofile?id="+params.id
       controller: "UserProfileCtrl"
-
   $provide.decorator "taOptions", ["$delegate", (taOptions) ->
       # $delegate is the taOptions we are decorating
       # here we override the default toolbars and classes specified in taOptions.
@@ -73,9 +69,9 @@ angular.module "ZapOrbit", [
         ]
         [
           "html"
-          "insertImage"
           "insertLink"
-          "unlink"
+          "insertImage"
+          "insertVideo"
         ]
       ]
       taOptions.classes =
@@ -151,3 +147,49 @@ angular.module 'infinite-scroll', []
           handler()
       ), 0
 ]
+.animation "animate", ->
+  enter: (element, done) ->
+    element.css "opacity", 0
+    console.log 'entering'
+    jQuery(element).animate
+      opacity: 1
+    , done
+
+    # optional onDone or onCancel callback
+    # function to handle any post-animation
+    # cleanup operations
+    (isCancelled) ->
+      jQuery(element).stop()  if isCancelled
+      return
+
+  leave: (element, done) ->
+    element.css "opacity", 1
+    jQuery(element).animate
+      opacity: 0
+    , done
+
+    # optional onDone or onCancel callback
+    # function to handle any post-animation
+    # cleanup operations
+    (isCancelled) ->
+      jQuery(element).stop()  if isCancelled
+      return
+
+  move: (element, done) ->
+    element.css "opacity", 0
+    jQuery(element).animate
+      opacity: 1
+    , done
+
+    # optional onDone or onCancel callback
+    # function to handle any post-animation
+    # cleanup operations
+    (isCancelled) ->
+      jQuery(element).stop()  if isCancelled
+      return
+
+
+  # you can also capture these animation events
+  addClass: (element, className, done) ->
+
+  removeClass: (element, className, done) ->

@@ -71,6 +71,8 @@ object writers {
 
   import FormMappings._
 
+  case class RawFriend(userid: Long, friendfbid: String)
+
   /*
    * reference from accepted answer in stackoverlow
    * http://stackoverflow.com/questions/17281291/how-do-i-write-a-json-format-for-an-object-in-the-java-library-that-doesnt-have
@@ -634,8 +636,19 @@ object writers {
     mapping(
       "id" -> optional(longNumber),
       "userid" -> longNumber,
-      "friendid" -> longNumber
+      "friendid" -> longNumber,
+      "friendfbid" -> nonEmptyText
     )(Friend.apply)(Friend.unapply)
+  )
+
+  /**** RawFriend validation ****/
+
+  implicit val rawFriendFormat = Json.format[RawFriend]
+  val rawFriendForm = Form(
+    mapping(
+      "userid" -> longNumber,
+      "friendfbid" -> nonEmptyText
+    )(RawFriend.apply)(RawFriend.unapply)
   )
 
   /**** Feedback validation ****/
@@ -919,26 +932,33 @@ class API(override implicit val env: RuntimeEnvironment[SocialUser]) extends sec
 
   /**
    *
-   * @param id the id of the listing to delete
+   * @param listingid the id of the listing to delete
    * @return
    */
-  def deleteListing(id: Long) = DBAction(parse.json) { implicit rs =>
-    Transactions.findPendingOrProcessingTransById(id) match {
-      case Some(trans) =>
-        Forbidden(Json.obj(
-          "status" -> "KO",
-          "message" -> "Forbidden to modify a pending or processing transaction."
-        ))
-      case None =>
-        val pictures = rs.request.body.as[List[String]]
-        pictures.foreach { p =>
-          val file = new File(configuration.getString("pictures_dir").get + p + ".jpg")
-          if (file.exists) file.delete
+  def deleteListing(listingid: Long) = SecuredAction { implicit request =>
+    request.user.main match {
+      case user =>
+        DB.withSession { implicit s =>
+          Transactions.findPendingOrProcessingTransById(listingid) match {
+            case Some(trans) =>
+              Forbidden(Json.obj(
+                "status" -> "KO",
+                "message" -> "Forbidden to modify a pending or processing transaction."
+              ))
+            case None =>
+              val pictures = Pictures.picturesByOfferId(listingid)
+              pictures.foreach { p =>
+                val parts = p.split("\\.")
+                val pName = if (parts.length > 1) p else p + ".jpg"
+                val file = new File(configuration.getString("pictures_dir").get + pName)
+                if (file.exists) file.delete
+              }
+              Offers.delete(listingid)
+              Ok(Json.obj(
+                "status" -> "OK"
+              ))
+          }
         }
-        Offers.delete(id)
-        Ok(Json.obj(
-          "status" -> "OK"
-        ))
     }
   }
 
@@ -1582,11 +1602,19 @@ class API(override implicit val env: RuntimeEnvironment[SocialUser]) extends sec
    */
   def followingFriends(userid: Long) = DBAction(parse.json(maxLength = 1024)) { implicit rs =>
     val friends = for {
-      fs <- rs.request.body.as[List[JsValue]]
+      fs <- rs.request.body.as[List[RawFriend]]
     } yield {
-      fs.validate[Friend].get
+     val friendid = Users.findByFbId(fs.friendfbid) match {
+       case Some(friend) => friend.id.get
+       case None => 0.toLong
+     }
+      if (friendid != 0) {
+        Some(Friend(userid = userid, friendid = friendid, friendfbid = fs.friendfbid))
+      } else None
     }
+    //println(friends)
     Friends.updateFollowingForUser(userid, friends)
+    //println(Friends.findFollowingForUser(userid)) // *now tested that this method corectly updates the followingFirends*
     Ok(Json.obj(
       "status" -> "OK",
       "message" -> "following friends updated"

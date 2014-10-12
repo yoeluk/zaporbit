@@ -2,7 +2,7 @@
 
 # Controllers
 angular.module "ZapOrbit.controllers", ["ngResource"]
-.controller "AppCtrl", ["$scope", "$location", "StorageSupport", "$log", ($scope, $location, StorageSupport, $log) ->
+.controller "AppCtrl", ["$scope", "$rootScope", "$location", "StorageSupport", "$log", ($scope, $rootScope, $location, StorageSupport, $log) ->
   $scope.go = (path) ->
     $location.path path
 
@@ -736,10 +736,10 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 ]
 .controller "ListingCtrl", ["$scope", ($scope) ->
 
-  $scope.htmlDescription = ""
+  $scope.htmlAttrDescription = ""
 
   $scope.$on "description", (e, description) ->
-    $scope.htmlDescription = description
+    $scope.htmlAttrDescription = description
 
 ]
 .controller "ProfileCtrl", ["$scope", "$timeout", "FacebookLogin", "$log", "SocialService", "$window", ($scope, $timeout, FacebookLogin, $log, SocialService, $window) ->
@@ -776,9 +776,6 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
   $timeout ->
     $scope.loginStatus(true)
-]
-.controller "AlertCtrl", ["$scope", "$timeout", "ListingService", ($scope, $timeout, ListingService) ->
-
 ]
 .controller "MessagesExampleCtrl", ["$scope", "$timeout", "$window", ($scope, $timeout, $window) ->
 
@@ -1072,7 +1069,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
           doneEditing()
 
 ]
-.controller "OwnListingsCtrl", ["$scope", "$timeout", "ListingsForUser", ($scope, $timeout, ListingsForUser) ->
+.controller "OwnListingsCtrl", ["$scope", "$rootScope", "$timeout", "ListingsForUser", "$http", ($scope, $rootScope, $timeout, ListingsForUser, $http) ->
 
   setOwnListings = (listings) ->
     $scope.ownListings = listings
@@ -1119,12 +1116,24 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     ListingsForUser.updateListingStatus index, status, setOwnListings
 
   $scope.share = (lst) ->
+    element = if event.srcElement? then event.srcElement else event.target
+    textDescription = angular.element(element).parent().parent().find(".html-description").text()
     FB.ui
       method: 'feed',
       name: lst.listing.title,
-      link: 'https://zaporbit.com/#!/listing_item/'+lst.listing.id,
-      picture: 'https://zaporbit.com/pictures/'+lst.listingPicture.name,
-      description: lst.listing.description,
+      link: 'https://zaporbit.com/#!/listing_item/' + lst.listing.id,
+      picture: 'https://zaporbit.com/pictures/' + lst.listingPicture.name,
+      description: textDescription
+
+  $scope.$on "deleteListing", (e, index) ->
+    if $scope.ownListings[index]?
+      $http
+        method: 'POST'
+        url: '/api/deletelisting/' + $scope.ownListings[index].listing.id
+        data: {}
+      .success (data, status) ->
+        console.log "listing with id = " + $scope.ownListings[index].listing.id + " has been deleted"
+        $scope.ownListings.splice index, 1
 
 ]
 .controller "UserProfileCtrl", ["$scope", "UserListingService", "$routeParams", "$timeout", ($scope, UserListingService, $routeParams, $timeout) ->
@@ -1204,29 +1213,30 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     Array::move = (from, to) ->
       @splice to, 0, @splice(from, 1)[0]
 
-    $scope.textAngularOpts = {}
-    $scope.htmlDescription = ''
-    $scope.errorMsg = "We found errors while processing your listing. Please ensure that all all fields are correctly filled and try again."
-    $scope.showError = false
-    $scope.inProgress = false
-    $scope.uploadProgress = 0
-    $scope.progMessage = ""
-    $scope.pictureNames = []
-    $scope.picturesProg = {}
-    $scope.cancelTitle = "Cancel"
-    $scope.posted = false
-    $scope.pictures = []
+    setupCtrl = ->
+      $scope.htmldescription = '' #"<p>Your item's <b>description</b> goes <i>here</i>.</P>"
+      $scope.errorMsg = "We found errors while processing your listing. Please ensure that all all fields are correctly filled and try again."
+      $scope.showError = false
+      $scope.inProgress = false
+      $scope.uploadProgress = 0
+      $scope.progMessage = "Uploading..."
+      $scope.pictureNames = []
+      $scope.picturesProg = {}
+      $scope.cancelTitle = "Cancel"
+      $scope.posted = false
+      $scope.pictures = []
+    setupCtrl()
 
     localeOpts =
-      locale: 'en-US'
+      locale: 'en_US'
       currency_code: 'USD'
 
     $scope.sortableOptions =
       start: (e, ui) ->
         $(e.target).data("ui-sortable").floating = true
 
-    $scope.cancel = ->
-      $modalInstance.dismiss "cancel"
+    $scope.dismiss = ->
+      $modalInstance.dismiss "close"
 
     $scope.onPictureSelect = ($files) ->
       file = $files[0]
@@ -1248,15 +1258,14 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       localeOpts = opts
 
     dataIsValid = (form) ->
-      return false if (!form.title.$viewValue || $filter('trim')(form.title.$viewValue) == '' ||
-        !form.price.$viewValue || !$filter('isNumber')(form.price.$viewValue) ||
-        $filter('trim')($scope.htmlDescription) == '')
-      return true
+      if !form.title.$viewValue || $filter('trim')(form.title.$viewValue) == '' || !form.price.$viewValue || !$filter('isNumber')(form.price.$viewValue) || $filter('trim')($scope.htmldescription) == ''
+        console.log 'invalid form,', "description: " + $scope.htmldescription
+        return false
+      true
 
     $scope.submit = (form) ->
       $scope.submitted = true
-      console.log form
-      return if !dataIsValid form
+      if !dataIsValid(form) then return
       $scope.inProgress = true
       $scope.disableCancel = true
       if $scope.pictures.length
@@ -1272,7 +1281,6 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
         file = pic.file
         fileReader = new FileReader()
         fileReader.readAsArrayBuffer file
-        #bufView = new Uint16Array buf
         parts = file.name.split "."
         fileName = $filter('pictureName')(24) + "." + parts[1]
         fileReader.onload = (e) ->
@@ -1294,24 +1302,27 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
           .success (data, status) ->
             $scope.pictureNames.push fileName
-            if $scope.uploadProgress > 99
-              console.log $scope.pictureNames
+            if $scope.uploadProgress > 99 && !$scope.creatingListing
+              $scope.creatingListing = true
               $scope.progMessage = "Creating listing..."
               NewListingService.newListing
                 title: $filter('trim')(form.title.$viewValue)
-                description: $filter('trim')($scope.htmlDescription)
+                description: $filter('trim')($scope.htmldescription)
                 price: parseFloat form.price.$viewValue
                 locale: localeOpts.locale
                 currency_code: localeOpts.currency_code
               , $scope.pictureNames, newListingCallback
 
     newListingCallback = (data) ->
-      console.log data
       $scope.pictureNames = []
       $scope.posted = true
       $scope.inProgress = false
       $scope.disableCancel = false
       $scope.cancelTitle = "Dismiss"
       $scope.progMessage = ''
+      setupCtrl()
+      $scope.dismiss()
+
+    $scope.creatingListing = false
 
 ]
