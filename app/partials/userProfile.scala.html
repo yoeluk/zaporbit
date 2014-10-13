@@ -53,8 +53,8 @@
                                                 <h4><a href="/#!/listing_item/{{listing.id}}" data-ng-bind-html="'» '+listing.title"></a></h4>
                                             </div>
                                             <div class="row-fluid center-cropped-wrapper">
-                                                <div data-ng-click="open('lg')" class="center-cropped pull-left" data-img-centred="/pictures/{{listing.pictures[0] | appendExt}}"></div>
-                                                <div data-ng-click="open('lg')" class="center-cropped user-listing" data-img-centred="/pictures/{{listing.pictures[1] | appendExt}}" data-ng-if="listing.pictures[1]"></div>
+                                                <div data-ng-click="open('lg')" class="center-cropped pull-left" data-img-centred="/scaledimage/600/{{listing.pictures[0] | appendExt}}"></div>
+                                                <div data-ng-click="open('lg')" class="center-cropped user-listing" data-img-centred="/scaledimage/600/{{listing.pictures[1] | appendExt}}" data-ng-if="listing.pictures[1]"></div>
                                             </div>
                                         </div>
                                     </div>

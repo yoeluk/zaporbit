@@ -89,6 +89,7 @@ GET         /webjars/*file                                          controllers.
 # listing images
 GET         /pictures/:file_name                                    controllers.ServeImage.at(file_name)
 GET         /thumbnails/:file_name                                  controllers.ServeThumbnail.at(file_name)
+GET         /scaledimage/:size/:file_name                           controllers.ServeScaledImage.at(size: Int, file_name)
 
 GET         /options/pictures/:file_name                            controllers.ServeOptionImages.at(file_name)
 

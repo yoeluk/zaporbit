@@ -1302,7 +1302,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
           .success (data, status) ->
             $scope.pictureNames.push fileName
-            if $scope.uploadProgress > 99 && !$scope.creatingListing
+            if $scope.uploadProgress > 95 && !$scope.creatingListing
               $scope.creatingListing = true
               $scope.progMessage = "Creating listing..."
               NewListingService.newListing
