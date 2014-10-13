@@ -18,6 +18,7 @@ public class ServeImage extends Controller {
         ByteArrayOutputStream img_stream = null;
         try {
             String[] parts = filename.split("\\.", -1);
+            if (parts.length == 1) parts[1] = ".jpg";
             File file = new File(Play.application().configuration().getString("pictures_dir")+filename);
             BufferedImage thumbnail = ImageIO.read(file);
             img_stream = new ByteArrayOutputStream();

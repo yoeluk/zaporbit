@@ -226,7 +226,7 @@ object Offers extends DAO {
         o.userid,
         o.created_on.?,
         o.updated_on.?)
-    ).sortBy(_._11.desc).drop(offset).take(pageSize)
+    ).sortBy(_._13.desc).drop(offset).take(pageSize)
     val totalRows = offerCountOfUser(userId)
     val result = query.list.map( row =>
       Listing(row._1, row._2, row._3, row._4, row._5, row._6,
@@ -258,7 +258,7 @@ object Offers extends DAO {
         o.userid,
         o.created_on.?,
         o.updated_on.?)
-      ).sortBy(_._11.desc).drop(offset).take(pageSize)
+      ).sortBy(_._13.desc).drop(offset).take(pageSize)
     val totalRows = offerCountOfUser(userId)
     val result = query.list.map( row =>
       Listing(row._1, row._2, row._3, row._4, row._5, row._6,

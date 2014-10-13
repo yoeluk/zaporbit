@@ -1,5 +1,7 @@
 package controllers
 
+import _root_.java.util
+
 import play.api._
 import play.api.mvc._
 import play.api.Play._
@@ -16,6 +18,8 @@ import org.apache.commons.codec.binary.Base64
 import com.typesafe.plugin._
 
 import _root_.java.sql.Timestamp
+import _root_.java.lang.{Integer => jInt}
+import _root_.java.util.{Arrays => JArrays}
 import play.api.libs.functional.syntax._
 import java.io.File
 
@@ -831,13 +835,19 @@ class API(override implicit val env: RuntimeEnvironment[SocialUser]) extends sec
     }
   }
 
-  def saveOptionsToDisk(name: String) = Action(parse.file(to = new File(configuration.getString("options_dir").get + name)) ) {
+  def saveOptionsToDisk(name: String, optionType: String) = Action.async(parse.file(to = new File(configuration.getString("options_dir").get + name)) ) {
     implicit request =>
-      Ok(Json.obj(
-        "status" -> "OK",
-        "message" -> JsString("picture " + name + " was uploaded.")
-      )
-      )
+      // this is ugly... oh well
+      val s: jInt = 300
+      val l: jInt = 1700
+      if (optionType == "bkg") ServeScaledImage.saveScaledImage(JArrays.asList(l), request.body)
+      else if (optionType == "pic") ServeScaledImage.saveScaledImage(JArrays.asList(s), request.body)
+      Future.successful {
+        Ok(Json.obj(
+          "status" -> "OK",
+          "message" -> JsString("picture " + name + " was uploaded.")
+        ))
+      }
   }
 
   /*
@@ -885,13 +895,19 @@ class API(override implicit val env: RuntimeEnvironment[SocialUser]) extends sec
    * @param name
    * @return
    */
-  def savePictureToDisk(name: String) = Action(parse.file(to = new File(configuration.getString("pictures_dir").get + name + (if (name.split("\\.", -1).length > 1) "" else ".jpg") ))) {
+  def savePictureToDisk(name: String) = Action.async(parse.file(to = new File(configuration.getString("pictures_dir").get + name ))) {
     implicit request =>
-      Ok(Json.obj(
-        "status" -> "OK",
-        "message" -> JsString("picture " + name + " was uploaded.")
-        )
-      )
+      // I will change this later to add these two task in parallel. Just need to return a Future from the other method :)
+      val s: jInt = 600
+      val l: jInt = 2000
+      val file = new File(configuration.getString("pictures_dir").get + name)
+      ServeScaledImage.saveScaledImage(JArrays.asList(s, l), file)
+      Future.successful{
+        Ok(Json.obj(
+          "status" -> "OK",
+          "message" -> JsString("picture " + name + " was uploaded.")
+        ))
+      }
   }
   /**
    * inserts a new listing item (offer + pictures)

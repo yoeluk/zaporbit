@@ -55,7 +55,7 @@ POST        /api/startconversation                                  @controllers
 
 POST        /api/updatelistingstatus                                @controllers.API.updateListingStatus
 POST        /api/updateuseroptions                                  @controllers.API.updateUserOptions
-POST        /api/saveOptionsPictures/:name                          @controllers.API.saveOptionsToDisk(name: String)
+POST        /api/saveoptionspictures/:opttype/:name                 @controllers.API.saveOptionsToDisk(name: String, opttype: String)
 
 POST        /api/replytoconvo                                       @controllers.API.replyToConvo
 

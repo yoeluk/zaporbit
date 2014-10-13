@@ -49,7 +49,6 @@ object UserOptions extends DAO {
     }
     userOpts.background match {
       case Some(b) =>
-        println("updating background: " + b)
         q.map(row => row.background).update(b)
       case None =>
     }

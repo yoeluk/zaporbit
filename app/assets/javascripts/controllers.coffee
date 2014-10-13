@@ -709,7 +709,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
   slides = $scope.slides = []
   $scope.addSlide = (i) ->
     slides.push
-      image: "/pictures/" + $filter('appendExt')($scope.$parent.lst.listing.pictures[i])
+      image: "/scaledimage/2000/" + $filter('appendExt')($scope.$parent.lst.listing.pictures[i])
       text: []
 
   if $scope.$parent.lst?
@@ -989,6 +989,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     _.each Object.getOwnPropertyNames(updateData), (prop, i) ->
       if profileData[prop]? && updateData[prop] != "" then profileData[prop] = updateData[prop]
       if prop == "profilePicture" || prop == "backgroundPicture"
+        optType = if prop == "profilePicture" then 'pic' else 'bkg'
         hasPictures = true
         file = updateData[prop].file
         fileReader = new FileReader()
@@ -1000,7 +1001,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
           prop: prop
         fileReader.onload = (e) ->
           $upload.http
-            url: '/api/saveOptionsPictures/'+fileName
+            url: '/api/saveoptionspictures/'+optType+'/'+fileName
             method: 'POST'
             data: e.target.result
             headers:
@@ -1122,7 +1123,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       method: 'feed',
       name: lst.listing.title,
       link: 'https://zaporbit.com/#!/listing_item/' + lst.listing.id,
-      picture: 'https://zaporbit.com/pictures/' + lst.listingPicture.name,
+      picture: 'https://zaporbit.com/scaledimage/2000/' + lst.listingPicture.name,
       description: textDescription
 
   $scope.$on "deleteListing", (e, index) ->
@@ -1186,7 +1187,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
   slides = $scope.slides = []
   $scope.addSlide = (i) ->
     slides.push
-      image: "/pictures/" + $filter('appendExt')($scope.$parent.lst.pictures[i])
+      image: "/scaledimage/2000/" + $filter('appendExt')($scope.$parent.lst.pictures[i])
       text: []
 
   if $scope.$parent.lst?
@@ -1273,7 +1274,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       return
 
     doPictureUploading = (pictures, form) ->
-      length = pictures.length
+      count = pictures.length
       $scope.uploadProgress = 5
       _.each pictures, (p, i) ->
         $scope.picturesProg[i] = 0
@@ -1302,7 +1303,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
           .success (data, status) ->
             $scope.pictureNames.push fileName
-            if $scope.uploadProgress > 95 && !$scope.creatingListing
+            if $scope.pictureNames.length == count && !$scope.creatingListing
               $scope.creatingListing = true
               $scope.progMessage = "Creating listing..."
               NewListingService.newListing

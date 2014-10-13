@@ -143,7 +143,7 @@ object Locations extends DAO {
           u.email,
           u.isMerchant.?,
           u.created_on.?))
-      ) ++ friendsLQ).sortBy(_._1._12.desc).drop(offset).take(pageSize).list
+      ) ++ friendsLQ).sortBy(_._1._13.desc).drop(offset).take(pageSize).list
     val totalRows = this.count(loc.locality, loc.administrativeArea)
     val result = q.map { row =>
       (Listing(row._1._1, row._1._2, row._1._3, row._1._4, row._1._5, row._1._6,
@@ -242,7 +242,7 @@ object Locations extends DAO {
           u.fbuserid,
           u.email,
           u.isMerchant.?,
-          u.created_on.?))) ++ friendsLQ).sortBy(_._1._12.desc)
+          u.created_on.?))) ++ friendsLQ).sortBy(_._1._13.desc)
       .list.filter( x => filters.count(
         _.r findFirstIn x._1._2.toLowerCase match {
           case None => false
