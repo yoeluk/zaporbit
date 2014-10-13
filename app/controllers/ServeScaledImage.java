@@ -31,7 +31,8 @@ public class ServeScaledImage extends Controller {
     }
 
     public static BufferedImage createThumbnail(BufferedImage img, Integer size) {
-        img = resize(img, Method.ULTRA_QUALITY, size, OP_ANTIALIAS, OP_BRIGHTER);
+        if (img.getWidth() > size || img.getHeight() > size)
+            img = resize(img, Method.ULTRA_QUALITY, size, OP_ANTIALIAS, OP_BRIGHTER);
         return img; //pad(img, 4);
     }
 }

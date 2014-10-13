@@ -81,12 +81,12 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
                   background = opts.background match {
                     case None =>
                       Some("/vassets/images/profile_cover.png")
-                    case Some(b) => Some("/options/pictures/"+b)
+                    case Some(b) => Some("/options/pictures/1700/"+b)
                   },
                   picture = opts.picture match {
                     case None =>
                       Some("/vassets/images/pic_placeholder.png")
-                    case Some(p) => Some("/options/pictures/"+p)
+                    case Some(p) => Some("/options/pictures/300/"+p)
                   },
                   about = opts.about match {
                     case None =>
@@ -156,7 +156,7 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
             case Some(opts) =>
               val customPictureUrl = opts.picture match {
                   case None => defaultPictureUrl
-                  case Some(b) => "/options/pictures/"+b
+                  case Some(b) => "/options/pictures/300/"+b
                 }
               Ok( partials.html.profile( user, rating, customPictureUrl ) )
           }
@@ -184,12 +184,12 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
                 background = opts.background match {
                   case None =>
                     Some("/vassets/images/profile_cover.png")
-                  case Some(b) => Some("/options/pictures/"+b)
+                  case Some(b) => Some("/options/pictures/1700/"+b)
                 },
                 picture = opts.picture match {
                   case None =>
                     Some("/vassets/images/pic_placeholder.png")
-                  case Some(p) => Some("/options/pictures/"+p)
+                  case Some(p) => Some("/options/pictures/300/"+p)
                 },
                 about = opts.about match {
                   case None =>
@@ -213,8 +213,8 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
         "//graph.facebook.com/v2.1/{{lst.user.fbuserid}}/picture?height=200&width=200"
       case Some(opts) =>
         val parts = opts.picture.get.split("\\.")
-        if (parts.length > 1) "/options/pictures/" + opts.picture.get
-        else "/options/pictures/" + opts.picture.get + ".jpg"
+        if (parts.length > 1) "/options/pictures/300/" + opts.picture.get
+        else "/options/pictures/300/" + opts.picture.get + ".jpg"
     }
   }
 
