@@ -701,29 +701,59 @@ class API(override implicit val env: RuntimeEnvironment[SocialUser]) extends sec
   /**** REQUESTS API ****/
   /**************************/
 
-  def listingsByLoc(page: Int, radius: Int) = DBAction(parse.json(maxLength = 1024)) {
-    implicit rs =>
-      (rs.request.body \ "location").validate[ZOLocation].map { loc =>
-        val userid = rs.request.queryString.get("id").flatMap(_.headOption).getOrElse("0").toLong
-        val pageResult = Locations.listByLoc(page = page, radius = radius, loc = loc, userid = userid)
-        //val pageResult = Locations.testListByLoc(page = page, radius = radius, loc = loc, userid = userid)
-        Ok(Json.toJson(pageResult))
-      }.getOrElse(BadRequest(Json.obj(
-        "status" -> "KO",
-        "message" -> "invalid location"))
-        )
+  def listingsByLoc(page: Int, radius: Int) = UserAwareAction(parse.json) { implicit request =>
+    DB.withSession { implicit s =>
+      request.user match {
+        case Some(user) =>
+          (request.body \ "location").validate[ZOLocation].map { loc =>
+            val pageResult = Locations.listByLoc(page = page, radius = radius, loc = loc, userid = user.main.id.get)
+            //val pageResult = Locations.testListByLoc(page = page, radius = radius, loc = loc, userid = userid)
+            Ok(Json.toJson(pageResult))
+          }.getOrElse(BadRequest(Json.obj(
+            "status" -> "KO",
+            "message" -> "invalid location"))
+            )
+        case None =>
+          (request.body \ "location").validate[ZOLocation].map { loc =>
+            val userid = request.queryString.get("id").flatMap(_.headOption).getOrElse("0").toLong
+            val pageResult = Locations.listByLoc(page = page, radius = radius, loc = loc, userid = userid)
+            //val pageResult = Locations.testListByLoc(page = page, radius = radius, loc = loc, userid = userid)
+            Ok(Json.toJson(pageResult))
+          }.getOrElse(BadRequest(Json.obj(
+            "status" -> "KO",
+            "message" -> "invalid location"))
+            )
+      }
+    }
   }
 
-  def filterLocation(page: Int) = DBAction(parse.json(maxLength = 1024)) { implicit rs =>
-    (rs.request.body \ "location").validate[ZOLocation].map { loc =>
-      val filter = rs.request.queryString.get("filter").get(0)
-      val userid = rs.request.queryString.get("id").flatMap(_.headOption).getOrElse("0").toLong
-      val pageResult = Locations.filterLoc(page = page, loc = loc, filterStr = filter, userid = userid)
-      Ok(Json.toJson(pageResult))
-    }.getOrElse(BadRequest(Json.obj(
-      "status" -> "KO",
-      "message" -> "invalid location"
-    )))
+
+  def filterLocation(page: Int) = UserAwareAction(parse.json) { implicit request =>
+    DB.withSession { implicit s =>
+      request.user match {
+        case Some(user) =>
+          (request.body \ "location").validate[ZOLocation].map { loc =>
+            val filter = request.queryString.get("filter").get(0)
+            val pageResult = Locations.filterLoc(page = page, loc = loc, filterStr = filter, userid = user.main.id.get)
+            //val pageResult = Locations.testListByLoc(page = page, radius = radius, loc = loc, userid = userid)
+            Ok(Json.toJson(pageResult))
+          }.getOrElse(BadRequest(Json.obj(
+            "status" -> "KO",
+            "message" -> "invalid location"))
+            )
+        case None =>
+          (request.body \ "location").validate[ZOLocation].map { loc =>
+            val filter = request.queryString.get("filter").get(0)
+            val userid = request.queryString.get("id").flatMap(_.headOption).getOrElse("0").toLong
+            val pageResult = Locations.filterLoc(page = page, loc = loc, filterStr = filter, userid = userid)
+            //val pageResult = Locations.testListByLoc(page = page, radius = radius, loc = loc, userid = userid)
+            Ok(Json.toJson(pageResult))
+          }.getOrElse(BadRequest(Json.obj(
+            "status" -> "KO",
+            "message" -> "invalid location"))
+            )
+      }
+    }
   }
 
   /**
@@ -1612,9 +1642,9 @@ class API(override implicit val env: RuntimeEnvironment[SocialUser]) extends sec
         Some(Friend(userid = userid, friendid = friendid, friendfbid = fs.friendfbid))
       } else None
     }
-    //println(friends)
+    println(friends)
     Friends.updateFollowingForUser(userid, friends)
-    //println(Friends.findFollowingForUser(userid)) // *now tested that this method corectly updates the followingFirends*
+    println(Friends.findFollowingForUser(userid)) // *now tested that this method corectly updates the followingFirends*
     Ok(Json.obj(
       "status" -> "OK",
       "message" -> "following friends updated"

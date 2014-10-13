@@ -78,7 +78,10 @@ object Locations extends DAO {
     val friendsLQ = for {
       f <- friends.filter(_.userid === userid)
       o <- offers.filter(_.userid === f.friendid)
-      l <- locations if l.locality =!= loc.locality
+      l <- locations.filter(_.offerid === o.id)
+        .filterNot(_.locality.toLowerCase === loc.locality.toLowerCase)
+        .filterNot(_.administrativeArea.toLowerCase === loc.administrativeArea.toLowerCase)
+      s <- listingStatuses.filter(_.offerid === l.offerid).filter(_.status === "forsale")
       u <- o.user
     } yield ((
         o.id.?,
@@ -108,9 +111,9 @@ object Locations extends DAO {
           u.created_on.?))
 
     val q = ((for {
-      l <- locations if
-        l.locality.toLowerCase === loc.locality.toLowerCase &&
-        l.administrativeArea.toLowerCase === loc.administrativeArea.toLowerCase
+      l <- locations
+        .filter(_.locality.toLowerCase === loc.locality.toLowerCase)
+        .filter(_.administrativeArea.toLowerCase === loc.administrativeArea.toLowerCase)
       s <- listingStatuses.filter(_.offerid === l.offerid).filter(_.status === "forsale")
       o <- l.offer
       u <- o.user
@@ -174,7 +177,10 @@ object Locations extends DAO {
     val friendsLQ = for {
       f <- friends.filter(_.userid === userid)
       o <- offers.filter(_.userid === f.friendid)
-      l <- locations if l.locality =!= loc.locality
+      l <- locations.filter(_.offerid === o.id)
+        .filterNot(_.locality.toLowerCase === loc.locality.toLowerCase)
+        .filterNot(_.administrativeArea.toLowerCase === loc.administrativeArea.toLowerCase)
+      s <- listingStatuses.filter(_.offerid === l.offerid).filter(_.status === "forsale")
       u <- o.user
     } yield (
         (o.id.?,
@@ -205,7 +211,8 @@ object Locations extends DAO {
 
     val offset = pageSize * page
     val q = ((for {
-      l <- locations.filter(_.locality.toLowerCase === loc.locality.toLowerCase)
+      l <- locations
+        .filter(_.locality.toLowerCase === loc.locality.toLowerCase)
         .filter(_.administrativeArea.toLowerCase === loc.administrativeArea.toLowerCase)
       s <- listingStatuses.filter(_.offerid === l.offerid).filter(_.status === "forsale")
       o <- l.offer
