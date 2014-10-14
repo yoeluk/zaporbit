@@ -102,23 +102,23 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     $scope.tabs = [
       {
         name: "Profile"
-        icon: "glyphicon-user"
+        icon: "glyphicon glyphicon-user"
       }
       {
         name: "Messages"
-        icon: "glyphicon-envelope"
+        icon: "fa fa-envelope"
       }
       {
         name: "Purchases"
-        icon: "glyphicon-credit-card"
+        icon: "fa fa-credit-card"
       }
       {
         name: "Sales"
-        icon: "glyphicon-transfer"
+        icon: "fa fa-calculator"
       }
       {
         name: "Billing"
-        icon: "glyphicon-briefcase"
+        icon: "fa fa-briefcase"
       }
     ]
 
@@ -273,7 +273,6 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
     $scope.tabIcon = (index) ->
       classes = {}
-      classes.glyphicon = true
       classes[$scope.tabs[index].icon] = true
       classes
 
@@ -920,15 +919,19 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
   $scope.profileMenus = [
     {
       name: "Listings"
+      icon: "fa fa-bars"
     }
     {
       name: "Feedbacks"
+      icon: "fa fa-bullhorn"
     }
     {
       name: "Following"
+      icon: "fa fa-magnet"
     }
     {
       name: "Merchant"
+      icon: "fa fa-money"
     }
   ]
 
@@ -1142,9 +1145,11 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
   $scope.profileMenus = [
     {
       name: "Listings"
+      icon: "fa fa-bars"
     }
     {
       name: "Feedbacks"
+      icon: "fa fa-bullhorn"
     }
   ]
 

@@ -39,7 +39,7 @@
                         </div>
                     </div>
                     <div class="pull-left" data-ng-click="setActive($index)" data-ng-class="isActive($index)" data-ng-repeat="menu in profileMenus track by $index">
-                        <div><h5> {{ menu.name }} </h5></div>
+                        <div><h5> <i class="tab-icon {{ menu.icon }}"></i> {{ menu.name }} </h5></div>
                         <div></div>
                     </div>
                 </div>
@@ -52,7 +52,7 @@
                     <button data-ng-click="open('lg')" class="btn btn-warning"> New Listing </button>
                 </div>
                 <div class="clearfix" style="padding: 0 15px;">
-                    <h4 class="pull-left"> Listings <span class="glyphicon glyphicon-bullhorn"></span></h4>
+                    <h5 class="pull-left"> Listings </h5>
                 </div>
 
                 <div class="alert alert-warning" role="alert" data-ng-if="ownListings.length == 0"> You don't have any listings at present. Need to sale something? Create a listing now. It's quick and simple!  </div>

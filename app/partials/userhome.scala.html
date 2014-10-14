@@ -264,7 +264,7 @@
                 <div data-ng-controller="SecuredHomeCtrl">
                     <ul class="nav nav-tabs">
                         <li data-ng-class="{ active: isActiveTab(tabIndex) }" data-ng-repeat="(tabIndex, tab) in tabs">
-                            <a href="javascript:;" data-ng-click="setActiveTab(tabIndex)"> <span data-ng-class="tabIcon(tabIndex)" class="tab-icon"></span> {{ tab.name }}
+                            <a class="pointer" data-ng-click="setActiveTab(tabIndex)"> <span data-ng-class="tabIcon(tabIndex)" class="tab-icon"></span> {{ tab.name }}
                                 <span class="badge" data-ng-if="tab.name == 'Messages' && conversations.length > 1"> {{ conversations.length }} </span>
                             </a>
                         </li>
