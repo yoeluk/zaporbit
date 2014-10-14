@@ -64,7 +64,8 @@
                                 <input type="text" class="form-control" data-ng-model="filterString" id="searchBar" name="filter" placeholder="Search..." />
                                 <span class="input-group-btn">
                                     <button type="submit" data-ng-click="filter(search)" class="btn btn-default btn-sm search-btn">
-                                        <span class="gbqfi gb_Fa"></span>
+                                        <!--<span class="gbqfi gb_Fa"></span>-->
+                                        <span class="glyphicon glyphicon-search"></span>
                                     </button>
                                 </span>
                             </div>
@@ -110,7 +111,7 @@
                                         <img data-ng-src="{{slide.image}}" style="">
                                     </div>
                                     <div class="carousel-caption">
-                                        <h4> Slide {{$index+1}} </h4>
+                                        <!--<h4> Slide {{$index+1}} </h4>-->
                                     </div>
                                 </slide>
                             </carousel>
@@ -147,10 +148,10 @@
                     </div>
                     <div data-ng-controller="ModalListingCtrl">
                         <div class="clearfix listing-title">
-                            <h5>» <a href="javascript:;" data-ng-click="open('lg')" data-ta-bind data-ng-model="lst.listing.title"></a></h5>
+                            <h4>» <a class="pointer" data-ng-click="open('lg')" data-ta-bind data-ng-model="lst.listing.title"></a></h4>
                         </div>
                         <div class="row-fluid center-cropped-wrapper">
-                            <div data-ng-click="open('lg')" class="center-cropped pull-left" data-img-centred="/scaledimage/600/{{lst.listing.pictures[0] | appendExt}}"></div>
+                            <div data-ng-click="open('lg')" class="center-cropped pull-left holderjs" data-img-centred="/scaledimage/600/{{lst.listing.pictures[0] | appendExt}}"></div>
                             <div data-ng-click="open('lg')" class="center-cropped" data-img-centred="/scaledimage/600/{{lst.listing.pictures[1] | appendExt}}" data-ng-if="lst.listing.pictures[1]"></div>
                         </div>
                     </div>

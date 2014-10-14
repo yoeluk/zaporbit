@@ -9,15 +9,19 @@
 .theme-navbar-header {
     background-image: linear-gradient(to bottom, #92D13D 0px, #92d13d 100%);
     background-repeat: repeat-x;
+    min-height: 40px!important;
 }
 .theme-navbar-header {
-    border-top-width: 1px;
-    margin-top: 10px;
+    border-top-width: 0;
+    margin-top: 0;
     border-color: #6db221;
 }
 
 .theme-navbar-header .navbar-brand, .theme-navbar-header .navbar-nav > li > a {
     text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.45);
+}
+.navbar-nav > li > a {
+    padding: 10px 15px;
 }
 .brand, .brand > ul > li > a {
     text-shadow:
@@ -31,6 +35,8 @@
 }
 .theme-navbar-header .navbar-brand {
     color: #ffffff !important;
+    padding: 10px 15px;
+    height: 20px;
 }
 .theme-navbar-header .navbar-collapse, .theme-navbar-header .navbar-form {
     border-color: #63b932;
@@ -75,15 +81,9 @@
     background-image: linear-gradient(to bottom, #a0ea1c 0px, #a0ea1c 100%);
     background-repeat: repeat-x;
 }
-ul > li.user-home-btn {
-    /*margin-right: 20px;*/
-
-}
 ul > li.user-home-btn > a {
     height: 30px;
-    margin: 10px;
+    margin: 5px 10px;
     padding: 5px 10px;
     border-radius: 2px;
-}
-.nav > li.user-home-btn > a:hover, .nav > li.user-home-btn > a:focus {
 }

@@ -9,6 +9,9 @@ body {
     line-height: 19px;
     margin: 0 0 9px;
 }
+a.pointer {
+    cursor: pointer;
+}
 label,h6,h5,h4,h3,h2,h1 {
     font-weight: 600;
 }
@@ -197,16 +200,20 @@ form label.col-sm-1{
     margin-bottom: 10px;
 }
 .listing-title {
-    margin: 10px 0;
+    margin: 10px 0 7px 0;
 }
-.listing-title > h5 {
+.listing-title > h4 {
     line-height: 1.2;
+    margin: 5px 0;
 }
-.listing-title > h5 a {
+.listing-title > h4 a {
     color: #000000;
 }
-.listing-title.title-opts{
+.listing-title.title-opts {
     margin-top: 0;
+}
+.listing-title.title-opts a {
+    color: #548B0C;
 }
 .title-opts h4 {
     margin-top: 0;
@@ -237,8 +244,11 @@ form label.col-sm-1{
     min-width: 280px;
     min-height: 280px;
     max-height: 280px;
-    background-position: center center;
-    background-repeat: no-repeat;
+    /* holderjs does not yet supports fluid sizing so this would not display the image because it needs a width or height defined on the element */
+    /*
+    background: url(?holder.js/300x300/vine/text:loading...) no-repeat 50% 50%;
+    background-size: cover;
+    */
     overflow: hidden;
     display: inline-block;
     border: 1px solid #cccccc;
@@ -338,14 +348,6 @@ and (max-device-width : 480px) {
 .locateGroup {
     float: right;
 }
-.btn.search-btn{
-    background: #92d13d!important;
-    vertical-align: top;
-    padding-top: 2px!important;
-    box-shadow: none;
-    border: none!important;
-    z-index: 2!important;
-}
 .nav-tabs > li > a {
     line-height: 19px;
 }
@@ -428,6 +430,20 @@ textarea:focus {
     border-color: #92d13d!important;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.055) inset, 0 0 8px rgba(84, 139, 12, 0.5)!important;
     outline: 0 none;
+}
+input#searchBar.form-control {
+    font-size: 14px;
+    height: 35px;
+}
+.btn.search-btn {
+    background: #92d13d!important;
+    padding: 0 20px!important;
+    box-shadow: none;
+    border: none!important;
+    z-index: 2!important;
+    height: 35px!important;
+    font-size: 16px!important;
+    color: #ffffff;
 }
 ::-webkit-input-placeholder, input:-moz-placeholder {
     color: #777;

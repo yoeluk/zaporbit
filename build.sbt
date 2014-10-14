@@ -40,6 +40,7 @@ libraryDependencies ++= {
     "org.webjars" % "angular-google-maps" % "1.2.2" exclude("org.webjars", "angularjs"),
     "org.webjars" % "angular-ui-sortable" % "0.12.11-1" exclude("org.webjars", "jquery-ui"),
     "org.webjars" % "font-awesome" % "4.2.0",
+    //"org.webjars" % "holderjs" % "2.4.0",
     "org.webjars" % "angular-file-upload" % "1.6.12",
     cache,
     filters,
