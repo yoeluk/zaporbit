@@ -41,7 +41,7 @@ angular.module "ZapOrbit", [
       templateUrl: "/partials/userhome"
       controller: "UserHomeCtrl"
     .when "/userprofile",
-      templateUrl: (params) -> "/userprofile?id="+params.id
+      templateUrl: (params) -> "/userprofile?id="+params.id+"&rnd="+params.rnd
       controller: "UserProfileCtrl"
   $provide.decorator "taOptions", ["$delegate", (taOptions) ->
       # $delegate is the taOptions we are decorating

@@ -75,7 +75,7 @@
             </div>
 
             <div class="row paging" data-ng-if="paging && paging.total > 0">
-                <label style="padding-left:5px;margin-bottom:0;margin-top:15px;" > Listing {{ paging.offset+1 }} to {{ paging.offset + allListings.length }} out of {{ paging.total }} </label>
+                <label style="padding-left:5px;margin-bottom:0;margin-top:15px;" > Showing {{ paging.offset+1 }} to {{ paging.offset + allListings.length }} out of {{ paging.total }} </label>
                 <div class="pull-right">
                     <ul class="pagination" data-ng-repeat="i in pageRange() track by $index" data-ng-if="$index*5 < paging.page + 1 && paging.page + 1 < $index*5 + 6">
                         <li data-ng-class="{disabled:$index==0}">
@@ -143,7 +143,7 @@
                         <div data-ng-include="'/credentialtemplate/'+lst.user.id"></div>
                         <span class="pull-right price-wrapper">
                             <label class="label label-info"> {{ lst.listing.formatted_price }} {{ lst.listing.currency_code }} </label>
-                            <a class="btn btn-info buy-now" href="/#!/listing_item/{{lst.listing.id}}"><i class="fa fa-google-wallet"></i> Buy Now </a>
+                            <a class="btn btn-info buy-now" data-ng-href="/#!/listing_item/{{lst.listing.id}}"><i class="fa fa-google-wallet"></i> Buy Now </a>
                         </span>
                     </div>
                     <div data-ng-controller="ModalListingCtrl">

@@ -327,6 +327,8 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
       $scope.markers = undefined
 
+      $scope.rand = Math.floor((Math.random() * 1000) + 1)
+
       $scope.getRatingWidth = (user) ->
         'width': 0+"%"
         #'width': 100*((50+user.rating)/(5*(user.ratingCount+10)))+"%"
@@ -914,6 +916,42 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     if $window.navigator.appVersion.indexOf("Mac") != -1 then {'margin-right': '-30px', 'padding-right': '40px'}
     else {"padding-right":"13px"}
 ]
+.controller "FeedbacksCtrl", ["$scope", "$timeout", "$http", ($scope, $timeout, $http) ->
+]
+.controller "MerchantCtrl", ["$scope", "$timeout", "$http", ($scope, $timeout, $http) ->
+]
+.controller "FollowingCtrl", ["$scope", "$timeout", "$http", ($scope, $timeout, $http) ->
+
+  $scope.followings = []
+
+  $scope.rand = Math.floor((Math.random() * 1000) + 1)
+
+  $scope.template =
+    name: "followingPartialTemplate"
+    url: "/partials/following"
+
+#  FB.api "/me/friends", (response) ->
+#    if (response && !response.error)
+#      console.log response
+
+  getFollowing = ->
+    $http
+      method: "GET"
+      url: "/api/followingfriends"
+    .success (data, status) ->
+      if data.followings? && data.followings.length then $scope.followings = data.followings
+      else $scope.followings = []
+
+  getFollowing()
+
+  $scope.$on 'unfollowEvent', (event, index) ->
+    $http
+      method: "GET"
+      url: "/api/unfollowfriend/" + $scope.followings[index].userid
+    .success (data, status) ->
+      console.log data
+      $scope.followings.splice index, 1
+]
 .controller "ProfileProfileCtrl", ["$scope", "$timeout", "$upload", "$log", ($scope, $timeout, $upload, $log) ->
 
   $scope.profileMenus = [
@@ -939,6 +977,18 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     {
       name: "listingTemplate"
       url: "own-listings-template"
+    }
+    {
+      name: "feedbacksTemplate"
+      url: "feedbacks-template"
+    }
+    {
+      name: "followingTemplate"
+      url: "following-template"
+    }
+    {
+      name: "merchantTemplate"
+      url: "merchant-template"
     }
   ]
 
@@ -1119,7 +1169,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
   $scope.updateStatus = (index, status) ->
     ListingsForUser.updateListingStatus index, status, setOwnListings
 
-  $scope.share = (lst) ->
+  $scope.share = (event, lst) ->
     element = if event.srcElement? then event.srcElement else event.target
     textDescription = angular.element(element).parent().parent().find(".html-description").text()
     FB.ui
@@ -1140,7 +1190,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
         $scope.ownListings.splice index, 1
 
 ]
-.controller "UserProfileCtrl", ["$scope", "UserListingService", "$routeParams", "$timeout", ($scope, UserListingService, $routeParams, $timeout) ->
+.controller "UserProfileCtrl", ["$scope", "UserListingService", "$routeParams", "$timeout", "$http", ($scope, UserListingService, $routeParams, $timeout, $http) ->
 
   $scope.profileMenus = [
     {
@@ -1180,6 +1230,27 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
   UserListingService.getData($routeParams.id, gotListings)
 
+  $scope.followMe = (event, fbuserid, userid) ->
+    rootElm = angular.element( if event.srcElement? then event.srcElement else event.target )
+    element = rootElm.parent()
+    if element.hasClass("followed")
+      $http
+        method: "GET"
+        url: "/api/unfollowfriend/" + userid
+      .success (data, status) ->
+        console.log data
+        element.removeClass("followed")
+    else
+      data =
+        fbuserid: "" + fbuserid
+        userid: userid
+      $http
+        method: "POST"
+        url: "/api/followthisuser"
+        data: data
+      .success (data, status) ->
+        console.log data
+        element.addClass("followed")
 ]
 .controller "UserListingsCtrl", ["$scope", ($scope) ->
   $scope.lst = {}

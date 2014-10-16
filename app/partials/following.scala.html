@@ -1,0 +1,25 @@
+<div class="alert alert-warning" role="alert" data-ng-if="false"> No followings yet!  </div>
+
+<div class="following-lane row-fluid clearfix">
+    <ul>
+        <li class="animate" data-ng-repeat="flw in followings track by flw.userid">
+            <div>
+                <div class="f-picture" data-img-override="{{ flw.pictureUrl }}"></div>
+                <div class="following-bg">
+                    <a class="inner-name" data-ng-href="/#!/userprofile?id={{flw.userid}}&rnd={{rand}}"> {{ flw.name }} {{ flw.surname }} </a>
+                    <div class="stars pull-left">
+                        <div class="rating" style="width: 0;"></div>
+                        <i></i>
+                        <i></i>
+                        <i></i>
+                        <i></i>
+                        <i></i>
+                    </div>
+                    <a class='followed pointer' data-index="{{ $index }}" data-unfollow-event="false">
+                        <i class="fa fa-magnet"></i>
+                    </a>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>

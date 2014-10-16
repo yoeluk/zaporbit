@@ -269,7 +269,7 @@ div.center-cropped:nth-child(2) {
 }
 .fitted-img {
     height: 650px;
-    text-align: center;  /* align the inline(-block) elements horizontally */
+    text-align: center;  /* align the inline(-block) elements horizonttransformy */
     font: 0/0 a;         /* remove the gap between inline(-block) elements */
 }
 .fitted-img .centerer {
@@ -369,7 +369,7 @@ these two helper classes display the search icon
     float: none;
     margin: 0 auto;
 }
-@media all
+@media transform
 and (max-width : 768px) {
     .locateBtn {
         margin-top: 10px;
@@ -428,12 +428,12 @@ textarea {
 input:focus,
 textarea:focus {
     border-color: #92d13d!important;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.055) inset, 0 0 8px rgba(84, 139, 12, 0.5)!important;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.055) inset, 0 0 8px rgba(96, 146, 12, 0.50) !important;
     outline: 0 none;
 }
 input#searchBar.form-control {
     font-size: 14px;
-    height: 35px;
+    height: 32px;
 }
 .btn.search-btn {
     background: #92d13d!important;
@@ -441,7 +441,7 @@ input#searchBar.form-control {
     box-shadow: none;
     border: none!important;
     z-index: 2!important;
-    height: 35px!important;
+    height: 32px!important;
     font-size: 16px!important;
     color: #ffffff;
 }
@@ -581,7 +581,7 @@ input[name="title"] {
     left: 300px;
     right: 20px;
     height: 110px;
-    text-align: center;  /* align the inline(-block) elements horizontally */
+    text-align: center;  /* align the inline(-block) elements horizonttransformy */
     font: 0/0 a;         /* remove the gap between inline(-block) elements */
     display: none;
 }
@@ -640,17 +640,17 @@ input[name="title"] {
     left: 0;
     width: 100%;
     max-height: 0;
-    transition: max-height 0.1s ease-out;
+    transition: max-height 0.25s ease-out 0.1s ease-out;
     overflow: hidden;
     background: #7ECB19;
 }
 .profile-footer > div:nth-child(n+2):hover > div:nth-child(2) {
-    max-height: 4px;
-    transition: max-height 0.1s ease-in;
+    max-height: 3px;
+    transition: max-height 0.25s ease-out 0.1s ease-in;
     transition-delay:0s;
 }
 .profile-footer > div.active > div:nth-child(2) {
-    max-height: 4px;
+    max-height: 3px;
 }
 .profile-footer > div h5 {
     margin: 0;
@@ -738,28 +738,22 @@ input[name="title"] {
     padding-right: 0;
     padding-left: 0;
 }
-.own-listings-wrapper {
+.profile-small-wrapper {
     padding: 15px;
 }
-.own-listings-wrapper.profile-small {
+.profile-small-wrapper.profile-small {
     padding-right: 5px;
     padding-left: 5px;
 }
-.own-listings-wrapper > .panel > .panel-footer > div {
-    display: inline-block;
-    display: -moz-inline-box;
-    zoom: 1; /* Trigger hasLayout */
-    width: 16%;
-}
-.own-listings-wrapper .panel {
+.profile-small-wrapper .panel {
     /*background-color: #f9f9f9;*/
     border-color: #dadada;
     border-radius: 2px;
 }
-.own-listings-wrapper .panel:last-child {
+.profile-small .panel:last-child {
     margin-bottom: 0;
 }
-.own-listings-wrapper .panel-body {
+.profile-small .panel-body {
     padding: 15px 20px;
 }
 .new-listing {
@@ -828,7 +822,7 @@ Bootstrap media query sizes
         padding-right: 15px;
         padding-left: 15px;
     }
-    .own-listings-wrapper.profile-small {
+    .profile-small-wrapper.profile-small {
         padding-right: 15px;
         padding-left: 15px;
     }
@@ -881,7 +875,7 @@ Bootstrap media query sizes
         padding-right: 15px;
         padding-left: 15px;
     }
-    .own-listings-wrapper.profile-small {
+    .profile-small-wrapper.profile-small {
         padding-right: 15px;
         padding-left: 15px;
     }
@@ -934,7 +928,7 @@ Bootstrap media query sizes
         padding-right: 15px;
         padding-left: 15px;
     }
-    .own-listings-wrapper.profile-small {
+    .profile-small-wrapper.profile-small {
         padding-right: 15px;
         padding-left: 15px;
     }
@@ -1294,7 +1288,7 @@ img.resize{
     width: 100%;
     height: 100%;
     max-height: 0;
-    transition: max-height 0.1s ease-out;
+    transition: max-height 0.25s ease-out 0.1s ease-out;
     background-color: rgba(255, 255, 255, 0.3);
     overflow: hidden;
     text-align: center;
@@ -1302,7 +1296,7 @@ img.resize{
 }
 .photo-lane > ul > li:hover > div.delete-look {
     max-height: 100%;
-    transition: max-height 0.1s ease-in;
+    transition: max-height 0.25s ease-out 0.1s ease-in;
     transition-delay:0s;
 }
 div.delete-look > button {
@@ -1377,7 +1371,7 @@ div.panel:hover .btn-custom {
     background-color: #eeeeee!important;
     border-top-color: #ffffff!important;
 }
-.own-listings-wrapper .panel-footer {
+.profile-small-wrapper .panel-footer {
     padding: 8px 15px;
     border-top: 1px solid #f0f0f0;
     text-align: justify;
@@ -1385,7 +1379,7 @@ div.panel:hover .btn-custom {
     overflow: hidden;
     cursor: default;
 }
-.own-listings-wrapper .panel-footer:after {
+.profile-small-wrapper .panel-footer:after {
     content: '';
     width: 100%; /* Ensures there are at least 2 lines of text, so justification works */
     display: inline-block;
@@ -1420,3 +1414,147 @@ iframe.ta-insert-video {
 .modal-backdrop.in {
     opacity: 0.3;
 }
+.following-lane {
+    min-height: 180px;
+    width: 100%;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    padding: 15px 0 0 4%;
+}
+.following-lane > ul {
+    padding-left: 0;
+    margin: 0;
+}
+.following-lane > ul > li:after {
+    bottom: -1px;
+    content: "";
+    display: block;
+    height: 1px;
+    left: 0;
+    margin: 0 -10px;
+    overflow: hidden;
+    position: absolute;
+    right: 0;
+}
+.following-lane > ul > li {
+    list-style: none outside none;
+    float: left;
+    margin: 0 2.5% 10px;
+    padding: 15px 0 23px;
+    position: relative;
+}
+.following-lane > ul > li > div {
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 0 1px rgba(255, 255, 255, 0.1);
+    position: relative;
+}
+.following-lane > ul > li:hover .following-bg {
+    margin: -25px -10px -30px -10px;
+    width: 160px;
+    border-radius: 0;
+    border-width: 1px;
+}
+.following-bg {
+    background-color: #ffffff;
+    border: 1px solid #C3C3C3;
+    border-radius: 5px;
+    overflow: hidden;
+    z-index: 0;
+    bottom: 0;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04), 0 1px 5px rgba(0, 0, 0, 0.1);
+    left: 0;
+    margin: -5px;
+    padding: 5px;
+    position: absolute;
+    top: 0;
+    transition: all 0.15s ease-out 0.1s;
+    width: 150px;
+}
+.f-picture {
+    position: relative;
+    border: 1px solid #e0e0e0;
+    width: 140px;
+    height: 140px;
+    z-index: 1;
+}
+.following-bg > .inner-name {
+    position: absolute;
+    top: 2px;
+    left: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 130px;
+    overflow: hidden;
+    text-align: center;
+}
+.following-bg > .stars {
+    position: absolute;
+    bottom: 5px;
+    left: 4px;
+}
+.following-bg > .followed {
+    position: absolute;
+    bottom: 4px;
+    left: 123px;
+    font-size: 16px;
+    color: #548B0C;
+    text-shadow: none;
+}
+.profile-footer > .follow-me {
+    margin: 0 15px;
+    padding: 15px;
+    vertical-align: middle;
+    text-align: center;
+    display: inline-block;
+    font-size: 22px;
+    cursor: default;
+}
+.profile-footer > .follow-me .fa-magnet {
+    color: #609B0C;
+}
+.profile-footer > .follow-me a:active .fa-magnet {
+    color: #72ad0c;
+}
+.profile-footer > .follow-me .fa-magnet {
+    transform: rotate(0.5turn);
+    -webkit-transition: transform 0.25s ease-out 0.1s;
+    -moz-transition: transform 0.25s ease-out 0.1s;
+    -ms-transition: transform 0.25s ease-out 0.1s;
+    -o-transition: transform 0.25s ease-out 0.1s;
+    transition: transform 0.25s ease-out 0.1s;
+}
+.profile-footer > .follow-me a.followed > .fa-magnet {
+    transform: rotate(1.0turn);
+}
+.profile-footer > .follow-me a:hover > .fa-magnet {
+    transform: rotate(1.0turn);
+}
+.profile-footer > .follow-me .fa-magnet.followed {
+    transform: rotate(1.0turn);
+}
+.profile-footer > .follow-me a:hover .fa-magnet.followed {
+    transform: rotate(0.5turn);
+}
+.profile-footer > .follow-me a.disable:hover .fa-magnet.followed,
+.profile-footer > .follow-me a.disable .fa-magnet.followed,
+.profile-footer > .follow-me a.disable:hover .fa-magnet,
+.profile-footer > .follow-me a.disable .fa-magnet {
+    transform: rotate(1.0turn);
+    color: #cccccc;
+    cursor: default;
+}
+.following-bg > .followed {
+    color: #609B0C;
+    transform: rotate(1.0turn);
+    -webkit-transition: all 0.25s ease-out 0.1s;
+    -moz-transition: all 0.25s ease-out 0.1s;
+    -ms-transition: all 0.25s ease-out 0.1s;
+    -o-transition: all 0.25s ease-out 0.1s;
+    transition: all 0.25s ease-out 0.1s;
+}
+.following-bg > .followed.confirm {
+    transform: rotate(0.5turn);
+    color: red;
+}
+

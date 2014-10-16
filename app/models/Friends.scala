@@ -44,6 +44,14 @@ object Friends extends DAO {
     friends.filter(_.userid === userid).list
   }
 
+  def isFollowing(userid: Long, friendid: Long)(implicit session: Session): Boolean = {
+    friends.filter(_.userid === userid).filter(_.friendid === friendid).firstOption match {
+      case None => false
+      case Some(_) => true
+    }
+
+  }
+
   /**
    *
    * @param friend
@@ -66,6 +74,9 @@ object Friends extends DAO {
     friends.insertAll(nff : _*)
   }
 
+  def deleteFollowing(userid: Long, friendid: Long)(implicit session: Session) = {
+    friends.filter(_.userid === userid).filter(_.friendid === friendid).delete
+  }
 
   /**
    *

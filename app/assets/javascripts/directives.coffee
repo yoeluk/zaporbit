@@ -334,7 +334,7 @@ angular.module "ZapOrbit.directives", []
             locale: locale
             currency_code: element.val()
 ]
-.directive "deleteListener", ["$document", "$timeout", "$location", "$window", ($document, $timeout, $location, $window) ->
+.directive "deleteListener", ["$document", "$timeout", ($document, $timeout) ->
   link: (scope, element, attrs) ->
 
     bodyClickCallback = (e) ->
@@ -353,6 +353,24 @@ angular.module "ZapOrbit.directives", []
         , 50
 
     element.bind "click", clickCallback
+]
+.directive "unfollowEvent", [ ->
+  link: (scope, element, attrs) ->
+
+    mouseleaveCallback = (e) ->
+      element.removeClass "confirm"
+      element.data 'unfollow-event', false
+
+    clickCallback = (e) ->
+      if !element.data('unfollow-event')
+        element.data 'unfollow-event', true
+        element.addClass "confirm"
+      else
+        scope.$emit 'unfollowEvent', element.data 'index'
+
+    element.bind "click", clickCallback
+
+    element.bind "mouseleave", mouseleaveCallback
 ]
 .directive "htmlAttrDescription", [ ->
   restrict: "A"

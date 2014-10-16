@@ -30,6 +30,8 @@ import play.api.libs.ws._
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits._
 
+import play.api.db.slick.Config.driver._
+
 import securesocial.core._
 import service.SocialUser
 
@@ -699,6 +701,17 @@ class API(override implicit val env: RuntimeEnvironment[SocialUser]) extends sec
   import AppCryptor._
 
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
+
+  def pictureUrl(userid: Long, fbuserid: String)(implicit s: simple.Session): String = {
+    UserOptions.findByUserid(userid.toLong) match {
+      case None =>
+        "//graph.facebook.com/v2.1/" + fbuserid + "/picture?height=200&width=200"
+      case Some(opts) =>
+        val parts = opts.picture.get.split("\\.")
+        if (parts.length > 1) "/options/pictures/300/" + opts.picture.get
+        else "/options/pictures/300/" + opts.picture.get + ".jpg"
+    }
+  }
 
   import writers._
   /**************************/
@@ -1641,30 +1654,108 @@ class API(override implicit val env: RuntimeEnvironment[SocialUser]) extends sec
     }
   }
 
+  def followingFriends = SecuredAction { implicit request =>
+    request.user.main match {
+      case user =>
+        DB.withSession { implicit s =>
+          val friends = Friends.findFollowingForUser(user.id.get)
+          val followings = for {
+            f <- friends
+          } yield {
+            Users.findByFbId(f.friendfbid) match {
+              case Some(dbUser) =>
+                Json.obj(
+                  "userid" -> f.friendid,
+                  "fbuserid" -> f.friendfbid,
+                  "pictureUrl" -> pictureUrl(f.friendid, f.friendfbid),
+                  "name" -> dbUser.name,
+                  "surname" -> dbUser.surname,
+                  "rating" -> Ratings.ratingsForUserId(f.userid)
+                )
+              case None =>
+                Json.obj()
+            }
+          }
+          Ok(Json.obj(
+            "status" -> "OK",
+            "followings" -> Json.toJson(followings)
+          ))
+        }
+    }
+  }
+
   /**
    *
-   * @param userid
    * @return
    */
-  def followingFriends(userid: Long) = DBAction(parse.json(maxLength = 1024)) { implicit rs =>
-    val friends = for {
-      fs <- rs.request.body.as[List[RawFriend]]
-    } yield {
-     val friendid = Users.findByFbId(fs.friendfbid) match {
-       case Some(friend) => friend.id.get
-       case None => 0.toLong
-     }
-      if (friendid != 0) {
-        Some(Friend(userid = userid, friendid = friendid, friendfbid = fs.friendfbid))
-      } else None
+  def updateFollowingFriends = SecuredAction(parse.json) { implicit request =>
+    request.user.main match {
+      case user =>
+        DB.withSession { implicit s =>
+          val friends = for {
+            fs <- request.body.as[List[RawFriend]]
+          } yield {
+            val friendid = Users.findByFbId(fs.friendfbid) match {
+              case Some(friend) => friend.id.get
+              case None => 0.toLong
+            }
+            if (friendid != 0) {
+              Some(Friend(userid = user.id.get, friendid = friendid, friendfbid = fs.friendfbid))
+            } else None
+          }
+          //println(friends)
+          Friends.updateFollowingForUser(user.id.get, friends)
+          //println(Friends.findFollowingForUser(user.id.get)) // * now tested that this method correctly updates the followingFirends * //
+          Ok(Json.obj(
+            "status" -> "OK",
+            "message" -> "following friends updated"
+          ))
+        }
     }
-    println(friends)
-    Friends.updateFollowingForUser(userid, friends)
-    println(Friends.findFollowingForUser(userid)) // *now tested that this method corectly updates the followingFirends*
-    Ok(Json.obj(
-      "status" -> "OK",
-      "message" -> "following friends updated"
-    ))
+  }
+
+  def followThisUser = SecuredAction(parse.json) { implicit request =>
+    request.user.main match {
+      case user =>
+        DB.withSession { implicit s =>
+          (request.body \ "fbuserid").asOpt[String] match {
+            case Some(friendfbid) =>
+              (request.body \ "userid").asOpt[Long] match {
+                case Some(friendid) =>
+                  if (user.id.get != friendid && !Friends.isFollowing(userid = user.id.get, friendid = friendid)) {
+                    Friends.insert( Friend(userid = user.id.get, friendid = friendid, friendfbid = friendfbid) )
+                  }
+                  Ok(Json.obj(
+                    "status" -> "OK",
+                    "message" -> "following added"
+                  ))
+                case None =>
+                  BadRequest(Json.obj(
+                    "status" -> "KO",
+                    "message" -> "friendid not found"
+                  ))
+              }
+            case None =>
+              BadRequest(Json.obj(
+                "status" -> "KO",
+                "message" -> "friendfbid not found"
+              ))
+          }
+        }
+    }
+  }
+
+  def unfollowFriend(friendid: Long) = SecuredAction { implicit request =>
+    request.user.main match {
+      case user =>
+        DB.withSession { implicit s =>
+          Friends.deleteFollowing(userid = user.id.get, friendid = friendid)
+          Ok(Json.obj(
+            "status" -> "OK",
+            "message" -> ""
+          ))
+        }
+    }
   }
 
   /**

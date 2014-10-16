@@ -46,8 +46,26 @@
             </div>
         </div>
 
+        <script type="text/ng-template" id="feedbacks-template">
+            <div class="profile-small-wrapper profile-small" data-ng-controller="FeedbacksCtrl">
+                feedbacks
+            </div>
+        </script>
+
+        <script type="text/ng-template" id="following-template">
+            <div class="profile-small-wrapper profile-small" data-ng-controller="FollowingCtrl">
+                <div data-ng-include="template.url"></div>
+            </div>
+        </script>
+
+        <script type="text/ng-template" id="merchant-template">
+            <div class="profile-small-wrapper profile-small" data-ng-controller="MerchantCtrl">
+                merchant
+            </div>
+        </script>
+
         <script type="text/ng-template" id="own-listings-template">
-            <div class="own-listings-wrapper profile-small" data-ng-controller="OwnListingsCtrl">
+            <div class="profile-small-wrapper profile-small" data-ng-controller="OwnListingsCtrl">
                 <div class="new-listing" data-ng-controller="ModalNewListingCtrl">
                     <button data-ng-click="open('lg')" class="btn btn-warning"> New Listing </button>
                 </div>
@@ -74,7 +92,7 @@
                         <button class="foot-link btn-custom" data-ng-class="canRelist($index)">
                             <i class="fa fa-repeat"></i> Re-post
                         </button>
-                        <button class="foot-link btn-custom" data-ng-click="share(lst)">
+                        <button class="foot-link btn-custom" data-ng-click="share($event, lst)">
                             <i class="fa fa-share"></i> Share
                         </button>
                         <button class="foot-link btn-custom" data-ng-class="canUpdate($index)">

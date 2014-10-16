@@ -5,6 +5,7 @@ import play.api._
 import play.api.mvc._
 import play.api.db.slick._
 import play.api.libs.json._
+import play.twirl.api.HtmlFormat
 import securesocial.controllers.BaseLoginPage
 
 import play.api.db.slick.Config.driver._
@@ -20,12 +21,16 @@ import play.api.Play.current
 class Application(override implicit val env: RuntimeEnvironment[SocialUser]) extends securesocial.core.SecureSocial[SocialUser] {
 
   // HOME PAGE
-
   def index = Action {
     val message = "Entice with higher confidence!"
     Ok(views.html.index(message))
   }
 
+  /**
+   *
+   * @param itemid
+   * @return
+   */
   def getListing(itemid: Long) = DBAction { implicit rs =>
     Offers.findById(itemid) match {
       case Some(offer) =>
@@ -60,51 +65,72 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
     }
   }
 
-  def userProfile = DBAction { implicit rs =>
-    rs.getQueryString("id") match {
-      case Some(userid) =>
-        Users.findById(userid.toLong) match {
-          case Some(user) =>
-            val rt = Ratings.ratingForUser(user.id.get)
-            val rating = 100*rt._1.toInt
-            val defaultOptions = UserOption(
-              userid = user.id.get,
-              background = Some("/vassets/images/profile_cover.png"),
-              picture = Some("//graph.facebook.com/v2.1/"+user.fbuserid+"/picture?height=200&width=200"),
-              about = Some("Tell others a little bit about you in one sentence. What is worth your while?"))
-            UserOptions.findByUserid(user.id.get) match {
+  def findProfile(user: User, socialUser: Option[SocialUser]): HtmlFormat.Appendable = {
+    DB.withSession { implicit s =>
+      val rt = Ratings.ratingForUser(user.id.get)
+      val rating = 100 * rt._1.toInt
+      val defaultOptions = UserOption(
+        userid = user.id.get,
+        background = Some("/vassets/images/profile_cover.png"),
+        picture = Some("//graph.facebook.com/v2.1/" + user.fbuserid + "/picture?height=200&width=200"),
+        about = Some("Tell others a little bit about you in one sentence. What is worth your while?"))
+      UserOptions.findByUserid(user.id.get) match {
+        case None =>
+          partials.html.userProfile(user, rating, defaultOptions, socialUser)
+        case Some(opts) =>
+          val currentOptions = UserOption(
+            userid = opts.userid,
+            background = opts.background match {
               case None =>
-                Ok( partials.html.userProfile( user, rating, defaultOptions ) )
-              case Some(opts) =>
-                val currentOptions = UserOption(
-                  userid = opts.userid,
-                  background = opts.background match {
-                    case None =>
-                      Some("/vassets/images/profile_cover.png")
-                    case Some(b) => Some("/options/pictures/1700/"+b)
-                  },
-                  picture = opts.picture match {
-                    case None =>
-                      Some("/vassets/images/pic_placeholder.png")
-                    case Some(p) => Some("/options/pictures/300/"+p)
-                  },
-                  about = opts.about match {
-                    case None =>
-                      Some("Tell others a little bit about you in one sentence. What is worth your while?")
-                    case x => x
-                  }
-                )
-                Ok( partials.html.userProfile( user, rating, currentOptions ) )
+                Some("/vassets/images/profile_cover.png")
+              case Some(b) => Some("/options/pictures/1700/" + b)
+            },
+            picture = opts.picture match {
+              case None =>
+                Some("/vassets/images/pic_placeholder.png")
+              case Some(p) => Some("/options/pictures/300/" + p)
+            },
+            about = opts.about match {
+              case None =>
+                Some("Tell others a little bit about you in one sentence. What is worth your while?")
+              case x => x
             }
-          case None =>
-            BadRequest("")
-        }
-      case None =>
-        BadRequest("no id param found")
+          )
+          partials.html.userProfile(user, rating, currentOptions, socialUser)
+      }
     }
-
   }
 
+  /**
+   *
+   * @return
+   */
+  def userProfile = UserAwareAction { implicit request =>
+    DB.withSession { implicit s =>
+      request.getQueryString("id") match {
+        case Some(userid) =>
+          Users.findByFbId(userid) match {
+            case Some(user) =>
+              Ok(this.findProfile(user = user, socialUser = request.user))
+            case None =>
+              Users.findById(userid.toLong) match {
+                case Some(user) =>
+                  Ok(this.findProfile(user = user, socialUser = request.user))
+                case None =>
+                  BadRequest("")
+              }
+          }
+        case None =>
+          BadRequest("id param not found")
+      }
+    }
+  }
+
+  /**
+   *
+   * @param partial
+   * @return
+   */
   def partialTemplates(partial: String) = Action { implicit request =>
     if ( partial == "home" ) {
       Ok(partials.html.home("") )
@@ -118,14 +144,7 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
       Ok( partials.html.loginPartial() )
     } else if ( partial == "userhome" ) {
       Ok( partials.html.userhome() )
-    } /*else if ( partial == "userprofile" ) {
-      request.getQueryString("id") match {
-        case Some( userid ) =>
-          Redirect( routes.Application.userProfile( userid.toLong ) )
-        case None =>
-          BadRequest("unknown user")
-      }
-    } */else if (partial == "profile") {
+    } else if (partial == "profile") {
       request.headers.get("X-Auth-Token") match {
         case Some(_) =>
           Redirect( routes.Application.profileTemplate() )
@@ -139,10 +158,30 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
         case None =>
           Redirect( routes.Application.loggedoutTemplate() )
       }
+    } else if (partial == "following") {
+      Ok( partials.html.following() )
     } else
         BadRequest(partial + " could not be found")
   }
 
+  /**
+   *
+   * @return
+   */
+  def followingTemplate = SecuredAction { implicit request =>
+    request.user.main match {
+      case user =>
+        DB.withSession { implicit s =>
+          val friends = Friends.findFollowingForUser(user.id.get)
+          Ok("")
+        }
+    }
+  }
+
+  /**
+   *
+   * @return
+   */
   def profileTemplate = SecuredAction { implicit request =>
     request.user.main match {
       case user =>
@@ -164,6 +203,10 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
     }
   }
 
+  /**
+   *
+   * @return
+   */
   def profileProfile = SecuredAction { implicit request =>
     request.user.main match {
       case user =>

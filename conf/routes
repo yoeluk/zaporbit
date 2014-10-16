@@ -22,6 +22,9 @@ GET         /api/leaveconvo/:convid/:userid                         @controllers
 GET         /api/getfeedbacksforuser/:userid                        @controllers.API.returnFeedbacksForUser(userid: Long)
 GET         /api/currentUser                                        @controllers.API.currentUser
 GET         /credentialtemplate/:userid                             @controllers.Application.credentialTemplate(userid: String)
+GET         /api/followingfriends                                   @controllers.API.followingFriends
+GET         /followingtemplate                                      @controllers.Application.followingTemplate
+GET         /api/unfollowfriend/:userid                             @controllers.API.unfollowFriend(userid: Long)
 
 
 # item
@@ -62,7 +65,8 @@ POST        /api/replytoconvo                                       @controllers
 POST        /api/getratingsfortrans/:by_userid                      @controllers.API.returnRatingForTransactions(by_userid: Long)
 POST        /api/getbillingforuser                                  @controllers.API.returnBillingForUser
 POST        /api/addmerchant                                        @controllers.API.merchantData
-POST        /api/followthesefriends/:userid                         @controllers.API.followingFriends(userid: Long)
+POST        /api/followthesefriends                                 @controllers.API.updateFollowingFriends
+POST        /api/followthisuser                                     @controllers.API.followThisUser
 POST        /api/fbauth/deauthorized                                @controllers.API.fbDeauthorized
 
 # Google Wallet

@@ -1,4 +1,4 @@
-@(user: User, rating: Int, options: UserOption)
+@(user: User, rating: Int, options: UserOption, socialUser: Option[service.SocialUser])(implicit session: play.api.db.slick.Config.driver.simple.Session)
 
 <div class="container outer-container">
     <div class="row template-header">
@@ -33,12 +33,22 @@
                                     <div><h5> <i class="tab-icon {{ menu.icon }}"></i> {{ menu.name }} </h5></div>
                                     <div></div>
                                 </div>
+                                <div class="pull-right follow-me">
+                                    <a class='pointer @{socialUser match {
+                                        case Some(u) =>
+                                            println("user.id: " + user.id.get + " u.main.id: " + u.main.id.get);
+                                            if(user.id.get == u.main.id.get) { "disable" }
+                                            else if(Friends.isFollowing(u.main.id.get, user.id.get)) "followed" else ""
+                                        case None => "disable"}}' data-ng-class="{disable:false}" data-ng-click="followMe($event, @user.fbuserid, @user.id.get)">
+                                        <i class="fa fa-magnet"></i>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <script type="text/ng-template" id="user-listings-template">
-                        <div class="own-listings-wrapper" data-ng-controller="UserListingsCtrl">
+                        <div class="profile-small-wrapper" data-ng-controller="UserListingsCtrl">
                             <div class="clearfix" style="padding: 0 15px;">
                                 <h5 class="pull-left"> Listings </h5>
                             </div>
