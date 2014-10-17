@@ -241,7 +241,7 @@ angular.module "ZapOrbit.directives", []
 .directive "scrollTop", ["$window", ($window) ->
   link: (scope, element, attrs) ->
     angular.element($window).bind "scroll", ->
-      if @pageYOffset >= 70
+      if @pageYOffset >= 50
         scope.fixedToTop = true
         scope.userHome = true
       else
@@ -375,4 +375,15 @@ angular.module "ZapOrbit.directives", []
 .directive "htmlAttrDescription", [ ->
   restrict: "A"
   link: (scope, element, attrs) -> scope.$broadcast 'description', element.data 'html-attr-description'
+]
+.directive 'bgHolder', [ ->
+  link: (scope, element, attrs) ->
+    element.css 'background' : "url("+attrs.bgHolder+")" + " no-repeat 50% 50%"
+    Holder.run images: element[0]
+]
+.directive "divBlurred", [ ->
+  link: (scope, element, attrs) ->
+    element.blurjs
+      source: '.header-view'
+      overlay: 'rgba(0,100,100,0.1)'
 ]

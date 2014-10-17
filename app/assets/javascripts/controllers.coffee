@@ -49,6 +49,8 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
   $scope.loadingProg = true
 
+  $scope.showLinks = false
+
   $scope.userTemplates = [
     {
       url: "login-template.html"
@@ -409,6 +411,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
               visible: true
               title: lst.listing.title
               draggable: false
+              animation: 'DROP'
         _.each $scope.markers, (m) ->
           m.onClicked = ->
             openListing(m.index)
@@ -755,6 +758,8 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       url: "/partials/profile"
     }
   ]
+
+  $scope.showLinks = true
 
   $scope.profileTemplate = $scope.profileTemplates[0]
 

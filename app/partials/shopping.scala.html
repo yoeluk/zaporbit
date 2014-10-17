@@ -75,23 +75,23 @@
             </div>
 
             <div class="row paging" data-ng-if="paging && paging.total > 0">
-                <label style="padding-left:5px;margin-bottom:0;margin-top:15px;" > Showing {{ paging.offset+1 }} to {{ paging.offset + allListings.length }} out of {{ paging.total }} </label>
+                <label style="padding-left:5px;margin-bottom:0;margin-top:15px;" > Showing {{ paging.offset+1 }} to {{ paging.offset + allListings.length }} of {{ paging.total }} </label>
                 <div class="pull-right">
                     <ul class="pagination" data-ng-repeat="i in pageRange() track by $index" data-ng-if="$index*5 < paging.page + 1 && paging.page + 1 < $index*5 + 6">
                         <li data-ng-class="{disabled:$index==0}">
-                            <a href="javascript:;" data-ng-click="$index>0 && listingsForLocation(true,'',$index*5-1)">&laquo;</a></li>
+                            <a data-ng-click="$index>0 && listingsForLocation(true,'',$index*5-1)">&laquo;</a></li>
                         <li data-ng-class="{active:$index*5==paging.page}">
-                            <a href="javascript:;" data-ng-click="listingsForLocation(true,'',$index*5)"> {{ ($index * 5) + 1 }} </a></li>
+                            <a data-ng-click="listingsForLocation(true,'',$index*5)"> {{ ($index * 5) + 1 }} </a></li>
                         <li data-ng-class="{active:$index*5+1==paging.page}" data-ng-if="$index*5*pageSize + pageSize+1 <= paging.total">
-                            <a href="javascript:;" data-ng-click="listingsForLocation(true,'',$index*5+1)"> {{ ($index * 5) + 2 }} </a></li>
+                            <a data-ng-click="listingsForLocation(true,'',$index*5+1)"> {{ ($index * 5) + 2 }} </a></li>
                         <li data-ng-class="{active:$index*5+2==paging.page}" data-ng-if="$index*5*pageSize + 2*pageSize+1 <= paging.total">
-                            <a href="javascript:;" data-ng-click="listingsForLocation(true,'',$index*5+2)"> {{ ($index * 5) + 3 }} </a></li>
+                            <a data-ng-click="listingsForLocation(true,'',$index*5+2)"> {{ ($index * 5) + 3 }} </a></li>
                         <li data-ng-class="{active:$index*5+3==paging.page}" data-ng-if="$index*5*pageSize + 3*pageSize+1 <= paging.total">
-                            <a href="javascript:;" data-ng-click="listingsForLocation(true,'',$index*5+3)"> {{ ($index * 5) + 4 }} </a></li>
+                            <a data-ng-click="listingsForLocation(true,'',$index*5+3)"> {{ ($index * 5) + 4 }} </a></li>
                         <li data-ng-class="{active:$index*5+4==paging.page}" data-ng-if="$index*5*pageSize + 4*pageSize+1 <= paging.total">
-                            <a href="javascript:;" data-ng-click="listingsForLocation(true,'',$index*5+4)"> {{ ($index * 5) + 5 }} </a></li>
+                            <a data-ng-click="listingsForLocation(true,'',$index*5+4)"> {{ ($index * 5) + 5 }} </a></li>
                         <li data-ng-class="{disabled: $index == indexes()}">
-                            <a href="javascript:;" data-ng-click="$index < indexes() && listingsForLocation(true,'',$index*5+5)">&raquo;</a>
+                            <a data-ng-click="$index < indexes() && listingsForLocation(true,'',$index*5+5)">&raquo;</a>
                         </li>
                     </ul>
                 </div>
@@ -161,19 +161,19 @@
             <div class="row paging" style="text-align: center" data-ng-if="paging && paging.total > 0">
                 <ul class="pagination" data-ng-repeat="i in pageRange() track by $index" data-ng-if="$index*5 < paging.page + 1 && paging.page + 1 < $index*5 + 6">
                     <li data-ng-class="{disabled:$index==0}">
-                        <a href="javascript:;" data-ng-click="$index>0 && listingsForLocation(true,'',$index*5-1)">&laquo;</a></li>
+                        <a data-ng-click="$index>0 && listingsForLocation(true,'',$index*5-1)">&laquo;</a></li>
                     <li data-ng-class="{active:$index*5==paging.page}">
-                        <a href="javascript:;" data-ng-click="listingsForLocation(true,'',$index*5)"> {{ ($index * 5) + 1 }} </a></li>
+                        <a data-ng-click="listingsForLocation(true,'',$index*5)"> {{ ($index * 5) + 1 }} </a></li>
                     <li data-ng-class="{active:$index*5+1==paging.page}" data-ng-if="$index*5*pageSize + pageSize+1 <= paging.total">
-                        <a href="javascript:;" data-ng-click="listingsForLocation(true,'',$index*5+1)"> {{ ($index * 5) + 2 }} </a></li>
+                        <a data-ng-click="listingsForLocation(true,'',$index*5+1)"> {{ ($index * 5) + 2 }} </a></li>
                     <li data-ng-class="{active:$index*5+2==paging.page}" data-ng-if="$index*5*pageSize + 2*pageSize+1 <= paging.total">
-                        <a href="javascript:;" data-ng-click="listingsForLocation(true,'',$index*5+2)"> {{ ($index * 5) + 3 }} </a></li>
+                        <a data-ng-click="listingsForLocation(true,'',$index*5+2)"> {{ ($index * 5) + 3 }} </a></li>
                     <li data-ng-class="{active:$index*5+3==paging.page}" data-ng-if="$index*5*pageSize + 3*pageSize+1 <= paging.total">
-                        <a href="javascript:;" data-ng-click="listingsForLocation(true,'',$index*5+3)"> {{ ($index * 5) + 4 }} </a></li>
+                        <a data-ng-click="listingsForLocation(true,'',$index*5+3)"> {{ ($index * 5) + 4 }} </a></li>
                     <li data-ng-class="{active:$index*5+4==paging.page}" data-ng-if="$index*5*pageSize + 4*pageSize+1 <= paging.total">
-                        <a href="javascript:;" data-ng-click="listingsForLocation(true,'',$index*5+4)"> {{ ($index * 5) + 5 }} </a></li>
+                        <a data-ng-click="listingsForLocation(true,'',$index*5+4)"> {{ ($index * 5) + 5 }} </a></li>
                     <li data-ng-class="{disabled: $index == indexes()}">
-                        <a href="javascript:;" data-ng-click="$index < indexes() && listingsForLocation(true,'',$index*5+5)">&raquo;</a>
+                        <a data-ng-click="$index < indexes() && listingsForLocation(true,'',$index*5+5)">&raquo;</a>
                     </li>
                 </ul>
             </div>

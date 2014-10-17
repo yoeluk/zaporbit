@@ -38,16 +38,21 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
           case Some(loc) =>
             Users.findById(offer.userid) match {
               case Some(user) =>
+                val lst = Offers.listingWithOffer(offer)
                 val optToken = if (user.isMerchant.get) {
                   Merchants.findByUserId(offer.userid) match {
                     case Some(merchant) =>
                       Some(Wallet.generateToken(offer, merchant.identifier, merchant.secret, user.id.get))
                   }
                 } else None
-                val lst = Offers.listingWithOffer(offer)
                 val rt = Ratings.ratingForUser(user.id.get)
                 val rating = 100*rt._1.toInt
-                Ok(partials.html.itemTemplate(lst, lst.pictures.get, loc, user, rating, currency = offer.currency_code, token = optToken, pictureUrl(user.id.get)))
+                rs.request.headers.get("user-agent") match {
+                  case Some(ua) if ua.contains("Facebook") =>
+                    Ok(views.html.staticItemWrapper(lst, lst.pictures.get, loc, user, rating, offer.currency_code, optToken, pictureUrl(user.id.get)))
+                  case Some(_) =>
+                    Ok(partials.html.itemTemplate(lst, lst.pictures.get, loc, user, rating, currency = offer.currency_code, token = optToken, pictureUrl(user.id.get)))
+                }
               case None =>
                 Ok(Json.obj(
                   "status" -> "KO"

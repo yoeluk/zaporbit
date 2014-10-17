@@ -1,0 +1,16 @@
+@(user: User, rating: Int, pictureUrl: String)
+<div class="profile row-fluid">
+    <div class="circular pull-left" style="background-image: url(@pictureUrl)"></div>
+    <div class="profile-crd" style=""><a href="/#!/userhome?id=0"><b> @user.name @user.surname </b></a></div>
+    <div class="stars pull-left">
+        <div class="rating" style="width: 0%;"></div>
+        <i></i>
+        <i></i>
+        <i></i>
+        <i></i>
+        <i></i>
+    </div>
+    <div class="pull-right" style="color: grey; font-size: 12px;">
+        <p class="merchant pull-right">@if(user.isMerchant.get){is <i>merchant</i>}else{is <i>not</i> merchant}</p>
+    </div>
+</div>

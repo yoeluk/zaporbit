@@ -36,7 +36,6 @@
                                 <div class="pull-right follow-me">
                                     <a class='pointer @{socialUser match {
                                         case Some(u) =>
-                                            println("user.id: " + user.id.get + " u.main.id: " + u.main.id.get);
                                             if(user.id.get == u.main.id.get) { "disable" }
                                             else if(Friends.isFollowing(u.main.id.get, user.id.get)) "followed" else ""
                                         case None => "disable"}}' data-ng-class="{disable:false}" data-ng-click="followMe($event, @user.fbuserid, @user.id.get)">

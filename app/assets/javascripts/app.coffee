@@ -25,9 +25,9 @@ angular.module "ZapOrbit", [
   $httpProvider
     .interceptors.push "SessionInjector"
   $routeProvider
-    .when "/",
-      templateUrl: "/partials/home"
-      controller: "HomeCtr"
+#    .when "/",
+#      templateUrl: "/partials/home"
+#      controller: "HomeCtr"
     .when "/listings",
       templateUrl: "/partials/listings"
       controller: "ShoppingCtrl"
@@ -43,6 +43,7 @@ angular.module "ZapOrbit", [
     .when "/userprofile",
       templateUrl: (params) -> "/userprofile?id="+params.id+"&rnd="+params.rnd
       controller: "UserProfileCtrl"
+    .otherwise "/listings"
   $provide.decorator "taOptions", ["$delegate", (taOptions) ->
       # $delegate is the taOptions we are decorating
       # here we override the default toolbars and classes specified in taOptions.

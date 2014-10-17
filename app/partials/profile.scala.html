@@ -1,20 +1,15 @@
 @(user: User, rating: Int, pictureUrl: String)
 
-<div class="" style="margin-bottom: 10px; border-bottom: 1px solid rgb(229, 229, 229)">
+<div class="summary-wrapper" style="margin-bottom: 10px;)">
     <h5> {{ title }} </h5>
-</div>
-<div class="profile row-fluid">
-    <div class="circular pull-left" style="background-image: url(@pictureUrl)"></div>
-    <div class="profile-crd" style=""><a href="/#!/userhome"><b> @user.name @user.surname </b></a></div>
-    <div class="stars pull-left">
-        <div class="rating" style="width: 0%;"></div>
-        <i></i>
-        <i></i>
-        <i></i>
-        <i></i>
-        <i></i>
+    <div data-ng-if="!showLinks">
+        @partials.html.profileSummary(user, rating, pictureUrl)
     </div>
-    <div class="pull-right" style="color: grey; font-size: 12px;">
-        <p class="merchant pull-right">@if(user.isMerchant.get){is <i>merchant</i>}else{is <i>not</i> merchant}</p>
+    <div class="profile-links row-fluid clearfix" data-ng-if="showLinks">
+        @partials.html.profileSummary(user, rating, pictureUrl)
+        <a data-ng-href="/#!/userhome?id=1"><i class="tab-icon fa fa-envelope"></i> Messages </a>
+        <a data-ng-href="/#!/userhome?id=2"><i class="tab-icon fa fa-credit-card"></i> Purchases </a>
+        <a data-ng-href="/#!/userhome?id=3"><i class="tab-icon fa fa-calculator"></i> Sales </a>
+        <a data-ng-href="/#!/userhome?id=4"><i class="tab-icon fa fa-briefcase"></i> Billing </a>
     </div>
 </div>
