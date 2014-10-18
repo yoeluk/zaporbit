@@ -192,7 +192,7 @@
                                     <div class="row-fluid message" data-ng-class="{ 'pull-right': msgPulledRight($index) }"
                                     data-ng-repeat="msg in conversations[activePill[activeTab]].conversation.messages track by $index">
                                         <div class="string" data-ng-class="{ 'me': isThisMe($index) }">
-                                            <span data-ta-bind="text" data-ng-model="msg.message"></span>
+                                            <span data-ng-bind="msg.message"></span>
                                         </div>
                                         <div class="message-date"> {{ msg.date | amCalendar }} </div>
                                     </div>

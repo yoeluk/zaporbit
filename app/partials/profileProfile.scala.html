@@ -60,7 +60,36 @@
 
         <script type="text/ng-template" id="merchant-template">
             <div class="profile-small-wrapper profile-small" data-ng-controller="MerchantCtrl">
-                merchant
+
+                <form name="googleWallet" novalidate class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <label for="merchantid" class="col-sm-3 control-label"> Google Wallet Merchant ID
+                            <span class="label label-danger" data-ng-show="submitted && googleWallet.merchantid.$error.required">Required!</span>
+                        </label>
+                        <div class="col-sm-9">
+                            <input data-ng-disabled="!isEditing" type="text" class="form-control" name="merchantid" data-ng-model="merchantid" id="merchantid" placeholder="Merchant ID" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="merchantsecret" class="col-sm-3 control-label"> Merchant Secret
+                            <span class="label label-danger" data-ng-show="submitted && googleWallet.merchantsecret.$error.required">Required!</span>
+                        </label>
+                        <div class="col-sm-9">
+                            <input data-ng-disabled="!isEditing" type="text" class="form-control" name="merchantsecret" data-ng-model="merchantsecret" id="merchantsecret" placeholder="Merchant Secret" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="description" class="col-sm-3 control-label">Your Postback URL</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" name="postbackurl" data-ng-model="postbackurl" id="postbackurl" placeholder="Your postback URL" readonly/>
+                        </div>
+                    </div>
+                    <div class="submit-btn clearfix">
+                        <button class="btn btn-default btn-small col-xs-offset-3" data-ng-click="edit() || submit(googleWallet)"> {{ title() }} </button>
+                    </div>
+                </form>
+                <p> Google wallet integration is <b>recommended</b> for all sellers. Your Google Wallet identification will be used by the website only for pre-processing payment information for Google Wallet and it is safely stored in our server using encrypted channels.</p>
+                <p> No Google Wallet yet? <a href="https://wallet.google.com/merchant" target="_blank">Set up your Google Wallet now </a> and start getting paid directly into it today!</p>
             </div>
         </script>
 

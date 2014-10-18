@@ -143,7 +143,8 @@
                         <div data-ng-include="'/credentialtemplate/'+lst.user.id"></div>
                         <span class="pull-right price-wrapper">
                             <label class="label label-info"> {{ lst.listing.formatted_price }} {{ lst.listing.currency_code }} </label>
-                            <a class="btn btn-info buy-now" data-ng-href="/#!/listing_item/{{lst.listing.id}}"><i class="fa fa-google-wallet"></i> Buy Now </a>
+                            <a data-ng-if="lst.user.isMerchant" class="btn btn-info buy-now" data-ng-href="/#!/listing_item/{{lst.listing.id}}"><i class="fa fa-google-wallet"></i> Buy Now </a>
+                            <a data-ng-if="!lst.user.isMerchant" class="btn btn-info buy-now" data-ng-href="/#!/listing_item/{{lst.listing.id}}"> Order Now </a>
                         </span>
                     </div>
                     <div data-ng-controller="ModalListingCtrl">
@@ -186,7 +187,7 @@
                 <div id="fbId" data-fb-login>
                     <div class="fb-login-button"
                     data-scope="public_profile,email,user_friends"
-                    data-max-rows="2"
+                    data-max-rows="1"
                     data-size="large"
                     data-show-faces="true"
                     data-auto-logout-link="false"

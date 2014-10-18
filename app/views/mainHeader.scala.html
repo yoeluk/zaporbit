@@ -16,7 +16,7 @@
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li data-ng-if="userName && userName != 'Offline'" data-ng-class="{ active: isActive('/userhome') }" class="user-home-btn">
-                        <a data-ng-href="#!/userhome"> <span data-ng-class="userIcon()" class="tab-icon"></span> {{ userName }} </a>
+                        <a data-ng-href="#!/userhome?id=0&tid=0"> <span data-ng-class="userIcon()" class="tab-icon"></span> {{ userName }} </a>
                     </li>
                     <li data-ng-class="{ active: isActive('/support') }"><a data-ng-href="#!/support"> Support </a></li>
                 </ul>

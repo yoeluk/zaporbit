@@ -283,7 +283,8 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     $scope.setActiveTab = (index) ->
       $scope.recordTemplate = $scope.recordTemplates[index]
       $scope.activeTab = index
-      $location.search 'id', index
+      if index == 0 then $location.search id: index, tid: 0
+      else $location.search 'id', index
 
     $scope.$watch ($scope) ->
       $location.search()
@@ -930,7 +931,52 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 ]
 .controller "FeedbacksCtrl", ["$scope", "$timeout", "$http", ($scope, $timeout, $http) ->
 ]
-.controller "MerchantCtrl", ["$scope", "$timeout", "$http", ($scope, $timeout, $http) ->
+.controller "MerchantCtrl", ["$scope", "$timeout", "$http", "$filter", ($scope, $timeout, $http, $filter) ->
+
+  $scope.isEditing = true
+
+  $scope.title = ->
+    if $scope.isEditing then "Save" else "Edit"
+
+  $scope.edit = ->
+    if $scope.isEditing then false
+    else
+      $scope.isEditing = true
+      true
+
+  $scope.submit = (form) ->
+    if form.$invalid
+      data =
+        identifier:""
+        secret:""
+    else
+      data =
+        identifier: form.merchantid.$viewValue
+        secret: form.merchantsecret.$viewValue
+    addMerchant data
+
+  addMerchant = (data) ->
+    $http
+      method: "POST"
+      url: "/api/addmerchant"
+      data: data
+    .success (data, status) ->
+      $scope.isEditing = false
+
+  getMerchant = ->
+    $http
+      method: "GET"
+      url: "/api/merchantinfo"
+    .success (data, status) ->
+      if data.merchant? && data.merchant.identifier.length && data.merchant.secret.length
+        $scope.merchantid = data.merchant.identifier
+        $scope.merchantsecret = data.merchant.secret
+        $scope.isEditing = false
+      $scope.postbackurl = "https://zaporbit.com/merchant/" + data.userid
+
+
+  getMerchant()
+
 ]
 .controller "FollowingCtrl", ["$scope", "$timeout", "$http", ($scope, $timeout, $http) ->
 
@@ -1004,7 +1050,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     }
   ]
 
-  templateId = if $routeParams.tid? && $routeParams.tid <= 3 then $routeParams.tid else 0
+  templateId = if $routeParams.tid? && !isNaN($routeParams.tid) && parseInt($routeParams.tid)>=0 && parseInt($routeParams.tid) <= 3 then $routeParams.tid else $location.search 'tid', 0; 0
 
   $scope.template = templates[templateId]
 

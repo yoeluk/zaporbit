@@ -78,6 +78,7 @@ object writers {
   import FormMappings._
 
   case class RawFriend(userid: Long, friendfbid: String)
+  case class RawMerchant(identifier: String, secret: String)
 
   /*
    * reference from accepted answer in stackoverlow
@@ -655,6 +656,16 @@ object writers {
       "userid" -> longNumber,
       "friendfbid" -> nonEmptyText
     )(RawFriend.apply)(RawFriend.unapply)
+  )
+
+  /**** RawMerchant validation ****/
+
+  implicit val rawMerchantFormat = Json.format[RawMerchant]
+  val rawMerchantForm = Form(
+    mapping(
+      "identifier" -> nonEmptyText,
+      "secret" -> nonEmptyText
+    )(RawMerchant.apply)(RawMerchant.unapply)
   )
 
   /**** Feedback validation ****/
@@ -1616,44 +1627,66 @@ class API(override implicit val env: RuntimeEnvironment[SocialUser]) extends sec
    *
    * @return
    */
-  def merchantData = DBAction(parse.raw) { implicit rs =>
-    rs.request.body.asBytes(maxLength = 1024) match {
-      case Some(body) =>
-        val tick = rs.request.queryString.get("tick").get(0)
-        val pass = password+tick
-        val decryptedBytes = appCryptor.decryptData(body, pass.toCharArray)
-        Json.parse(decryptedBytes).validate[Merchant].map { merchant =>
-          Merchants.findByUserId(merchant.userid) match {
-            case Some(existingMerchant) =>
-              if (merchant.secret == "" || merchant.identifier == "")
-                Users.updateMerchant(isMerchant = false, merchant.userid)
-              else Users.updateMerchant(isMerchant = true, merchant.userid)
-              Merchants.update(existingMerchant.id.get, merchant)
-              Ok(Json.obj(
-                "status" -> "OK",
-                "merchant" -> Json.toJson(merchant),
-                "existing id" -> JsNumber(existingMerchant.id.get)
-              ))
+  def merchantData = SecuredAction(parse.json) { implicit request =>
+    request.user.main match {
+      case user =>
+        DB.withSession { implicit s =>
+          request.body.asOpt[RawMerchant] match {
+            case Some(rawMerchant) =>
+              val merchant = Merchant(userid = user.id.get, identifier = rawMerchant.identifier, secret = rawMerchant.secret)
+              Merchants.findByUserId(user.id.get) match {
+                case Some(existingMerchant) =>
+                  if (merchant.secret == "" || merchant.identifier == "")
+                    Users.updateMerchant(isMerchant = false, merchant.userid)
+                  else Users.updateMerchant(isMerchant = true, merchant.userid)
+                  Merchants.update(existingMerchant.id.get, merchant)
+                  Ok(Json.obj(
+                    "status" -> "OK",
+                    "merchant" -> Json.toJson(merchant),
+                    "existing id" -> JsNumber(existingMerchant.id.get)
+                  ))
+                case None =>
+                  Merchants.insert(merchant)
+                  Users.updateMerchant(isMerchant = true, merchant.userid)
+                  Ok(Json.obj(
+                    "status" -> "OK",
+                    "merchant" -> Json.toJson(merchant)
+                  ))
+              }
             case None =>
-              Merchants.insert(merchant)
-              Users.updateMerchant(isMerchant = true, merchant.userid)
-              Ok(Json.obj(
-                "status" -> "OK",
-                "merchant" -> Json.toJson(merchant)
-              ))
+              BadRequest("invalid data in json")
           }
-        }.getOrElse(BadRequest(Json.obj(
-          "status" -> "KO",
-          "message" -> "bad merchant"
-        )))
-      case None =>
-        BadRequest(Json.obj(
-          "status" -> "KO",
-          "message" -> "bad request"
-        ))
+        }
     }
   }
 
+  /**
+   *
+   * @return
+   */
+  def merchantInfo = SecuredAction { implicit request =>
+    request.user.main match {
+      case user =>
+        DB.withSession { implicit s =>
+          Merchants.findByUserId(user.id.get) match {
+            case Some(merchant) =>
+              Ok(Json.obj(
+                "merchant" -> Json.toJson(merchant),
+                "userid" -> user.id.get
+              ))
+            case None =>
+              Ok(Json.obj(
+                "userid" -> user.id.get
+              ))
+          }
+        }
+    }
+  }
+
+  /**
+   *
+   * @return
+   */
   def followingFriends = SecuredAction { implicit request =>
     request.user.main match {
       case user =>
@@ -1714,6 +1747,10 @@ class API(override implicit val env: RuntimeEnvironment[SocialUser]) extends sec
     }
   }
 
+  /**
+   *
+   * @return
+   */
   def followThisUser = SecuredAction(parse.json) { implicit request =>
     request.user.main match {
       case user =>
@@ -1745,6 +1782,11 @@ class API(override implicit val env: RuntimeEnvironment[SocialUser]) extends sec
     }
   }
 
+  /**
+   *
+   * @param friendid
+   * @return
+   */
   def unfollowFriend(friendid: Long) = SecuredAction { implicit request =>
     request.user.main match {
       case user =>

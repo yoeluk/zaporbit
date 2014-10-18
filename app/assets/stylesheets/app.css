@@ -305,6 +305,7 @@ and (max-device-width : 480px) {
 }
 .item-description {
     padding: 15px;
+    font-size: 14px;
 }
 .getAll {
     margin: 0;
@@ -1595,5 +1596,15 @@ iframe.ta-insert-video {
 .following-bg > .followed.confirm {
     transform: rotate(0.5turn);
     color: red;
+}
+.profile-small > form {
+    margin: 15px 0 0;
+    padding: 10px;
+}
+.profile-small > p {
+    padding: 5px 15px;
+}
+form[name='googleWallet'] .submit-btn {
+    margin-left: 10px;
 }
 

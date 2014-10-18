@@ -172,7 +172,7 @@ object Locations extends DAO {
                 filterStr: String = "%",
                 userid: Long)(implicit session: Session): (Page[(Listing, ZOLocation, User)], Map[Long, (Int, Int)]) = {
     val filters = filterStr.split("\\s+").filterNot(_ == " ").map( x => x.toLowerCase).toVector
-    //println( filters.count(_.r.findAllIn("the dog").length > 0) )
+    //println( filters )
 
     val friendsLQ = for {
       f <- friends.filter(_.userid === userid)
