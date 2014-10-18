@@ -241,7 +241,7 @@ angular.module "ZapOrbit.directives", []
 .directive "scrollTop", ["$window", ($window) ->
   link: (scope, element, attrs) ->
     angular.element($window).bind "scroll", ->
-      if @pageYOffset >= 50
+      if @pageYOffset >= 55
         scope.fixedToTop = true
         scope.userHome = true
       else

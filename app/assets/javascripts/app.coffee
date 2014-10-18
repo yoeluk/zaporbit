@@ -25,9 +25,9 @@ angular.module "ZapOrbit", [
   $httpProvider
     .interceptors.push "SessionInjector"
   $routeProvider
-#    .when "/",
-#      templateUrl: "/partials/home"
-#      controller: "HomeCtr"
+    .when "/",
+      templateUrl: "/partials/listings"
+      controller: "ShoppingCtrl"
     .when "/listings",
       templateUrl: "/partials/listings"
       controller: "ShoppingCtrl"
@@ -40,9 +40,11 @@ angular.module "ZapOrbit", [
     .when "/userhome",
       templateUrl: "/partials/userhome"
       controller: "UserHomeCtrl"
+      reloadOnSearch: false
     .when "/userprofile",
       templateUrl: (params) -> "/userprofile?id="+params.id+"&rnd="+params.rnd
       controller: "UserProfileCtrl"
+      reloadOnSearch: false
     .otherwise "/listings"
   $provide.decorator "taOptions", ["$delegate", (taOptions) ->
       # $delegate is the taOptions we are decorating

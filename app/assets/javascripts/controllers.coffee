@@ -94,8 +94,8 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
   $scope.loginStatus(true)
 
 ]
-.controller "SecuredHomeCtrl", ["$scope", "$http", "FacebookLogin", "$log", "$window", '$routeParams',"$timeout", "$rootScope",
-  ($scope, $http, FacebookLogin, $log, $window, $routeParams, $timeout, $rootScope) ->
+.controller "SecuredHomeCtrl", ["$scope", "$http", "FacebookLogin", "$log", "$window", '$routeParams',"$timeout", "$rootScope", "$location",
+  ($scope, $http, FacebookLogin, $log, $window, $routeParams, $timeout, $rootScope, $location) ->
 
     $scope.loadingProg = true
 
@@ -242,7 +242,9 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       if user.fbuserid == $scope.myFbId then "me"
       else user.name
 
-    $scope.activeTab = if $routeParams? && $routeParams.id? then parseInt($routeParams.id) else 0
+    $scope.activeTab = if $routeParams? && $routeParams.id? && !isNaN($routeParams.id) then parseInt($routeParams.id) else 0
+
+    if isNaN($routeParams.id) then $location.search "id", 0
 
     $scope.recordTemplate = $scope.recordTemplates[$scope.activeTab]
 
@@ -281,6 +283,14 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     $scope.setActiveTab = (index) ->
       $scope.recordTemplate = $scope.recordTemplates[index]
       $scope.activeTab = index
+      $location.search 'id', index
+
+    $scope.$watch ($scope) ->
+      $location.search()
+    , (newValue, oldValue) ->
+      if !isNaN(newValue.id) && parseInt(newValue.id) != $scope.activeTab
+        $scope.setActiveTab parseInt(newValue.id)
+      if newValue.tid? && !isNaN(newValue.tid) then $scope.$broadcast "templateId", newValue.tid
 
     $scope.isActiveTab = (index) ->
       index == $scope.activeTab
@@ -314,11 +324,6 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     $scope.msgWrapperStyle = ->
       if $window.navigator.appVersion.indexOf("Mac") != -1 then {'margin-right': '-30px', 'padding-right': '40px'}
       else {"padding-right":"13px"}
-
-#  $timeout ->
-#    if $scope.replies[$scope.activePill[$scope.activeTab]] is not undefined
-#      $scope.replies[$scope.activePill[$scope.activeTab]] = $scope.tempReply
-#  , 500
 ]
 .controller "HomeCtr", ["$scope", ($scope) ->
     $scope.message = "Entice with higher confidence!"
@@ -394,7 +399,8 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
         $scope.paging = ListingService.paging()
         $scope.filterStr = ListingService.filter()
         if !$scope.filterStr && listings.length == 0 && $scope.alerts.length == 0
-          $scope.addAlert "There are not listings in this location."
+          $scope.addAlert "There are not listings in this location currently. Be the first of your friends to list an item for sale in this locality!"
+        else $scope.alerts = []
         doListingsMarkers()
 
       doListingsMarkers = ->
@@ -435,6 +441,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
       addressCallback = (loc, dummyParam, remote) ->
         $scope.locProg = false
+        $scope.inProgress = false
         if loc? && loc.locality?
           ListingService.listings zoLocation(loc), listingCallback, remote
 
@@ -957,7 +964,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       console.log data
       $scope.followings.splice index, 1
 ]
-.controller "ProfileProfileCtrl", ["$scope", "$timeout", "$upload", "$log", ($scope, $timeout, $upload, $log) ->
+.controller "ProfileProfileCtrl", ["$scope", "$timeout", "$upload", "$log", "$routeParams", "$location", ($scope, $timeout, $upload, $log, $routeParams, $location) ->
 
   $scope.profileMenus = [
     {
@@ -997,17 +1004,27 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     }
   ]
 
-  $scope.template = templates[0]
+  templateId = if $routeParams.tid? && $routeParams.tid <= 3 then $routeParams.tid else 0
 
-  activeMenu = $scope.profileMenus[0]
+  $scope.template = templates[templateId]
+
+  activeMenu = $scope.profileMenus[templateId]
+
+  console.log $routeParams
 
   $scope.isActive = (index) ->
     active: $scope.profileMenus[index].name == activeMenu.name
 
   $scope.setActive = (index) ->
+    $location.search 'tid', index
     if templates[index]? then $scope.template = templates[index]
     else $scope.template = ""
     activeMenu = $scope.profileMenus[index]
+
+  $scope.$on "templateId", (e, id) ->
+    tid = parseInt id
+    if $scope.template != templates[tid]
+      $scope.setActive parseInt(tid)
 
   updateData = {}
 

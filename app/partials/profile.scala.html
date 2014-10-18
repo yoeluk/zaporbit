@@ -2,7 +2,7 @@
 
 <div class="summary-wrapper" style="margin-bottom: 10px;)">
     <h5> {{ title }} </h5>
-    <div data-ng-if="!showLinks">
+    <div class="inner-summary" data-ng-if="!showLinks">
         @partials.html.profileSummary(user, rating, pictureUrl)
     </div>
     <div class="profile-links row-fluid clearfix" data-ng-if="showLinks">

@@ -8,12 +8,11 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a data-ng-href="#!/" class="navbar-brand brand"> ZapOrbit </a>
+                <a data-ng-href="#!/listings" class="navbar-brand brand"> ZapOrbit </a>
             </div>
             <div data-collapse="navCollapsed" class="navbar-collapse collapse navbar-responsive-collapse brand">
                 <ul class="nav navbar-nav">
-                    <!--<li data-ng-class="{ active: isActive('/')}"><a data-ng-href="#!/"> Home </a></li>-->
-                    <li data-ng-class="{ active: isActive('/listings')}"><a data-ng-href="#!/listings"> Listings </a></li>
+                    <li data-ng-class="{ active: isActive('/listings') || isActive('/')}"><a data-ng-href="#!/listings"> Listings </a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li data-ng-if="userName && userName != 'Offline'" data-ng-class="{ active: isActive('/userhome') }" class="user-home-btn">
