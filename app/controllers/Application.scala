@@ -145,6 +145,8 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
       Ok(partials.html.shopping("") )
     } else if ( partial == "modalItem" ) {
       Ok(partials.html.uiModalItem() )
+    } else if ( partial == "newMessageTemplate" ) {
+      Ok(partials.html.newMessage() )
     } else if ( partial == "newlistingPartial" ) {
       Ok( partials.html.newListing() )
     } else if ( partial == "loginPartial" ) {

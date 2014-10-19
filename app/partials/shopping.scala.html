@@ -129,9 +129,13 @@
                 <div class="item-description">
                     <div data-ta-bind data-ng-model="lst.listing.description"> </div>
                 </div>
+
+                <div data-ng-include="'/partials/newMessageTemplate'"></div>
+
                 <div class="modal-footer" style="padding-right: 20px;">
-                    <button class="btn btn-default" data-ng-click="cancel()"> OK </button>
+                    <button class="btn btn-warning" data-ng-click="cancel()"> Dismiss </button>
                 </div>
+
             </script>
 
             <div class="listing container-with-shadow" data-ng-repeat="lst in allListings" data-ng-if="lst.listing.pictures[0]">

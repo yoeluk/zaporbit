@@ -79,6 +79,7 @@ object writers {
 
   case class RawFriend(userid: Long, friendfbid: String)
   case class RawMerchant(identifier: String, secret: String)
+  case class RawMessage(toUser: Long, title: String, offerid: Long, message: String)
 
   /*
    * reference from accepted answer in stackoverlow
@@ -666,6 +667,18 @@ object writers {
       "identifier" -> nonEmptyText,
       "secret" -> nonEmptyText
     )(RawMerchant.apply)(RawMerchant.unapply)
+  )
+
+  /**** RawMessage validation ****/
+
+  implicit val rawMessageFormat = Json.format[RawMessage]
+  val rawMessageForm = Form(
+    mapping(
+      "toUser" -> longNumber,
+      "title" -> nonEmptyText,
+      "offerid" -> longNumber,
+      "message" -> nonEmptyText
+    )(RawMessage.apply)(RawMessage.unapply)
   )
 
   /**** Feedback validation ****/
@@ -1318,43 +1331,45 @@ class API(override implicit val env: RuntimeEnvironment[SocialUser]) extends sec
     }
   }
 
-  def startConversation = DBAction(parse.json(maxLength = 2048)) { implicit rs =>
-    (rs.request.body \ "conversation").validate[Conversation].map { conversation =>
-      (rs.request.body \ "message").asOpt[String] match {
-        case Some(raw_message) =>
-        Conversations.insertReturningId(conversation) match {
-          case Some(convId) =>
-            Json.obj(
-              "message" -> raw_message,
-              "received_status" -> "unread",
-              "convid" -> convId,
-              "senderid" -> conversation.user1id,
-              "recipientid" -> conversation.user2id
-            ).validate[Message].map { message =>
-              Messages.insert(message)
-              Ok(Json.obj(
-                "status" -> "OK",
-                "message" -> Json.toJson(message))
-              )
-            }.getOrElse {
-              Conversations.delete(convId)
-              BadRequest(Json.obj(
-                "status" -> "KO",
-                "message" -> "unknown error while validating the message"))
-            }
-          case None =>
-            BadRequest(Json.obj(
+  def startConversation = SecuredAction(parse.json) { implicit request =>
+    request.user.main match {
+      case user =>
+        request.body.asOpt[RawMessage] match {
+          case Some(rawMessage) =>
+            if (user.id.get != rawMessage.toUser) {
+              val convo = Conversation(
+                user1_status = "online",
+                user2_status = "online",
+                user1id = user.id.get,
+                user2id = rawMessage.toUser,
+                title = rawMessage.title,
+                offerid = Some(rawMessage.offerid))
+              DB.withSession { implicit s =>
+                Conversations.insertReturningId(convo) match {
+                  case Some(convId) =>
+                    val msg = Message(
+                      message = rawMessage.message,
+                      received_status = "unread",
+                      convid = convId,
+                      senderid = convo.user1id,
+                      recipientid = convo.user2id)
+                    Messages.insert(msg)
+                    Ok(Json.obj(
+                      "status" -> "OK",
+                      "message" -> "the messages was sent successfully"
+                    ))
+                  case None =>
+                    InternalServerError("An error ocurrered while inserting a new conversation. No ID was returned where one was expected.")
+                }
+              }
+            } else BadRequest(Json.obj(
               "status" -> "KO",
-              "message" -> "inserting did not return an id"))
+              "message" -> "you can't send messages to yourself."
+            ))
+          case None =>
+            BadRequest("invalid message")
         }
-        case None =>
-          BadRequest(Json.obj(
-            "status" -> "KO",
-            "message" -> "there was not message in the request"))
-      }
-    }.getOrElse(BadRequest(Json.obj(
-      "status" -> "KO",
-      "message" -> "invalid conversation posted")))
+    }
   }
 
   def markConvoRead(convid: Long) = DBAction { implicit rs =>

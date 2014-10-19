@@ -1471,5 +1471,24 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       $scope.dismiss()
 
     $scope.creatingListing = false
+]
+.controller "StartConversationCtrl", ["$scope", "$http", "$filter", ($scope, $http, $filter) ->
 
+  $scope.tempMessage = ''
+
+  lst = $scope.$parent.lst
+
+  $scope.sendMessage = ->
+    trimmedMessage = $filter('trim')($scope.tempMessage)
+    if trimmedMessage != ""
+      $http
+        method: 'POST'
+        url: "/api/startconversation"
+        data:
+          message: trimmedMessage
+          toUser: lst.user.id
+          title: lst.listing.title
+          offerid: lst.listing.id
+      .success (data, status) ->
+        console.log data
 ]

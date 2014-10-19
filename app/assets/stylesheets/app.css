@@ -304,7 +304,7 @@ and (max-device-width : 480px) {
     }
 }
 .item-description {
-    padding: 15px;
+    padding: 15px 20px;
     font-size: 14px;
 }
 .getAll {
@@ -1131,10 +1131,6 @@ img.resize{
     margin-bottom: 15px;
     text-align: center;
 }
-.list-group-item > p {
-    font-family: 'Open Sans', sans-serif;
-    text-overflow: ellipsis;
-}
 .message-title > h4 {
     font-weight: 700;
 }
@@ -1165,10 +1161,14 @@ img.resize{
 }
 .list-group-item {
     border: 1px solid #C7C7C7;
+    padding: 12px 15px;
 }
 .list-group-item > p {
-    overflow: hidden;
+    font-family: 'Open Sans', sans-serif;
     height: 17px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 .list-group-item-heading {
     font-weight: 600!important;
@@ -1207,7 +1207,6 @@ img.resize{
 }
 .convo-preview {
     position: relative;
-    height: 62px;
 }
 .close-wrapper {
     position: absolute;
@@ -1613,4 +1612,11 @@ form[name='googleWallet'] .submit-btn {
 }
 .modal-header > .modal-title {
     text-align: center;
+}
+.conversation-starter {
+    padding: 5px 20px;
+}
+.message-starter {
+    min-height: 82px;
+    padding: 10px;
 }

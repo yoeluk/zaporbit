@@ -387,3 +387,37 @@ angular.module "ZapOrbit.directives", []
       source: '.header-view'
       overlay: 'rgba(0,100,100,0.1)'
 ]
+.directive "starterMessage", ["$filter", ($filter) ->
+  restrict: "A"
+  require: "ngModel"
+  link: (scope, element, attrs, ngModel) ->
+
+    read = ->
+      ngModel.$setViewValue element.html()
+
+    focussed = ->
+      trimmed = $filter('trim')(element.html())
+      if trimmed? and trimmed == attrs.placeholder
+        element.html ""
+
+    blurred = ->
+      trimmed = $filter('trim')(element.html())
+      if trimmed? and trimmed == ""
+        element.html attrs.placeholder
+
+    ngModel.$render = ->
+      trimmed = $filter('trim')(element.html())
+      if trimmed? and trimmed == ""
+        element.html attrs.placeholder
+      else
+        element.html ngModel.$viewValue or ""
+
+    element.bind "blur keyup change", ->
+      scope.$apply read
+
+    element.bind "blur", ->
+      scope.$apply blurred
+
+    element.bind "focus", ->
+      scope.$apply focussed
+]

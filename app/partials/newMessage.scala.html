@@ -1,0 +1,13 @@
+<div class="conversation-starter" data-ng-controller="StartConversationCtrl">
+    <div class="clearfix">
+        <div id="message-starter"
+        class="message-reply message-starter"
+        data-starter-message
+        data-ng-model="tempMessage"
+        contentEditable="true"
+        data-placeholder="Ask the seller more about this listing."></div>
+    </div>
+    <div class="clearfix">
+        <button class="btn btn-default btn-sm" style="margin-bottom: 10px;" data-ng-click="sendMessage()"> Send</button>
+    </div>
+</div>
