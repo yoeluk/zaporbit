@@ -1345,7 +1345,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
   $scope.open = (size) ->
     modalInstance = $modal.open
-      templateUrl: "new-listing-template.html"
+      templateUrl: "partials/newlistingPartial"
       controller: "NewListingInstCtrl"
       size: size
       backdrop: 'static'
@@ -1359,8 +1359,8 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       @splice to, 0, @splice(from, 1)[0]
 
     setupCtrl = ->
-      $scope.htmldescription = '' #"<p>Your item's <b>description</b> goes <i>here</i>.</P>"
-      $scope.errorMsg = "We found errors while processing your listing. Please ensure that all all fields are correctly filled and try again."
+      $scope.htmldescription = ''
+      $scope.errorMsg = ''
       $scope.showError = false
       $scope.inProgress = false
       $scope.uploadProgress = 0
@@ -1403,8 +1403,12 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       localeOpts = opts
 
     dataIsValid = (form) ->
-      if !form.title.$viewValue || $filter('trim')(form.title.$viewValue) == '' || !form.price.$viewValue || !$filter('isNumber')(form.price.$viewValue) || $filter('trim')($scope.htmldescription) == ''
-        console.log 'invalid form,', "description: " + $scope.htmldescription
+      if !form.title.$viewValue || $filter('trim')(form.title.$viewValue) == '' || !form.price.$viewValue || !$filter('isNumber')(form.price.$viewValue) || $filter('trim')($scope.htmldescription) == '' || !$scope.pictures.length
+        $scope.submitted = false
+        $scope.errorMsg = '<p>Your new listing contains missing or invalid data. All fields are <b>required</b>. Please review your listing and try again.</p>'
+        $timeout ->
+          $scope.errorMsg = ''
+        , 5000
         return false
       true
 
@@ -1413,9 +1417,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       if !dataIsValid(form) then return
       $scope.inProgress = true
       $scope.disableCancel = true
-      if $scope.pictures.length
-        doPictureUploading $scope.pictures, form
-      return
+      doPictureUploading $scope.pictures, form
 
     doPictureUploading = (pictures, form) ->
       count = pictures.length

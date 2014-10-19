@@ -1,0 +1,87 @@
+<div class="modal-header">
+    <h3 class="modal-title"> New Listing Composer </h3>
+</div>
+<div class="modal-body">
+    <div id="msg" class="alert alert-success" data-ng-show="successMsg" data-ng-bind="successMsg"></div>
+    <div id="errorMsg" class="alert alert-danger alert-custom" data-ng-if="errorMsg.length" data-ng-bind-html="errorMsg"></div>
+    <progressbar class="progress-striped active" data-ng-show="inProgress" max="100" value="100" type="info"><i> {{progMessage}} </i></progressbar>
+    <form name="newListing" novalidate class="form-horizontal newListing" role="form">
+        <div class="form-group">
+            <div class="col-sm-12">
+                <input type="text" class="form-control" name="title" data-ng-model="title" id="title" placeholder="Title" required />
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-12">
+                <div
+                data-text-angular
+                data-ta-text-editor-class="form-content"
+                data-ta-html-editor-class="form-content"
+                data-ta-focussed-class="focussed"
+                data-ng-model="htmldescription"
+                data-placeholder="Your item's description goes here."
+                ></div>
+            </div>
+        </div>
+        <div style="padding: 5px 0; margin-bottom: 15px;" class="clearfix">
+            <div class="form-group pull-left" style="margin:0 10px 0 0; padding: 0;">
+                <label class="custom-select">
+                    <select id="currency" name="currency" data-locale-attr>
+                        <option value="USD" selected data-locale="en-US"> USD $ </option>
+                        <option value="CAD" data-locale="en_CA"> CAD $ </option>
+                        <option value="NZD" data-locale="en_NZ"> NZD $ </option>
+                        <option value="GBP" data-locale="en_GB"> GBP £ </option>
+                        <option value="EUR" data-locale="fr_FR"> EUR € </option>
+                        <option value="CHF" data-locale="de_CH"> CHF Fr </option>
+                        <option value="SEK" data-locale="sv_SE"> SEK kr </option>
+                        <option value="NOK" data-locale="nb_NO"> NOK kr </option>
+                        <option value="DKK" data-locale="da_DK"> DKK kr </option>
+                        <option value="PLN" data-locale="pl_PL"> PLN zł </option>
+                        <option value="TRY" data-locale="tr_TR"> TRY &#xf195;</option>
+                            <!--<option value="ISK" data-locale="is_IS"> ISK kr </option>-->
+                        <option value="ZAR" data-locale="en_ZA"> ZAR R </option>
+                        <option value="SAR" data-locale="ar_SA"> SAR ﷼ </option>
+                        <option value="AED" data-locale="ar_AE"> AED د.إ </option>
+                        <option value="EGP" data-locale="ar_EG"> EGP ج.م </option>
+                        <option value="INR" data-locale="hi_IN"> INR ₹ </option>
+                        <option value="THB" data-locale="th_TH"> THB ฿ </option>
+                        <option value="JPY" data-locale="ja_JP"> JPY ¥ </option>
+                        <option value="VND" data-locale="vi_VN"> VND ₫ </option>
+                        <option value="HKD" data-locale="zh_HK"> HKD $ </option>
+                        <option value="CNY" data-locale="zh_CN"> CNY ¥ </option>
+                            <!--<option value="TWD" data-locale="zh_TW"> TWD NT$ </option>-->
+                        <option value="KRW" data-locale="ko_KR"> KRW ₩ </option>
+                        <option value="MXN" data-locale="es_MX"> MXN $ </option>
+                        <option value="BRL" data-locale="pr_BR"> BRL R$ </option>
+                        <option value="ARS" data-locale="es_AR"> ARS $ </option>
+                        <option value="CLP" data-locale="es_CL"> CLP $ </option>
+                        <option value="COP" data-locale="es_CO"> COP $ </option>
+                        <option value="CRC" data-locale="es_CR"> CRC ₡ </option>
+                            <!--<option value="UYU" data-locale="es_UY"> UYU $</option>-->
+                        <option value="UAH" data-locale="uk_UA"> UAH ₴ </option>
+                        <option value="RUB" data-locale="ru_RU"> RUB &#xf158; </option>
+                    </select>
+                </label>
+            </div>
+            <div class="form-group pull-left" style="margin:0 10px 0 0; padding: 0;">
+                <input type="number" step="any" data-ng-model="price" id="price" name="price" min="0" placeholder="Price" required>
+            </div>
+        </div>
+        <div class="photo-lane row-fluid clearfix">
+            <ul data-ui-sortable="sortableOptions" data-ng-model="pictures">
+                <li data-img-centred="{{pic.src}}" data-ng-repeat="pic in pictures track by $index">
+                    <div class="delete-look" data-sort-events data-index="{{$index}}">
+                        <button data-ng-click="deletePicture($index)" class="btn btn-danger btn-sm"> Delete </button>
+                    </div>
+                </li>
+            </ul>
+            <div data-img-centred="/vassets/images/add_photo.png" class="btn-file">
+                <input type="file" data-ng-file-select="isDisabled || onPictureSelect($files)" accept="image/*">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-success" data-ng-disabled="inProgress || posted" data-ng-click="submit(newListing)">Submit</button>
+            <button class="btn btn-warning" data-ng-disabled="disableCancel" data-ng-click="dismiss()"> {{ cancelTitle }} </button>
+        </div>
+    </form>
+</div>

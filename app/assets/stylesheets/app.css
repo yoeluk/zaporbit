@@ -507,7 +507,7 @@ input[name="title"] {
 }
 .profile-links {
     margin: 5px 0 15px;
-    padding: 5px 20px;
+    padding: 5px 20px 12px;
     /*background-color: #f4f4f4;*/
     /*box-shadow: 0 0 10px rgba(0, 0, 0, 0.1) inset;*/
     border: 1px solid #e5e5e5;
@@ -1608,4 +1608,9 @@ iframe.ta-insert-video {
 form[name='googleWallet'] .submit-btn {
     margin-left: 10px;
 }
-
+.alert.alert-custom {
+    font-size: 14px;
+}
+.modal-header > .modal-title {
+    text-align: center;
+}
