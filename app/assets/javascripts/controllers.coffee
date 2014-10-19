@@ -147,7 +147,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
     $scope.transactionPills = [
       {
-        name: "Requested"
+        name: "Ordered"
       }
       {
         name: "Commited"
@@ -931,7 +931,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 ]
 .controller "FeedbacksCtrl", ["$scope", "$timeout", "$http", ($scope, $timeout, $http) ->
 ]
-.controller "MerchantCtrl", ["$scope", "$timeout", "$http", "$filter", ($scope, $timeout, $http, $filter) ->
+.controller "MerchantCtrl", ["$scope", "$timeout", "$http", ($scope, $timeout, $http) ->
 
   $scope.isEditing = true
 

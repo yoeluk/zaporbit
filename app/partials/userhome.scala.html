@@ -81,7 +81,7 @@
                                                     <span class="glyphicon glyphicon-trash"></span>
                                                 </button>
                                             </div>
-                                            <a href="javascript:;" class="list-group-item"
+                                            <a class="list-group-item pointer"
                                             data-ng-click="setActivePill($index)">
                                                 <h4 class="list-group-item-heading">{{ meOrUsername(samp.user1) }} \u00BB {{ meOrUsername(samp.user2) }}
                                                     <span class="message-counter" data-ng-if="samp.messages.length>1"> ({{ samp.messages.length }}) </span>
@@ -99,12 +99,12 @@
                         <div class="convos" data-ng-repeat="(cIndex, conv) in sampleConversations" data-ng-show="isActivePill(cIndex)">
                             <div class="message-outer">
                                 <div class="message-title" data-ng-show="sampleConversations.length">
-                                    <h4><a href="#">{{ sampleConversations[activeConvo].title }}</a>
+                                    <h4><a class="pointer">{{ sampleConversations[activeConvo].title }}</a>
                                     </h4>
                                 </div>
                                 <div class="message-from" data-ng-show="sampleConversations.length">
                                     {{ sellerOrBuyer() }}:
-                                    <a href="javascript:;">
+                                    <a class="pointer">
                                         {{ withWho() }}
                                     </a>
                                 </div>
@@ -221,7 +221,7 @@
                 <div class="row-fluid">
                         <ul class="nav nav-pills nav-justified purchase-pills">
                             <li data-ng-class="{ active: isActivePill($index) }" data-ng-repeat="tran in transactionPills track by $index">
-                                <a href="javascript:;" data-ng-click="setActivePill($index)">
+                                <a class="pointer" data-ng-click="setActivePill($index)">
                                     {{ tran.name }}
                                     <!--<span class="badge pull-right" data-ng-if="conv.conversation.messages.length>1"> {{ conv.conversation.messages.length }} </span>-->
                                 </a>
@@ -234,7 +234,7 @@
                 <div class="row-fluid">
                     <ul class="nav nav-pills nav-justified purchase-pills">
                         <li data-ng-class="{ active: isActivePill($index) }" data-ng-repeat="tran in transactionPills track by $index">
-                            <a href="javascript:;" data-ng-click="setActivePill($index)">
+                            <a class="pointer" data-ng-click="setActivePill($index)">
                                 {{ tran.name }}
                                 <!--<span class="badge pull-right" data-ng-if="conv.conversation.messages.length>1"> {{ conv.conversation.messages.length }} </span>-->
                             </a>
@@ -249,7 +249,7 @@
                     <div class="col-sm-4 col-md-4 convo">
                         <ul class="nav nav-pills nav-stacked">
                             <li data-ng-class="{ active: isActivePill($index) }" data-ng-repeat="pill in billingPills track by $index">
-                                <a href="javascript:;" data-ng-click="setActivePill($index)">
+                                <a class="pointer" data-ng-click="setActivePill($index)">
                                     {{ pill.name }}
                                     <!--<span class="badge pull-right" data-ng-if="conv.conversation.messages.length>1"> {{ conv.conversation.messages.length }} </span>-->
                                 </a>
