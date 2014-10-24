@@ -34,30 +34,18 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
   def getListing(itemid: Long) = DBAction { implicit rs =>
     Offers.findById(itemid) match {
       case Some(offer) =>
-        Locations.findZLocByOfferId(itemid) match {
-          case Some(loc) =>
-            Users.findById(offer.userid) match {
-              case Some(user) =>
-                val lst = Offers.listingWithOffer(offer)
-                val optToken = if (user.isMerchant.get) {
-                  Merchants.findByUserId(offer.userid) match {
-                    case Some(merchant) =>
-                      Some(Wallet.generateToken(offer, merchant.identifier, merchant.secret, user.id.get))
-                  }
-                } else None
-                val rt = Ratings.ratingForUser(user.id.get)
-                val rating = 100*rt._1.toInt
-                rs.request.headers.get("user-agent") match {
-                  case Some(ua) if ua.contains("Facebook") =>
-                    Ok(views.html.staticItemWrapper(lst, lst.pictures.get, loc, user, rating, offer.currency_code, optToken, pictureUrl(user.id.get)))
-                  case Some(_) =>
-                    Ok(partials.html.itemTemplate(lst, lst.pictures.get, loc, user, rating, currency = offer.currency_code, token = optToken, pictureUrl(user.id.get)))
-                }
-              case None =>
-                Ok(Json.obj(
-                  "status" -> "KO"
-                ))
-            }
+        Users.findById(offer.userid) match {
+          case Some(user) =>
+            val lst = Offers.listingWithOffer(offer)
+            val optToken = if (user.isMerchant.get) {
+              Merchants.findByUserId(offer.userid) match {
+                case Some(merchant) =>
+                  Some(Wallet.generateToken(offer, merchant.identifier, merchant.secret, offer.userid))
+              }
+            } else None
+            val rt = Ratings.ratingForUser(user.id.get)
+            val rating = 100*rt._1.toInt
+            Ok(partials.html.itemTemplate(lst, lst.pictures.get, user, rating, currency = offer.currency_code, token = optToken, pictureUrl(user.id.get, Some(user.fbuserid))))
           case None =>
             Ok(Json.obj(
               "status" -> "KO"
@@ -256,13 +244,18 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
   }
 
   def credentialTemplate(userid: String) = DBAction { implicit rs =>
-    Ok(partials.html.credentials( pictureUrl( userid.toLong ) ))
+    Ok(partials.html.credentials( pictureUrl( userid.toLong, None ) ))
   }
 
-  def pictureUrl(userid: Long)(implicit s: simple.Session): String = {
-    UserOptions.findByUserid(userid.toLong) match {
+  def pictureUrl(userid: Long, fbIdOpt: Option[String])(implicit s: simple.Session): String = {
+    UserOptions.findByUserid(userid) match {
       case None =>
-        "//graph.facebook.com/v2.1/{{lst.user.fbuserid}}/picture?height=200&width=200"
+        fbIdOpt match {
+          case Some(fbuserid) =>
+            "//graph.facebook.com/v2.1/"+fbuserid+"/picture?height=200&width=200"
+          case None =>
+            "//graph.facebook.com/v2.1/{{lst.user.fbuserid}}/picture?height=200&width=200"
+        }
       case Some(opts) =>
         val parts = opts.picture.get.split("\\.")
         if (parts.length > 1) "/options/pictures/300/" + opts.picture.get

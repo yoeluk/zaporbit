@@ -155,8 +155,7 @@
                                                     <span class="glyphicon glyphicon-trash"></span>
                                                 </button>
                                             </div>
-                                            <a href="javascript:;"
-                                            class="list-group-item"
+                                            <a class="list-group-item pointer"
                                             data-ng-click="setActivePill($index)"
                                             data-ng-disable="replying">
                                                 <h4 class="list-group-item-heading">{{ meOrUsername(conv.user1) }} \u00BB {{ meOrUsername(conv.user2) }}
@@ -184,11 +183,11 @@
                                 </div>
                                 <div class="message-from" data-ng-show="conversations.length">
                                     <i>{{ sellerOrBuyer() }}:</i>
-                                    <a href="javascript:;">
+                                    <a class="pointer">
                                         {{ withWho() }}
                                     </a>
                                 </div>
-                                <div class="messages-wrapper" data-ng-style="msgWrapperStyle()">
+                                <div class="messages-wrapper" data-em-height data-ng-style="msgWrapperStyle()">
                                     <div class="row-fluid message" data-ng-class="{ 'pull-right': msgPulledRight($index) }"
                                     data-ng-repeat="msg in conversations[activePill[activeTab]].conversation.messages track by $index">
                                         <div class="string" data-ng-class="{ 'me': isThisMe($index) }">

@@ -333,7 +333,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 .controller "ShoppingCtrl", ["$timeout", "$scope", "LocationService", "ReverseGeocode", "ListingService", "pageSize", "localStorageService", "$rootScope",
   ($timeout, $scope, LocationService, ReverseGeocode, ListingService, pageSize, localStorageService, $rootScope) ->
 
-      $scope.markers = undefined
+      $scope.markers = []
 
       $scope.rand = Math.floor((Math.random() * 1000) + 1)
 
@@ -510,7 +510,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
             doAfterMapIsLoaded task, args
           , timeInMs
 
-      $scope.listingsForLocation = (remote, filter, page)->
+      $scope.listingsForLocation = (remote, filter, page) ->
         addr = `ReverseGeocode.address() ? zoLocation(ReverseGeocode.address()) : browserLoc ? {
           location: {
             street: browserLoc.s,
@@ -556,11 +556,10 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       $scope.formattedPrice = (index) ->
         if $scope.allListings? and $scope.allListings[index]?
           listing = $scope.allListings[index].listing
-          if listing.currency_code == "TRY"
-              listing.price + " &#xf195; " + listing.currency_code
-#          else if listing.currency_code == "RUB"
-#            listing.price + " &#xf158;"
-          else listing.formatted_price + " " + listing.currency_code
+          listing.formatted_price + " " + listing.currency_code
+
+      $rootScope.$on "authenticated", (e) ->
+        $scope.listingsForLocation true, "", 0
 ]
 .controller "SearchCtrl", ["$scope", "ListingService", ($scope, ListingService) ->
 
@@ -956,6 +955,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     addMerchant data
 
   addMerchant = (data) ->
+    console.log data
     $http
       method: "POST"
       url: "/api/addmerchant"
@@ -1055,8 +1055,6 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
   $scope.template = templates[templateId]
 
   activeMenu = $scope.profileMenus[templateId]
-
-  console.log $routeParams
 
   $scope.isActive = (index) ->
     active: $scope.profileMenus[index].name == activeMenu.name

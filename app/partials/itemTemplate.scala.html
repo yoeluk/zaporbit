@@ -1,4 +1,4 @@
-@(listing: Listing, pictures:List[String], loc: Location, user: User, rating: Float, currency: String, token: Option[String], pictureUrl: String)
+@(listing: Listing, pictures:List[String], user: User, rating: Float, currency: String, token: Option[String], pictureUrl: String)
 <script src="https://wallet.google.com/inapp/lib/buy.js"></script>
 <script type="text/javascript" language="javascript">
     // Success handler
@@ -72,7 +72,7 @@
                     </div>
                     <div class="profile row-fluid clearfix">
                         <div class="circular pull-left" style="background-image: url( @pictureUrl )"></div>
-                        <div class="profile-crd" style=""><a href="javascript:;"><b> @user.name @user.surname </b></a></div>
+                        <div class="profile-crd" style=""><a class="pointer"><b> @user.name @user.surname </b></a></div>
                         <div class="stars pull-left">
                             <div class="rating" style="width: @rating%"></div>
                             <i></i>

@@ -421,3 +421,15 @@ angular.module "ZapOrbit.directives", []
     element.bind "focus", ->
       scope.$apply focussed
 ]
+.directive "emHeight", ["$timeout", ($timeout) ->
+  link: (scope, $el, attrs) ->
+
+    elem = $el[0]
+
+    scope.$watch (scope) ->
+      elem.scrollHeight
+    , (newScrollHeight) ->
+      $timeout ->
+        scope.$apply ->
+          elem.scrollTop = elem.scrollHeight
+]

@@ -122,7 +122,7 @@ public class JWT_Handler {
         //Configure request object, which provides information of the item
         JsonObject request = new JsonObject();
         request.addProperty("name", offer.title());
-        request.addProperty("description", offer.description());
+        request.addProperty("description", offer.title());
         request.addProperty("price", Double.toString(offer.price()));
         request.addProperty("currencyCode", offer.currency_code());
         request.addProperty("sellerData", "offerid:"+offerid+",buyerid:"+buyerid);

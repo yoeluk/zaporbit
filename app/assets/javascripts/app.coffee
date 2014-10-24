@@ -1,6 +1,4 @@
 'use strict'
-
-# Declare app level module which depends on filters, and services
 angular.module "ZapOrbit", [
   "ngRoute",
   "ngResource",
@@ -47,8 +45,6 @@ angular.module "ZapOrbit", [
       reloadOnSearch: false
     .otherwise "/listings"
   $provide.decorator "taOptions", ["$delegate", (taOptions) ->
-      # $delegate is the taOptions we are decorating
-      # here we override the default toolbars and classes specified in taOptions.
       taOptions.toolbar = [
         [
           "h1"
@@ -64,6 +60,7 @@ angular.module "ZapOrbit", [
           "ol"
           "redo"
           "undo"
+          "clear"
         ]
         [
           "justifyLeft"
@@ -88,10 +85,7 @@ angular.module "ZapOrbit", [
         htmlEditor: "form-control"
       return taOptions
   ]
-
   $provide.decorator "taOptions", ["taRegisterTool", "$delegate", (taRegisterTool, taOptions) ->
-    # $delegate is the taOptions we are decorating
-    # register the tool with textAngular
     taRegisterTool "colourRed",
       iconclass: "fa fa-square red"
       action: ->
@@ -101,6 +95,9 @@ angular.module "ZapOrbit", [
     taOptions.toolbar[1].push "colourRed"
     return taOptions
   ]
+#  GoogleMapApi.configure
+#    key: 'AIzaSyDWU1SnyZt9QxEqXgLoeHylM4RnKFeYPbI'
+#    v: '3.17',
 ]
 angular.module 'infinite-scroll', []
 .directive 'infiniteScroll', ['$rootScope', '$window', '$timeout', ($rootScope, $window, $timeout) ->

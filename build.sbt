@@ -34,14 +34,15 @@ libraryDependencies ++= {
     "org.webjars" % "jquery" % "2.1.1",
     "org.webjars" % "jquery-ui" % "1.11.1",
     "org.webjars" % "bootstrap" % "3.2.0",
-    "org.webjars" % "angularjs" % "1.3.0-rc.4",
+    "org.webjars" % "angularjs" % "1.2.26",
     "org.webjars" % "angular-ui-bootstrap" % "0.11.2" exclude("org.webjars", "angularjs"),
     "org.webjars" % "angular-moment" % "0.8.2" exclude("org.webjars", "angularjs"),
     "org.webjars" % "angular-google-maps" % "1.2.2" exclude("org.webjars", "angularjs"),
     "org.webjars" % "angular-ui-sortable" % "0.12.11-1" exclude("org.webjars", "jquery-ui"),
+    "org.webjars" % "angular-local-storage" % "0.1.1-1" exclude("org.webjars", "angularjs"),
+    "org.webjars" % "angular-file-upload" % "1.6.12" exclude("org.webjars", "angularjs"),
     "org.webjars" % "font-awesome" % "4.2.0",
     //"org.webjars" % "holderjs" % "2.4.0",
-    "org.webjars" % "angular-file-upload" % "1.6.12",
     cache,
     filters,
     ws
@@ -57,7 +58,6 @@ Concat.groups := Seq(
   "all.js" -> group(Seq(
     "javascripts/textAngular/1.2.2/textAngularSetup.js",
     "javascripts/textAngular/1.2.2/textAngular.js",
-    "javascripts/angular-local-storage.js",
     "javascripts/app.js",
     "javascripts/services.js",
     "javascripts/controllers.js",
@@ -75,7 +75,7 @@ Closure.flags := Seq("--formatting=PRETTY_PRINT", "--accept_const_keyword")
 // Asset pipeline tasks
 pipelineStages in Assets := Seq(concat)
 
-includeFilter in closure := "all.js"
+includeFilter in closure := "all.js" || "bluebird.js"
 
 pipelineStages := Seq(closure, digest, gzip)
 

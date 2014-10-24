@@ -43,8 +43,7 @@ object Locations extends DAO {
     Query(
       (for {
         l <- locations
-          .filter(_.locality.toLowerCase like locality.toLowerCase)
-          .filter(_.administrativeArea.toLowerCase === adminArea.toLowerCase)
+          .filter(x => x.locality.toLowerCase === locality.toLowerCase && x.administrativeArea.toLowerCase === adminArea.toLowerCase)
         s <- listingStatuses.filter(_.offerid === l.offerid).filter(_.status === "forsale")
         o <- l.offer
       } yield o).length).first
@@ -52,8 +51,7 @@ object Locations extends DAO {
   def countFiltered(locality: String, adminArea: String, filter: String)(implicit session: Session): Int =
     Query(
       (for {
-        l <- locations.filter(_.locality.toLowerCase === locality.toLowerCase)
-          .filter(_.administrativeArea.toLowerCase === adminArea.toLowerCase)
+        l <- locations.filter(x => x.locality.toLowerCase === locality.toLowerCase && x.administrativeArea.toLowerCase === adminArea.toLowerCase)
         s <- listingStatuses.filter(_.offerid === l.offerid).filter(_.status === "forsale")
         o <- l.offer if o.title.toLowerCase like "%"+filter.toLowerCase+"%"
       } yield o).length).first
@@ -79,8 +77,7 @@ object Locations extends DAO {
       f <- friends.filter(_.userid === userid)
       o <- offers.filter(_.userid === f.friendid)
       l <- locations.filter(_.offerid === o.id)
-        .filterNot(_.locality.toLowerCase === loc.locality.toLowerCase)
-        .filterNot(_.administrativeArea.toLowerCase === loc.administrativeArea.toLowerCase)
+        .filterNot(x => x.locality.toLowerCase === loc.locality.toLowerCase && x.administrativeArea.toLowerCase === loc.administrativeArea.toLowerCase)
       s <- listingStatuses.filter(_.offerid === l.offerid).filter(_.status === "forsale")
       u <- o.user
     } yield ((
@@ -112,8 +109,7 @@ object Locations extends DAO {
 
     val q = ((for {
       l <- locations
-        .filter(_.locality.toLowerCase === loc.locality.toLowerCase)
-        .filter(_.administrativeArea.toLowerCase === loc.administrativeArea.toLowerCase)
+        .filter(x => x.locality.toLowerCase === loc.locality.toLowerCase && x.administrativeArea.toLowerCase === loc.administrativeArea.toLowerCase)
       s <- listingStatuses.filter(_.offerid === l.offerid).filter(_.status === "forsale")
       o <- l.offer
       u <- o.user
@@ -144,7 +140,7 @@ object Locations extends DAO {
           u.isMerchant.?,
           u.created_on.?))
       ) ++ friendsLQ).sortBy(_._1._13.desc).drop(offset).take(pageSize).list
-    val totalRows = this.count(loc.locality, loc.administrativeArea)
+    val totalRows = q.length
     val result = q.map { row =>
       (Listing(row._1._1, row._1._2, row._1._3, row._1._4, row._1._5, row._1._6,
         Option((for {
@@ -178,8 +174,7 @@ object Locations extends DAO {
       f <- friends.filter(_.userid === userid)
       o <- offers.filter(_.userid === f.friendid)
       l <- locations.filter(_.offerid === o.id)
-        .filterNot(_.locality.toLowerCase === loc.locality.toLowerCase)
-        .filterNot(_.administrativeArea.toLowerCase === loc.administrativeArea.toLowerCase)
+        .filterNot(x => x.locality.toLowerCase === loc.locality.toLowerCase && x.administrativeArea.toLowerCase === loc.administrativeArea.toLowerCase)
       s <- listingStatuses.filter(_.offerid === l.offerid).filter(_.status === "forsale")
       u <- o.user
     } yield (
@@ -212,8 +207,7 @@ object Locations extends DAO {
     val offset = pageSize * page
     val q = ((for {
       l <- locations
-        .filter(_.locality.toLowerCase === loc.locality.toLowerCase)
-        .filter(_.administrativeArea.toLowerCase === loc.administrativeArea.toLowerCase)
+        .filter(x => x.locality.toLowerCase === loc.locality.toLowerCase && x.administrativeArea.toLowerCase === loc.administrativeArea.toLowerCase)
       s <- listingStatuses.filter(_.offerid === l.offerid).filter(_.status === "forsale")
       o <- l.offer
       u <- o.user

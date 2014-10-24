@@ -61,7 +61,7 @@
                     <div class="search-wrapper">
                         <form name="search" class="" role="form">
                             <div class="input-group input-group-sm">
-                                <input type="text" class="form-control" data-ng-model="filterString" id="searchBar" name="filter" placeholder="Search..." />
+                                <input type="text" class="form-control " data-ng-model="filterString" id="searchBar" name="filter" placeholder="Search..." />
                                 <span class="input-group-btn">
                                     <button type="submit" data-ng-click="filter(search)" class="btn btn-default btn-sm search-btn">
                                         <!--<span class="gbqfi gb_Fa"></span>-->
@@ -142,14 +142,9 @@
                 <div class="listing-item">
                     <div class="row-fluid profile clearfix">
                         <div class="pull-right item-time" style="color: grey; font-size: 12px;">
-                            <span data-am-time-ago="{{lst.listing.date}}" data-am-preprocess="unix"></span>
+                            <span data-am-time-ago="{{lst.listing.date}}"></span>
                         </div>
                         <div data-ng-include="'/credentialtemplate/'+lst.user.id"></div>
-                        <span class="pull-right price-wrapper">
-                            <label class="label label-info"> {{ lst.listing.formatted_price }} {{ lst.listing.currency_code }} </label>
-                            <a data-ng-if="lst.user.isMerchant" class="btn btn-info buy-now" data-ng-href="/#!/listing_item/{{lst.listing.id}}"><i class="fa fa-google-wallet"></i> Buy Now </a>
-                            <a data-ng-if="!lst.user.isMerchant" class="btn btn-info buy-now" data-ng-href="/#!/listing_item/{{lst.listing.id}}"> Order Now </a>
-                        </span>
                     </div>
                     <div data-ng-controller="ModalListingCtrl">
                         <div class="clearfix listing-title">
@@ -158,6 +153,11 @@
                         <div class="row-fluid center-cropped-wrapper">
                             <div data-ng-click="open('lg')" class="center-cropped pull-left holderjs" data-img-centred="/scaledimage/600/{{lst.listing.pictures[0] | appendExt}}"></div>
                             <div data-ng-click="open('lg')" class="center-cropped" data-img-centred="/scaledimage/600/{{lst.listing.pictures[1] | appendExt}}" data-ng-if="lst.listing.pictures[1]"></div>
+                            <span class="pull-right price-wrapper">
+                                <label class="btn btn-info"> {{ lst.listing.formatted_price }} {{ lst.listing.currency_code }} </label>
+                                <a data-ng-if="lst.user.isMerchant" class="btn btn-info buy-now" data-ng-href="/#!/listing_item/{{lst.listing.id}}"><i class="fa fa-google-wallet"></i> Buy Now </a>
+                                <a data-ng-if="!lst.user.isMerchant" class="btn btn-info buy-now" data-ng-href="/#!/listing_item/{{lst.listing.id}}"> Order Now </a>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -193,8 +193,8 @@
                     data-scope="public_profile,email,user_friends"
                     data-max-rows="1"
                     data-size="large"
-                    data-show-faces="true"
-                    data-auto-logout-link="false"
+                    data-show-faces="false"
+                    data-auto-logout-link="true"
                     onlogin="angular.element(document.getElementById('fbId')).scope().loginStatus(false)"></div>
                 </div>
             </div>

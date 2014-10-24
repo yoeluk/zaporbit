@@ -166,15 +166,24 @@ form label.col-sm-1{
     margin-right: 0;
     text-align: right;
 }
+.center-cropped-wrapper > .price-wrapper {
+    z-index: 10;
+    position: absolute;
+    bottom: 25px;
+    right: 20px;
+}
 .price-wrapper > label {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 400;
     letter-spacing: 1px;
     padding: 3px 5px 3px 7px;
     visibility:visible;
     opacity:1;
     transition-delay:0s;
-    /*font-family: 'FontAwesome', 'Open Sans', sans-serif;*/
+}
+.price-wrapper > a,
+.price-wrapper > label {
+    box-shadow: 0 0 3px #a5a5a5;
 }
 .price-wrapper > a {
     position: absolute;
@@ -206,11 +215,19 @@ form label.col-sm-1{
     margin: 10px 0 7px 0;
 }
 .listing-title > h4 {
-    line-height: 1.2;
     margin: 5px 0;
+    color: #333333;
+    display: -webkit-box;
+    line-height: 22px;     /* fallback */
+    max-height: 68px;      /* fallback */
+    -webkit-line-clamp: 3; /* number of lines to show */
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 .listing-title > h4 a {
-    color: #000000;
+    color: #548B0C;
+
 }
 .listing-title.title-opts {
     margin-top: 0;
@@ -235,6 +252,7 @@ form label.col-sm-1{
     border: 1px solid #f1f1f1;
 }
 .center-cropped-wrapper {
+    position: relative;
     overflow-y: scroll;
     overflow-x: hidden;
     max-height: 300px;
@@ -438,7 +456,7 @@ textarea:focus {
 }
 input#searchBar.form-control {
     font-size: 14px;
-    height: 32px;
+    height: 34px;
 }
 .btn.search-btn {
     background: #92d13d!important;
@@ -446,8 +464,8 @@ input#searchBar.form-control {
     box-shadow: none;
     border: none!important;
     z-index: 2!important;
-    height: 32px!important;
-    font-size: 16px!important;
+    height: 34px!important;
+    font-size: 17px!important;
     color: #ffffff;
 }
 ::-webkit-input-placeholder, input:-moz-placeholder {
@@ -1386,6 +1404,9 @@ select > option {
 .ta-scroll-window > .ta-bind {
     outline: 0!important;
 }
+.ta-toolbar > .btn-group:first-child {
+    margin-left: 7px;
+}
 .fa-square.red {
     color: red;
 }
@@ -1437,12 +1458,17 @@ div.panel:hover .btn-custom {
     background: #D20000!important;
 }
 img.ta-insert-video {
-    content: url(../images/img-youtube-play.png);
+    content: url('/vassets/images/img-youtube-play.png');
+    transform: scale(0.95);
+    -webkit-transform: scale(0.95)
+}
+img.ta-insert-video:before {
+    content: url('/vassets/images/img-youtube-play.png');
     transform: scale(0.95);
     -webkit-transform: scale(0.95)
 }
 iframe.ta-insert-video {
-    background: url(../images/img-youtube-play.png) no-repeat 50% 50%;
+    background: url('/vassets/images/img-youtube-play.png') no-repeat 50% 50%;
     background-size: cover;
     transform: scale(0.95);
     -webkit-transform: scale(0.95)
@@ -1521,9 +1547,9 @@ iframe.ta-insert-video {
     left: 10px;
     font-size: 14px;
     font-weight: 600;
+    width: 140px;
     white-space: nowrap;
     text-overflow: ellipsis;
-    width: 130px;
     overflow: hidden;
     text-align: center;
 }
@@ -1617,6 +1643,10 @@ form[name='googleWallet'] .submit-btn {
     padding: 5px 20px;
 }
 .message-starter {
+    font-size: 14px;
     min-height: 82px;
     padding: 10px;
+}
+.label.label-custom {
+    color: #1897BD;
 }

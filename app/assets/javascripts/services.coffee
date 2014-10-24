@@ -113,6 +113,18 @@ angular.module "ZapOrbit.services", []
     getFilterStr = ->
       filterStr
 
+    doResults = (data) ->
+      results =
+        listings: []
+        paging: data.paging
+      _.each data.listings, (lst) ->
+        if lst.listing.pictures.length > 0
+          t = lst.listing.updated_on.split /[- :]/
+          d = new Date t[0], t[1]-1, t[2], t[3], t[4], t[5]
+          lst.listing.date = d
+          results.listings.push lst
+      results
+
     getData = (url, body, callback) ->
       $http
         method: "POST"
@@ -121,16 +133,7 @@ angular.module "ZapOrbit.services", []
         context: this
       .success (data, status) ->
         if data?
-          results =
-            listings: []
-            paging: data.paging
-          _.each data.listings, (lst) ->
-            if lst.listing.pictures.length > 0
-              t = lst.listing.updated_on.split /[- :]/
-              d = new Date t[0], t[1]-1, t[2], t[3], t[4], t[5]
-              lst.listing.date = d
-              results.listings.push lst
-          setAllListings results
+          setAllListings doResults(data)
           callback allListings
 
     getListings = (body, callback, remote, filter, page) ->
@@ -156,7 +159,8 @@ angular.module "ZapOrbit.services", []
         config.headers["X-Auth-Token"] = SocialService.social().token
       config
 ]
-.factory "SocialService", ["$injector", "localStorageService", "$timeout", "$log", ($injector, localStorageService, $timeout, $log) ->
+.factory "SocialService", ["$injector", "localStorageService", "$timeout", "$log", "$rootScope"
+  ($injector, localStorageService, $timeout, $log, $rootScope) ->
 
     localStorageService.remove 'tokenData'
     localStorageService.remove 'loggedIn'
@@ -194,6 +198,7 @@ angular.module "ZapOrbit.services", []
             _.each setupUIs, (cb) ->
               cb(true)
             setupUIs = []
+            $rootScope.$emit "authenticated"
           else
             logout()
             _.each setupUIs, (cb) ->
