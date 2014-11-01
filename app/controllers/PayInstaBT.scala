@@ -17,9 +17,8 @@ object PayInstaBT extends Controller {
   def doPay = Action.async {
 
     val options = Some(Map(
-      "url_call_back" -> "someUrlCallback",
-      "url_success" -> "someUrlRedirect",
-      "url_failure" -> "someUrlRedirect"
+      "url_success" -> "https://zaporbit.com/instabt/success",
+      "url_failure" -> "https://zaporbit.com/instabt/failure"
     ))
 
     val key = current.configuration.getString("instaBT.key").get
@@ -42,6 +41,14 @@ object PayInstaBT extends Controller {
       case error: String => InternalServerError(error)
     }
 
+  }
+
+  def successfulPayment = Action {
+    Ok("Great!")
+  }
+
+  def failedPayment = Action {
+    Ok("Oops!")
   }
 
 }

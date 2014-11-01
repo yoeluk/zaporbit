@@ -55,8 +55,8 @@ object InstaBT {
   )
 
   def payWithConfiguration(config: Configuration,
-                    end_point: String = "/create_order",
-                    url: String = "https://api.instabt.com"): Future[PayResponse] = {
+                           end_point: String = "/create_order",
+                           url: String = "https://api.instabt.com"): Future[PayResponse] = {
 
 //    val rnd = new scala.util.Random
 //    def tailWithSize(alphabet: String = "0123456789")(n: Int): String =
@@ -64,11 +64,9 @@ object InstaBT {
 //    def microTail = tailWithSize()(3)
 
     val utcTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-    val nonce = utcTime.getTimeInMillis.toString + "000"
+    val nonce = s"${utcTime.getTimeInMillis}000"
     val payload =
-      "amount=" + config.amount.toString +
-      "&currency=" + config.currency +
-      "&nonce=" + nonce +
+      s"amount=${config.amount.toString}&currency=${config.currency}&nonce=$nonce" +
       (config.options match {
         case Some(options) =>
           options.map { case (key, value) => s"&$key=$value" }.foldLeft("") { _ + _ }

@@ -28,7 +28,9 @@ GET         /api/unfollowfriend/:userid                             @controllers
 GET         /api/merchantinfo                                       @controllers.API.merchantInfo
 
 GET         /api/paypal/pay                                         controllers.PayPal.paySandbox
-GET         /api/instabt/pay                                        controllers.PayInstaBT.doPay
+GET         /instabt/pay                                            controllers.PayInstaBT.doPay
+GET         /instabt/success                                        controllers.PayInstaBT.successfulPayment
+GET         /instabt/failure                                        controllers.PayInstaBT.failedPayment
 
 
 # item
