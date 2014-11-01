@@ -68,11 +68,9 @@ object Messages extends DAO {
   def insertReturningId(message: Message)(implicit session: Session): Option[Long] =
     Option(messages returning messages.map(_.id) insert message)
 
-  def markAsReadByConvId(convid: Long)(implicit session: Session): Unit = {
-    val q = messages.filter(_.convid === convid).filter(_.received_status like "%unread%")
-    q.map { m =>
+  def markAsReadByConvId(convid: Long)(implicit session: Session) =
+    messages.filter(_.convid === convid).filter(_.received_status like "%unread%").map { m =>
       m.received_status
     }.update("read")
-  }
 
 }

@@ -2,7 +2,7 @@ import com.typesafe.sbt.web.Import._
 import com.typesafe.sbt.web.SbtWeb
 import play.PlayScala
 
-name := "ZapOrbit"
+name := """ZapOrbit"""
 
 version := "1.0-SNAPSHOT"
 
@@ -30,6 +30,7 @@ libraryDependencies ++= {
     "com.google.collections" % "google-collections" % "1.0",
     "joda-time" % "joda-time" % "2.1",
     "com.googlecode.json-simple" % "json-simple" % "1.1.1",
+    "com.paypal.sdk" % "adaptivepaymentssdk" % "2.7.117",
     "org.webjars" %% "webjars-play" % "2.3.0-2",
     "org.webjars" % "jquery" % "2.1.1",
     "org.webjars" % "jquery-ui" % "1.11.1",
@@ -75,7 +76,7 @@ Closure.flags := Seq("--formatting=PRETTY_PRINT", "--accept_const_keyword")
 // Asset pipeline tasks
 pipelineStages in Assets := Seq(concat)
 
-includeFilter in closure := "all.js" || "bluebird.js"
+includeFilter in closure := "all.js"
 
 pipelineStages := Seq(closure, digest, gzip)
 

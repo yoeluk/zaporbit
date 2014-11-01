@@ -265,11 +265,6 @@ form label.col-sm-1{
     min-width: 280px;
     min-height: 280px;
     max-height: 280px;
-    /* holderjs does not yet supports fluid sizing so this would not display the image because it needs a width or height defined on the element */
-    /*
-    background: url(?holder.js/300x300/vine/text:loading...) no-repeat 50% 50%;
-    background-size: cover;
-    */
     overflow: hidden;
     display: inline-block;
     border: 1px solid #cccccc;
@@ -372,7 +367,11 @@ and (max-device-width : 480px) {
     float: right;
 }
 .nav-tabs > li > a {
-    line-height: 19px;
+    font-weight: 600;
+    line-height: 20px;
+    padding: 8px 12px;
+    text-transform: uppercase;
+    letter-spacing: normal;
 }
 /*
 these two helper classes display the search icon
@@ -395,7 +394,7 @@ these two helper classes display the search icon
 @media transform
 and (max-width : 768px) {
     .locateBtn {
-        margin-top: 10px;
+        .margin-top: 10px;
     }
 }
 
@@ -504,7 +503,6 @@ input[name="title"] {
 .col-md-3ths,
 .col-lg-3ths {
     min-height: 1px;
-    margin-right: 25px;
     margin-bottom: 10px;
 }
 .col-xs-3ths:last-child,
@@ -524,8 +522,8 @@ input[name="title"] {
     min-height: 50px;
 }
 .profile-links {
-    margin: 5px 0 15px;
-    padding: 5px 20px 12px;
+    margin: 10px 0 0;
+    padding: 5px 17px 12px;
     /*background-color: #f4f4f4;*/
     /*box-shadow: 0 0 10px rgba(0, 0, 0, 0.1) inset;*/
     border: 1px solid #e5e5e5;
@@ -533,9 +531,10 @@ input[name="title"] {
     display: block;
 }
 .summary-wrapper h5 {
-    margin: 10px 0 15px;
+    margin: 10px 0 0;
 }
 .inner-summary {
+    margin-top: 10px;
     padding: 5px 0 10px;
 
 }
@@ -544,7 +543,7 @@ input[name="title"] {
     margin: 7px 0 10px -7px;
 }
 .profile-links > a {
-    padding: 5px 0;
+    padding: 3px 0;
     display: block;
     color: #548B0C;
 }
@@ -570,7 +569,7 @@ input[name="title"] {
     /*background: url(/vassets/images/profile_cover_img.png) repeat-y center center;
     background-size: 100% auto;*/
     width: 100%;
-    height: 250px;
+    height: 255px;
     position: relative;
 }
 .carousel-control.left,
@@ -655,7 +654,7 @@ input[name="title"] {
     bottom: 0;
     display: block;
     width: 100%;
-    height: 50px;
+    height: 48px;
     background: #f5f5f5;
     border-bottom: 1px solid #dddddd;
     border-top: 1px solid #dddddd;
@@ -667,8 +666,11 @@ input[name="title"] {
     padding-top: 10px;
     position: relative;
 }
+.profile-footer > div.active {
+    cursor: default;
+}
 .profile-footer > div > div {
-    height: 70%;
+    height: 75%;
     padding: 0 15px;
     text-align: center;
     color: #548B0C;
@@ -699,20 +701,20 @@ input[name="title"] {
     width: 100%;
     max-height: 0;
     transition: max-height 0.15s ease-out 0.1s;
+    transition-delay:0s;
     overflow: hidden;
     background: #7ECB19;
 }
+.profile-footer > div.active > div:nth-child(2),
 .profile-footer > div:nth-child(n+2):hover > div:nth-child(2) {
-    max-height: 3px;
-    transition: max-height 0.15s ease-out 0.1s;
-    transition-delay:0s;
-}
-.profile-footer > div.active > div:nth-child(2) {
     max-height: 3px;
 }
 .profile-footer > div h5 {
     margin: 0;
-    padding-top: 5px;
+    padding-top: 6px;
+    text-transform: uppercase;
+    font-size: 13px;
+    font-weight: 600;
 }
 .self-description {
     border: 1px solid #dddddd;
@@ -992,7 +994,7 @@ Bootstrap media query sizes
     }
 }
 
-img.resize{
+img.resize {
     width:250px; /* you can use % */
     height: auto;
 }
@@ -1000,52 +1002,56 @@ img.resize{
     padding: 0 3px;
 }
 .nav-pills > li > a {
-    color: #548b0c;
-    font-weight: 500;
+    border: 1px solid #f5f5f5;
     border-radius: 3px;
-    background-color: #f5f5f5;
-    margin: 3px 0;
-    font-size: 13px!important;
+    margin: 0 4px;
+    font-size: 14px !important;
+    padding: 8px 0;
+    font-weight: 600;
 }
 @media (min-width: 768px) {
     .nav-pills > li {
         padding: 0;
     }
-    .nav-pills > li > a {
-        margin: 3px 10px 3px 0!important;
-    }
 }
-.nav-pills > li > a:hover, .nav-pills > li > a:focus {
-    color: #ffffff;
+.nav-pills > li:hover > a,
+.nav-pills > li:hover > a,
+.nav-pills > li:hover > a,
+.nav-pills > li > a:hover,
+.nav-pills > li > a:focus,
+.nav-pills > li > a:active{
+    background-color: #fefefe !important;
+    background-image: none !important;
+    text-shadow: none !important;
+    border: 1px solid #f0f0f0;
+}
+.nav-pills > li:hover {
+    cursor: pointer;
+}
+.nav-pills > li.active {
+    cursor: default;
 }
 .nav-pills > li > a > .badge {
     background-color: darkgrey;
 }
-.nav-pills > li > a:focus > .badge, .nav-pills > li > a:hover > .badge {
-    color: #428bca;
-    background-color: #ffffff;
+.nav-pills > li.active > a,
+.nav-pills > li.active > a:hover,
+.nav-pills > li.active > a:focus {
+    background-color: #ffffff !important;
+    background-image: none !important;
+    text-shadow: none !important;
+    color: #333333;
+    border: 1px solid #f0f0f0;
 }
-.nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
-    background-image: linear-gradient(to bottom, #95DD34 0px, #7CCB12 100%);
-    background-repeat: repeat-x;
-    border: 1px solid #72BB10;
-    text-shadow:
-    -1px -1px 0 #5ca402,
-    1px -1px 0 #5ca402,
-    -1px 1px 0 #5ca402,
-    1px 1px 0 #5ca402 !important;
-}
-.nav-pills > li.active > a > .badge, .nav-pills > li.active > a:hover > .badge, .nav-pills > li.active > a:focus > .badge {
-    text-shadow:none;
+.nav-pills > li.active > a > .badge,
+.nav-pills > li.active > a:hover > .badge,
+.nav-pills > li.active > a:focus > .badge {
+    text-shadow: none;
 }
 .nav-tabs > li > a > .badge {
     background-color: darkgrey;
     color: #ffffff;
-}/*
-.nav-tabs > li > a:focus > .badge, .nav-tabs > li > a:hover > .badge {
-    color: #428bca;
-    background-color: #ffffff;
-}*/
+}
 .nav-tabs > li.active > a > .badge {
     background-color: darkgrey;
     color: #ffffff;
@@ -1058,9 +1064,12 @@ img.resize{
     border-left-color: #ddd;
     border-right-color: #ddd;
 }
-.nav-tabs > li.active > a {
+.nav-tabs > li.active > a,
+.nav-tabs > li:hover.active > a,
+.nav-tabs > li:focus.active > a {
     background-color: #ffffff;
     background-image: none;
+    color: #333333;
 }
 .tab-icon {
     margin-right: 5px;
@@ -1170,32 +1179,33 @@ img.resize{
     min-height: 668px;
     background-color: #ffffff;
 }
-.purchase-pills {
-    padding: 0 15px;
-}
 /* Directly override bootstrap list-group-item */
 .list-group {
     box-shadow: none;
 }
 .list-group-item {
     border: 1px solid #C7C7C7;
-    padding: 12px 15px;
+    border-top-width: 0;
+    padding: 12px 15px 12px 10px;
 }
 .list-group-item > p {
-    font-family: 'Open Sans', sans-serif;
-    height: 17px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+    padding-left: 5px;
 }
 .list-group-item-heading {
-    font-weight: 600!important;
-    overflow: hidden;
+    font-weight: 600;
     white-space: nowrap;
     margin-right: 25px;
-    text-overflow: ellipsis;
+    overflow: hidden;
+    margin-bottom: 3px;
+    min-height: 22px;
+    padding-left: 5px;
 }
 .list-group-item-text {
+    white-space: nowrap;
+    overflow: hidden;
     text-overflow: ellipsis;
 }
 .list-group-item .badge {
@@ -1244,6 +1254,7 @@ img.resize{
 .list-group > div:first-child .list-group-item {
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
+    border-top-width: 1px;
 }
 .list-group > div:last-child .list-group-item {
     border-bottom-left-radius: 4px;
@@ -1253,7 +1264,7 @@ img.resize{
 .convo-preview.active > .list-group-item,
 .convo-preview.active:hover > .list-group-item,
 .convo-preview.active:focus > .list-group-item {
-    background-image: linear-gradient(to bottom, #89CB30 0%, #72BB10 100%);
+    background-image: linear-gradient(to bottom, #92db35 0%, #87d110 100%);
     background-repeat: repeat-x;
     border-color: #72BB10;
     text-shadow:
@@ -1262,6 +1273,9 @@ img.resize{
     -1px 1px 0 #5ca402,
     1px 1px 0 #5ca402;
     z-index: 0;
+}
+.list-group > div:last-child > .convo-preview.active > .list-group-item {
+    border-bottom-color: #65ad02;
 }
 .convo-preview.active .list-group-item-text,
 .convo-preview.active:hover .list-group-item-text,
@@ -1281,14 +1295,21 @@ img.resize{
     background-color: #ffffff;
     color: rgb(66, 139, 202);
 }
-.close-wrapper:hover + .list-group-item > .list-group-item-text,
 .close-wrapper:hover + .list-group-item > .list-group-item-heading,
 .close-wrapper:hover + .list-group-item,
 .close-wrapper:focus + .list-group-item {
-    background: #EB4848 none!important;
-    border-color: #EB4848!important;
-    color: rgb(51, 51, 51)!important;
-    text-shadow: none!important;
+    background: #e53f42 none!important;
+    border-color: #cd2d2f !important;
+    color: #eeeeee!important;
+    text-shadow:
+    -1px -1px 0 #AE0500,
+    1px -1px 0 #AE0500,
+    -1px 1px 0 #AE0500,
+    1px 1px 0 #AE0500;
+}
+.close-wrapper:hover + .list-group-item > .list-group-item-text {
+    color: #6e0003;
+    text-shadow: none;
 }
 .convo-placeholder {
     background: url(/vassets/images/plaid3.png) repeat;
@@ -1393,9 +1414,6 @@ select > option {
     border-radius: 4px;
     font-size: 14px;
     outline: 0;
-}
-.form-content > div:last-child {
-    min-height: 400px;
 }
 .form-content:focus, .focussed + div {
     border: 2px solid #92d13d!important;
@@ -1535,6 +1553,7 @@ iframe.ta-insert-video {
     width: 150px;
 }
 .f-picture {
+    background-color: #ffffff;
     position: relative;
     border: 1px solid #e0e0e0;
     width: 140px;
@@ -1649,4 +1668,63 @@ form[name='googleWallet'] .submit-btn {
 }
 .label.label-custom {
     color: #1897BD;
+}
+div#fbId {
+    height: 45px;
+    padding: 10px 17px;
+    margin-bottom: 10px;
+    background-color: #eeeeee;
+    border-radius: 2px;
+}
+.row-fluid.transaction {
+    height: 100%
+}
+.trans-pills {
+    padding: 0 60px;
+}
+.trans-record {
+    padding: 0 15px 15px;
+}
+.trans-record > .toolbar > ul {
+    background: #f5f5f5;
+    border-top: 1px solid #ededed;
+    border-bottom: 1px solid #d5d5d5;
+}
+.trans-record > .trans-body {
+    background: #f5f5f5;
+    border: 1px solid #efefef;
+    border-top-width: 0;
+    min-height: 618px;
+    height: 100%;
+    padding: 30px 15px 15px 15px;
+}
+.toolbar > ul > li > div:last-child {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    min-height: 0;
+    transition: min-height 0.1s ease-out 0.1s;
+    overflow: hidden;
+    background: #7ECB19;
+}
+.toolbar > ul > li:hover > div:last-child,
+.toolbar > ul > li.active > div:last-child {
+    min-height: 3px;
+}
+.trans-record > .trans-body > .panel-default {
+    border-color: #e9e9e9;
+}
+.trans-record > .toolbar > ul > li {
+    position: relative;
+}
+.trans-record > .toolbar > ul > li.active > .active-indicator {
+    position: absolute;
+    bottom: -1px;
+    left: 50%;
+    width: 16px;
+    height: 8px;
+    margin-left: -8px;
+    background: url("../images/active-indicator@2x.png") no-repeat 50% 50%;
+    background-size: cover;
 }

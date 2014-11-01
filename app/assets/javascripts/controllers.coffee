@@ -99,7 +99,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
     $scope.loadingProg = true
 
-    randId = Math.floor((Math.random() * 1000) + 1)
+    randId = Math.ceil(Math.random() * 1000)
 
     $scope.tabs = [
       {
@@ -147,7 +147,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
     $scope.transactionPills = [
       {
-        name: "Ordered"
+        name: "Started"
       }
       {
         name: "Commited"
@@ -168,6 +168,12 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       }
     ]
 
+    $scope.records = {}
+    $scope.purchases = []
+    $scope.conversations = []
+    $scope.sales = []
+    $scope.bills = []
+
     $scope.myFbId = FacebookLogin.getFbUser().id
 
     $scope.replying = false
@@ -186,8 +192,16 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
               d = new Date t[0], t[1]-1, t[2], t[3], t[4], t[5]
               msg.date = d
           $log.debug data
+          $scope.conversations.sort (a, b) ->
+            [afirst, ..., alast] = a.conversation.messages
+            [bfirst, ..., blast] = b.conversation.messages
+            alast.date < blast.date
           setReplies()
           $scope.loadingProg = false
+
+          $scope.purchases = $scope.records.buying_recods
+          $scope.sales = $scope.records.selling_records
+          $scope.billing = $scope.records.billing_recods
 
     getRecords()
 
@@ -214,8 +228,6 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
           $scope.replying = false
           $scope.replies[$scope.activePill[$scope.activeTab]] = ""
           $scope.tempReply = ""
-          if status.code == 200
-            console.log data
         .error (error) ->
           $scope.replying = false
           console.log error
@@ -232,11 +244,20 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       if $scope.conversations? && $scope.conversations[$scope.activePill[$scope.activeTab]]?
         if $scope.conversations[$scope.activePill[$scope.activeTab]].user1.fbuserid != $scope.myFbId then "Buyer" else "Seller"
 
-    $scope.withWho = ->
+    whoUser = ->
       if $scope.conversations? && $scope.conversations[$scope.activePill[$scope.activeTab]]?
         if $scope.conversations[$scope.activePill[$scope.activeTab]].user1.fbuserid != $scope.myFbId
-          $scope.conversations[$scope.activePill[$scope.activeTab]].user1.name + " " + $scope.conversations[$scope.activePill[$scope.activeTab]].user1.surname
-        else $scope.conversations[$scope.activePill[$scope.activeTab]].user2.name + " " + $scope.conversations[$scope.activePill[$scope.activeTab]].user2.surname
+          $scope.conversations[$scope.activePill[$scope.activeTab]].user1
+        else
+          $scope.conversations[$scope.activePill[$scope.activeTab]].user2
+
+    $scope.withWho = ->
+      user = whoUser()
+      user.name + " " + user.surname
+
+    $scope.withWhoLink = ->
+      "id=" + whoUser().id + "&rnd=" + randId
+
 
     $scope.meOrUsername = (user) ->
       if user.fbuserid == $scope.myFbId then "me"
@@ -250,7 +271,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
     $scope.activePill = {}
 
-    $scope.replies = {}
+    $scope.replies = []
 
     $scope.tempReply = if $scope.replies[$scope.activePill[$scope.activeTab]]? then $scope.replies[$scope.activePill[$scope.activeTab]] else ""
 
@@ -325,6 +346,23 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     $scope.msgWrapperStyle = ->
       if $window.navigator.appVersion.indexOf("Mac") != -1 then {'margin-right': '-30px', 'padding-right': '40px'}
       else {"padding-right":"13px"}
+]
+.controller "MessagesCtrl", ["$scope", "$http", ($scope, $http) ->
+
+  $scope.conversations = $scope.$parent.conversations
+
+  $scope.deleteConvo = (event, index) ->
+    $http
+      method: "GET"
+      url: "/api/leaveconvo/"+$scope.conversations[index].conversation.id
+    .success (data, status) ->
+      $scope.conversations.splice index, 1
+]
+.controller "PurchaseCtrl", ["$scope", ($scope) ->
+
+  $scope.purchases = $scope.$parent.records.buying_records
+
+  console.log $scope.$parent.records
 ]
 .controller "HomeCtr", ["$scope", ($scope) ->
     $scope.message = "Entice with higher confidence!"
@@ -878,8 +916,6 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       title.scrollLeft(0)
 
   $scope.deleteConvo = (event, index) ->
-    element = `event.srcElement ? event.srcElement : event.target;`
-    $scope.sampleConversations.splice(index,1)
 
   $scope.activeConvo = 0
 
@@ -1470,9 +1506,28 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
     $scope.creatingListing = false
 ]
-.controller "StartConversationCtrl", ["$scope", "$http", "$filter", ($scope, $http, $filter) ->
+.controller "StartConversationCtrl", ["$scope", "$http", "$filter", "$timeout", ($scope, $http, $filter, $timeout) ->
 
   $scope.tempMessage = ''
+
+  $scope.alert = {}
+
+  $scope.showAlert = false
+
+  alert = (msg, type) ->
+    $scope.showAlert = true
+    $scope.alert =
+      message: msg
+      type: type
+    $timeout ->
+      $scope.closeAlert()
+    , 5000
+
+  $scope.alertMsg = ''
+
+  $scope.closeAlert = ->
+    $scope.showAlert = false
+    $scope.alert = {}
 
   lst = $scope.$parent.lst
 
@@ -1488,5 +1543,9 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
           title: lst.listing.title
           offerid: lst.listing.id
       .success (data, status) ->
-        console.log data
+        alert 'Your message was sent to the seller.', "success"
+        $scope.$broadcast "starterMsgSent"
+      .error (errorMsg, status) ->
+        alert errorMsg.message, "danger"
+        $scope.$broadcast "starterMsgSent"
 ]

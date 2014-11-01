@@ -1,6 +1,6 @@
 @(user: User, rating: Int, pictureUrl: String)
 
-<div class="summary-wrapper" style="margin-bottom: 10px;)">
+<div class="summary-wrapper">
     <h5> {{ title }} </h5>
     <div class="inner-summary" data-ng-if="!showLinks">
         @partials.html.profileSummary(user, rating, pictureUrl)

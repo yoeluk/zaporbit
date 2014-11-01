@@ -28,7 +28,7 @@ import models._
 import org.cryptonode.jncryptor._
 import play.api.libs.ws._
 import scala.concurrent.Future
-import play.api.libs.concurrent.Execution.Implicits._
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import play.api.db.slick.Config.driver._
 
@@ -1364,7 +1364,7 @@ class API(override implicit val env: RuntimeEnvironment[SocialUser]) extends sec
               }
             } else BadRequest(Json.obj(
               "status" -> "KO",
-              "message" -> "you can't send messages to yourself."
+              "message" -> "You can't send messages to yourself."
             ))
           case None =>
             BadRequest("invalid message")
@@ -1379,11 +1379,16 @@ class API(override implicit val env: RuntimeEnvironment[SocialUser]) extends sec
     ))
   }
 
-  def leaveConvo(convid: Long, userid: Long) = DBAction { implicit rs =>
-    Conversations.userLeaveConvo(convid, userid)
-    Ok(Json.obj(
-      "status" -> "OK"
-    ))
+  def leaveConvo(convid: Long) = SecuredAction { implicit request =>
+    request.user.main match {
+      case user =>
+        DB.withSession { implicit s =>
+          Conversations.userLeaveConvo(convid, user.id.get)
+          Ok(Json.obj(
+            "status" -> "OK"
+          ))
+        }
+    }
   }
 
   def replyToConvo = SecuredAction(parse.json) { implicit request =>

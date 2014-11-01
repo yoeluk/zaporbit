@@ -3,25 +3,25 @@
     <div class="row template-header">
         <div class="col-xs-12 col-md-8">
 
-            <div class="row paging" data-ng-show="showSearch">
+            <div class="row paging" data-ng-show="true">
                 <div class="locate-panel clearfix">
-                        <form style="" name="newLoc" class="form-horizontal form-inline" role="form">
-                            <div class="col-sm-3ths col-md-3ths col-lg-3ths">
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-addon"> City: </span>
-                                    <input type="text" class="form-control" name="city" data-ng-model="city" id="city" placeholder="City Name" required>
-                                </div>
+                    <form style="" name="newLoc" class="form-horizontal form-inline" role="form">
+                        <div class="col-sm-3ths col-md-3ths col-lg-3ths">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon"> City: </span>
+                                <input type="text" class="form-control" name="city" data-ng-model="city" id="city" placeholder="City Name" required>
                             </div>
-                            <div class="col-sm-3ths col-md-3ths col-lg-3ths">
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-addon"> Region: </span>
-                                    <input type="text" class="form-control" name="region" data-ng-model="region" id="region" placeholder="Region or State" required>
-                                </div>
+                        </div>
+                        <div class="col-sm-3ths col-md-3ths col-lg-3ths">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon"> Region: </span>
+                                <input type="text" class="form-control" name="region" data-ng-model="region" id="region" placeholder="Region or State" required>
                             </div>
-                            <div class="col-sm-3ths col-md-3ths col-lg-3ths" style="width: 60px;">
-                                <button data-ng-disabled="inProgress" data-ng-click="locate(newLoc)" class="btn btn-default btn-sm btn-locate">Locate</button>
-                            </div>
-                        </form>
+                        </div>
+                        <div class="col-sm-3ths col-md-3ths col-lg-3ths" style="width: 60px;">
+                            <button data-ng-disabled="inProgress" data-ng-click="locate(newLoc)" class="btn btn-default btn-sm btn-locate">Locate</button>
+                        </div>
+                    </form>
                 </div>
             </div>
 
@@ -41,7 +41,7 @@
                 <marker
                 idkey="loc.id"
                 coords="loc.coords"
-                icon="'@routes.Assets.versioned("images/marker.png")'"
+                icon="'@routes.Assets.versioned("/images/marker.png")'"
                 options="loc.options"
                 control="loc.control"
                 ></marker>

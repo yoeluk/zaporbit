@@ -18,7 +18,7 @@ GET         /api/backdownfromdeal/:transid                          @controllers
 GET         /api/getuserbyid/:userid                                @controllers.API.sendUserById(userid: Long)
 GET         /api/getconversationsforuser/:page/:userid              @controllers.API.getConversationsForUser(page: Int, userid: Long)
 GET         /api/markconvoread/:convid                              @controllers.API.markConvoRead(convid: Long)
-GET         /api/leaveconvo/:convid/:userid                         @controllers.API.leaveConvo(convid: Long, userid: Long)
+GET         /api/leaveconvo/:convid                                 @controllers.API.leaveConvo(convid: Long)
 GET         /api/getfeedbacksforuser/:userid                        @controllers.API.returnFeedbacksForUser(userid: Long)
 GET         /api/currentUser                                        @controllers.API.currentUser
 GET         /credentialtemplate/:userid                             @controllers.Application.credentialTemplate(userid: String)
@@ -26,6 +26,9 @@ GET         /api/followingfriends                                   @controllers
 GET         /followingtemplate                                      @controllers.Application.followingTemplate
 GET         /api/unfollowfriend/:userid                             @controllers.API.unfollowFriend(userid: Long)
 GET         /api/merchantinfo                                       @controllers.API.merchantInfo
+
+GET         /api/paypal/pay                                         controllers.PayPal.paySandbox
+GET         /api/instabt/pay                                        controllers.PayInstaBT.doPay
 
 
 # item

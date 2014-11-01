@@ -140,13 +140,13 @@
                     <progressbar ng-if="loadingProg" class="progress-striped active progress" animate="true" value="100" type="info"> {{ loadingMessage }} </progressbar>
                 </div>
 
-                <div class="row-fluid clearfix" data-ng-if="!loadingProg && conversations.length ">
+                <div class="row-fluid clearfix" data-ng-if="!loadingProg && conversations.length" data-ng-controller="MessagesCtrl">
 
                     <div class="col-sm-5 col-md-5">
                         <div class="convo-placeholder">
                             <div class="outer-convo">
                                 <div class="list-group convo scroll" data-ng-style="osPadding()">
-                                    <div data-ng-repeat="conv in conversations track by $index">
+                                    <div class="animate" data-ng-repeat="conv in conversations track by conv.conversation.id">
                                         <div class="convo-preview" data-ng-class="{ active: isActivePill($index) }"
                                         data-ng-mouseenter="scrollToWidth($event)"
                                         data-ng-mouseleave="scrollToStart($event)">
@@ -183,7 +183,7 @@
                                 </div>
                                 <div class="message-from" data-ng-show="conversations.length">
                                     <i>{{ sellerOrBuyer() }}:</i>
-                                    <a class="pointer">
+                                    <a class="pointer" data-ng-href="/#!/userprofile?{{withWhoLink()}}">
                                         {{ withWho() }}
                                     </a>
                                 </div>
@@ -217,29 +217,51 @@
             </script>
 
             <script type="text/ng-template" id="purchase-template.html">
-                <div class="row-fluid">
-                        <ul class="nav nav-pills nav-justified purchase-pills">
-                            <li data-ng-class="{ active: isActivePill($index) }" data-ng-repeat="tran in transactionPills track by $index">
-                                <a class="pointer" data-ng-click="setActivePill($index)">
-                                    {{ tran.name }}
-                                    <!--<span class="badge pull-right" data-ng-if="conv.conversation.messages.length>1"> {{ conv.conversation.messages.length }} </span>-->
-                                </a>
-                            </li>
-                        </ul>
+                <div class="row-fluid transaction" data-ng-controller="PurchaseCtrl">
+                    <div class="trans-record">
+                        <div class="toolbar">
+                            <ul class="nav nav-pills nav-justified trans-pills">
+                                <li data-ng-class="{ active: isActivePill($index) }"
+                                data-ng-click="setActivePill($index)"
+                                data-ng-repeat="tran in transactionPills track by $index">
+                                    <a> {{ tran.name }} </a>
+                                    <span class="active-indicator"></span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="trans-body">
+                            <div class="panel panel-default" data-ng-class="{animate:true}" data-ng-repeat="trans in purchases track by trans.id">
+                                <div class="panel-body">
+                                    <h4 style="margin: 0">
+                                        <a href="/#!/listing_item/{{trans.offerid}}" data-ng-bind="trans.title"></a>
+                                    </h4>
+                                    <div class="description-wrapper">
+                                        <p class="html-description" data-ta-bind data-ng-model="trans.description">  </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </script>
 
             <script type="text/ng-template" id="sale-template.html">
-                <div class="row-fluid">
-                    <ul class="nav nav-pills nav-justified purchase-pills">
-                        <li data-ng-class="{ active: isActivePill($index) }" data-ng-repeat="tran in transactionPills track by $index">
-                            <a class="pointer" data-ng-click="setActivePill($index)">
-                                {{ tran.name }}
-                                <!--<span class="badge pull-right" data-ng-if="conv.conversation.messages.length>1"> {{ conv.conversation.messages.length }} </span>-->
-                            </a>
-                        </li>
-                    </ul>
+                <div class="row-fluid transaction">
+                    <div class="trans-record">
+                        <div class="toolbar">
+                            <ul class="nav nav-pills nav-justified trans-pills">
+                                <li data-ng-class="{ active: isActivePill($index) }"
+                                data-ng-click="setActivePill($index)"
+                                data-ng-repeat="tran in transactionPills track by $index">
+                                    <a> {{ tran.name }} </a>
+                                    <span class="active-indicator"></span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="trans-body">
 
+                        </div>
+                    </div>
                 </div>
             </script>
 

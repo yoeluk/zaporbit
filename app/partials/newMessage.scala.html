@@ -1,4 +1,5 @@
 <div class="conversation-starter" data-ng-controller="StartConversationCtrl">
+    <alert type="{{alert.type}}" close="closeAlert()" data-ng-if="showAlert"> {{ alert.message }} </alert>
     <div class="clearfix">
         <div id="message-starter"
         class="message-reply message-starter"

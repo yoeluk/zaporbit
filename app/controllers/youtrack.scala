@@ -166,7 +166,7 @@ object Youtrack extends Controller {
             case Some(msg) =>
               Cache.remove("login.key5")
               Cache.remove("login.key6")
-              Redirect(routes.Youtrack.getStats)
+              Redirect(routes.Youtrack.getStats())
             case None =>
               Ok(resp.json)
           }
