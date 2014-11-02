@@ -4,6 +4,7 @@ package controllers
  * Created by yoelusa on 30/10/14.
  */
 
+import play.api.libs.ws.WS
 import play.api.mvc._
 import com.instabt._
 import play.api.Play.current
@@ -14,7 +15,18 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 object PayInstaBT extends Controller {
 
-  def doPay = Action.async {
+  def currecyConverter(amount: String, currency: String) = Action.async {
+    WS.url(s"https://www.google.com/finance/converter?a=$amount&from=$currency&to=BTC")
+      .withHeaders(
+        "Accept" -> "text/xml"
+      ).get().map { response =>
+      val startIndex = response.body indexOf "= <span class=bld>"
+      val endIndex = response.body indexOf " BTC</span>"
+      Ok(response.body.substring(startIndex+18, endIndex+4))
+    }
+  }
+
+  def doTestPay = Action.async {
 
     val options = Some(Map(
       "url_success" -> "https://zaporbit.com/instabt/success",
@@ -40,7 +52,6 @@ object PayInstaBT extends Controller {
       }
       case error: String => InternalServerError(error)
     }
-
   }
 
   def successfulPayment = Action {

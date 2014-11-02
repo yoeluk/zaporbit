@@ -114,17 +114,13 @@ object Youtrack extends Controller {
             case None =>
               Future.successful(InternalServerError("there was an error authenticating with youtrack@zaporbit"))
           }
-
         case _ =>
-
           val mail = use[MailerPlugin].email
           mail.setSubject(issue.summary)
           mail.setFrom(issue.email.get)
           mail.setRecipient("support@zaporbit.com")
           mail.send(issue.description)
-
           Future.successful(Ok("there was an error authenticating with youtrack@zaporbit"))
-
       }
 
     }.getOrElse {

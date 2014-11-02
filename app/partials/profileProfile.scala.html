@@ -75,7 +75,7 @@
                             <span class="label label-danger" data-ng-show="submitted && googleWallet.merchantsecret.$error.required">Required!</span>
                         </label>
                         <div class="col-sm-9">
-                            <input data-ng-readonly="!isEditing" type="text" class="form-control" name="merchantsecret" data-ng-model="merchantsecret" id="merchantsecret" placeholder="Merchant Secret" required />
+                            <input data-ng-disabled="!isEditing" type="password" class="form-control" name="merchantsecret" data-ng-model="merchantsecret" id="merchantsecret" placeholder="Merchant Secret" required />
                         </div>
                     </div>
                     <div class="form-group">

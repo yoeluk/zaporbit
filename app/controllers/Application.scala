@@ -2,6 +2,7 @@ package controllers
 
 import models._
 import play.api._
+import play.api.libs.ws.WS
 import play.api.mvc._
 import play.api.db.slick._
 import play.api.libs.json._
