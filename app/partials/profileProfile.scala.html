@@ -1,4 +1,4 @@
-@(user: User, rating: Int, options: UserOption)
+@(user: User, rating: Int, options: UserOption, paypalEnabled: Boolean)
 
 <div class="row-fluid clearfix" data-ng-controller="ProfileProfileCtrl">
 
@@ -59,28 +59,39 @@
         </script>
 
         <script type="text/ng-template" id="merchant-template">
-            <div class="profile-small-wrapper profile-small" data-ng-controller="MerchantCtrl">
-
+            <div class="profile-small-wrapper profile-small row-fluid" data-ng-controller="MerchantCtrl">
+                <div class="merchant-row">
+                    <div class="col-sm-2 merchant-number">
+                        <span class="numberCircle">1</span>
+                    </div>
+                    <div class="col-sm-10 merchant-content">
+                        <img class="buy-brand" src="/vassets/images/gwall_logo_hrz_fc_rgb_gry_pos.png">
+                        <span> Set Up </span>
+                    </div>
+                </div>
                 <form name="googleWallet" novalidate class="form-horizontal" role="form">
                     <div class="form-group">
-                        <label for="merchantid" class="col-sm-3 control-label"> Google Wallet Merchant ID
-                            <span class="label label-danger" data-ng-show="submitted && googleWallet.merchantid.$error.required">Required!</span>
-                        </label>
+                        <div class="col-sm-3"> </div>
                         <div class="col-sm-9">
+                            <label for="merchantid" class="control-label"> Google Wallet Merchant ID
+                                <span class="label label-danger" data-ng-show="submitted && googleWallet.merchantid.$error.required">Required!</span>
+                            </label>
                             <input data-ng-readonly="!isEditing" type="text" class="form-control" name="merchantid" data-ng-model="merchantid" id="merchantid" placeholder="Merchant ID" required />
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="merchantsecret" class="col-sm-3 control-label"> Merchant Secret
-                            <span class="label label-danger" data-ng-show="submitted && googleWallet.merchantsecret.$error.required">Required!</span>
-                        </label>
+                        <div class="col-sm-3"> </div>
                         <div class="col-sm-9">
+                            <label for="merchantsecret" class="control-label"> Merchant Secret
+                                <span class="label label-danger" data-ng-show="submitted && googleWallet.merchantsecret.$error.required">Required!</span>
+                            </label>
                             <input data-ng-disabled="!isEditing" type="password" class="form-control" name="merchantsecret" data-ng-model="merchantsecret" id="merchantsecret" placeholder="Merchant Secret" required />
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="description" class="col-sm-3 control-label"> Your Postback URL </label>
+                        <div class="col-sm-3"> </div>
                         <div class="col-sm-9">
+                            <label for="description" class="control-label"> Your Postback URL </label>
                             <input readonly type="text" class="form-control" name="postbackurl" data-ng-model="postbackurl" id="postbackurl" placeholder="Your postback URL" />
                         </div>
                     </div>
@@ -88,8 +99,36 @@
                         <button class="btn btn-default btn-small col-xs-offset-3" data-ng-click="edit() || submit(googleWallet)"> {{ title() }} </button>
                     </div>
                 </form>
-                <p> Google Wallet integration is <b>recommended</b> for all sellers. Your Google Wallet identification will be used only for pre-processing payment information for Google Wallet in connection with making payments into your account and it is safely stored in our server using encrypted channels.</p>
-                <p> No a Google Wallet merchant? <a href="https://checkout.google.com/inapp/merchant/signup.html" target="_blank"> Set up your Google Wallet merchant account now </a> and start getting paid directly into it today!</p>
+                <div class="col-sm-offset-3 merchant-content">
+                    <p> No a Google Wallet merchant? <a href="https://checkout.google.com/inapp/merchant/signup.html" target="_blank"> Set up your Google Wallet merchant account now </a> and start getting paid directly into it today!</p>
+                </div>
+                <div style="height:20px"></div>
+                <div class="merchant-row">
+                    <div class="col-sm-2 merchant-number">
+                        <span class="numberCircle">2</span>
+                    </div>
+                    <div class="col-sm-10 merchant-content">
+                        <div class="">
+                            <img class="buy-brand" src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/PP_logo_h_200x51.png" alt="PayPal" />
+                            <span> Set Up </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-offset-3 merchant-content"> Selling with PayPal is
+                    <span>
+                        @{ if (paypalEnabled) {
+                             <span data-ng-bind-html="trustedEnabledHtml"></span>
+                           } else <span data-ng-bind-html="trustedDisabledHtml"></span>
+                         }
+                    </span><br>
+                    <button class="btn-custom btn-paypal delete-btn"
+                    data-paypal-auth='@{if(paypalEnabled) "true" else "false"}'
+                    data-event="authPaypal"
+                    data-destructive-event="removePaypal">
+                        <i class="fa fa-paypal"></i> {{ btnTitle("@{if (paypalEnabled) "Disable PayPal" else "Enable PayPal"}") }}
+                    </button>
+                    <progressbar class="progress-striped active" data-ng-if="inProgress" max="200" value="200" type="info"><i> Working... </i></progressbar>
+                </div>
             </div>
         </script>
 
@@ -127,7 +166,11 @@
                         <button class="foot-link btn-custom" data-ng-class="canUpdate($index)">
                             <i class="fa fa-wrench"></i> Update
                         </button>
-                        <button class="foot-link btn-custom delete-listing" data-delete-listener="false" data-index='{{$index}}' data-ng-class="canDelete($index)">
+                        <button class="foot-link btn-custom delete-btn"
+                        data-delete-listener="false"
+                        data-index='{{$index}}'
+                        data-ng-class="canDelete($index)"
+                        data-event="deleteListing">
                             <i class="glyphicon glyphicon-trash"></i> Delete
                         </button>
                     </div>

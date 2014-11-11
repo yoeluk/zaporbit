@@ -150,7 +150,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
         name: "Started"
       }
       {
-        name: "Commited"
+        name: "Committed"
       }
       {
         name: "Completed"
@@ -346,6 +346,9 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     $scope.msgWrapperStyle = ->
       if $window.navigator.appVersion.indexOf("Mac") != -1 then {'margin-right': '-30px', 'padding-right': '40px'}
       else {"padding-right":"13px"}
+
+    $scope.isFailedTrans = (index) ->
+      'failed-trans': index > 2
 ]
 .controller "MessagesCtrl", ["$scope", "$http", ($scope, $http) ->
 
@@ -363,6 +366,9 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
   $scope.purchases = $scope.$parent.records.buying_records
 
   console.log $scope.$parent.records
+]
+.controller "SaleCtrl", ["$scope", ($scope) ->
+
 ]
 .controller "HomeCtr", ["$scope", ($scope) ->
     $scope.message = "Entice with higher confidence!"
@@ -966,9 +972,14 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 ]
 .controller "FeedbacksCtrl", ["$scope", "$timeout", "$http", ($scope, $timeout, $http) ->
 ]
-.controller "MerchantCtrl", ["$scope", "$timeout", "$http", ($scope, $timeout, $http) ->
+.controller "MerchantCtrl", ["$scope", "$timeout", "$http", "$window", '$sce', ($scope, $timeout, $http, $window, $sce) ->
 
   $scope.isEditing = true
+  $scope.inProgress = false
+
+  enabledText = undefined
+  paypalBtnTitle = undefined
+  authText = undefined
 
   $scope.title = ->
     if $scope.isEditing then "Save" else "Edit"
@@ -1009,9 +1020,46 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
         $scope.merchantsecret = data.merchant.secret
         $scope.isEditing = false
       $scope.postbackurl = "https://zaporbit.com/merchant/" + data.userid
-
-
   getMerchant()
+
+  requestPaypalAuth = ->
+    $scope.inProgress = true
+    $http
+      method: "GET"
+      url: "/paypal/permission"
+    .success (data, status) ->
+      $window.location = data.url
+    .error (error, status) ->
+      console.log error
+
+  $scope.$on 'authPaypal', (event, element) ->
+    requestPaypalAuth()
+
+  $scope.$on 'removePaypal', (event, element) ->
+    $http
+      method: "POST"
+      url: "/paypal/deauthorize"
+      data: {}
+    .success (data, status) ->
+      element.removeClass 'disable'
+      $timeout ->
+        $scope.$apply ->
+          $scope.trustedEnabledHtml = $scope.trustedDisabledHtml
+          paypalBtnTitle = "Enable PayPal"
+          element.data 'paypal-auth', 'false'
+
+  enabledHtml = '<i> enabled </i> <i class="fa fa-check green"></i>'
+  $scope.trustedEnabledHtml = $sce.trustAsHtml(enabledHtml);
+
+  disabledHtml = '<i> disabled </i> <i class="fa fa-remove red"></i>'
+  $scope.trustedDisabledHtml = $sce.trustAsHtml(disabledHtml);
+
+  $scope.btnTitle = (text) ->
+    if paypalBtnTitle? then paypalBtnTitle else text
+
+  $scope.paypalAuthText = (text) ->
+    console.log text
+    if authText == undefined then text else authText
 
 ]
 .controller "FollowingCtrl", ["$scope", "$timeout", "$http", ($scope, $timeout, $http) ->
@@ -1023,10 +1071,6 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
   $scope.template =
     name: "followingPartialTemplate"
     url: "/partials/following"
-
-#  FB.api "/me/friends", (response) ->
-#    if (response && !response.error)
-#      console.log response
 
   getFollowing = ->
     $http
@@ -1548,4 +1592,16 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
       .error (errorMsg, status) ->
         alert errorMsg.message, "danger"
         $scope.$broadcast "starterMsgSent"
+]
+.controller "SellingCtrl", ["$scope", "$http", "$filter", "$timeout", "$window", ($scope, $http, $filter, $timeout, $window) ->
+
+  $scope.textPaypal = (offerid) ->
+    $http
+      method: 'GET'
+      url: '/paypal/pay?offerid=' + offerid
+    .success (data, status) ->
+      console.log data
+      $window.location = data.url
+    .error (error, status) ->
+      console.log error
 ]

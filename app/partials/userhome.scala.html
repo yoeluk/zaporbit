@@ -62,9 +62,7 @@
             </script>
 
             <script type="text/ng-template" id="messages-example-template.html">
-
                 <div class="row-fluid clearfix" data-ng-controller="MessagesExampleCtrl">
-
                     <div class="col-sm-12 col-md-12" data-ng-if="showAlert" style="padding-right: 15px;">
                         <div class="alert alert-warning" role="alert"> Alert message! The messages shown below are sample messages that describe the messaging services. They will automatically remove themselves as soon as you receive or send a message.</div>
                     </div>
@@ -95,7 +93,6 @@
                         </div>
                     </div>
                     <div class="col-sm-7 col-md-7 clearfix">
-
                         <div class="convos" data-ng-repeat="(cIndex, conv) in sampleConversations" data-ng-show="isActivePill(cIndex)">
                             <div class="message-outer">
                                 <div class="message-title" data-ng-show="sampleConversations.length">
@@ -139,9 +136,7 @@
                 <div style="padding:0 10px;">
                     <progressbar ng-if="loadingProg" class="progress-striped active progress" animate="true" value="100" type="info"> {{ loadingMessage }} </progressbar>
                 </div>
-
                 <div class="row-fluid clearfix" data-ng-if="!loadingProg && conversations.length" data-ng-controller="MessagesCtrl">
-
                     <div class="col-sm-5 col-md-5">
                         <div class="convo-placeholder">
                             <div class="outer-convo">
@@ -172,7 +167,6 @@
                         </div>
                     </div>
                     <div class="col-sm-7 col-md-7">
-
                         <div class="convos" data-ng-repeat="(cIndex, conv) in conversations" data-ng-show="isActivePill(cIndex)">
                             <div class="message-outer">
                                 <div class="message-title" data-ng-show="conversations.length">
@@ -211,9 +205,7 @@
                         </div>
                     </div>
                 </div>
-
                 <div data-ng-include="messagesExampleTemplate.url" data-ng-if="!loadingProg && !conversations.length"></div>
-
             </script>
 
             <script type="text/ng-template" id="purchase-template.html">
@@ -224,7 +216,7 @@
                                 <li data-ng-class="{ active: isActivePill($index) }"
                                 data-ng-click="setActivePill($index)"
                                 data-ng-repeat="tran in transactionPills track by $index">
-                                    <a> {{ tran.name }} </a>
+                                    <a data-ng-class="isFailedTrans($index)"> <span class="numberCircle" data-ng-if="$index < 3">{{$index+1}}</span> {{ tran.name }} </a>
                                     <span class="active-indicator"></span>
                                 </li>
                             </ul>
@@ -246,14 +238,14 @@
             </script>
 
             <script type="text/ng-template" id="sale-template.html">
-                <div class="row-fluid transaction">
+                <div class="row-fluid transaction" data-nf-controller="SaleCtrl">
                     <div class="trans-record">
                         <div class="toolbar">
                             <ul class="nav nav-pills nav-justified trans-pills">
                                 <li data-ng-class="{ active: isActivePill($index) }"
                                 data-ng-click="setActivePill($index)"
                                 data-ng-repeat="tran in transactionPills track by $index">
-                                    <a> {{ tran.name }} </a>
+                                    <a data-ng-class="isFailedTrans($index)"> <span class="numberCircle" data-ng-if="$index < 3">{{$index+1}}</span> {{ tran.name }} </a>
                                     <span class="active-indicator"></span>
                                 </li>
                             </ul>

@@ -342,12 +342,34 @@ angular.module "ZapOrbit.directives", []
       element.data 'delete-listener', false
       angular.element($document[0].body).unbind "click", bodyClickCallback
       if angular.element(e.target).is(element)
-        scope.$emit 'deleteListing', element.data 'index'
+        scope.$emit element.data('event'), element.data 'index'
 
     clickCallback = (e) ->
       if !element.data('delete-listener')
         element.data 'delete-listener', true
         element.addClass "confirm"
+        $timeout ->
+          angular.element($document[0].body).bind "click", bodyClickCallback
+        , 50
+
+    element.bind "click", clickCallback
+]
+.directive "paypalAuth", ["$document", "$timeout", ($document, $timeout) ->
+  link: (scope, element, attrs) ->
+
+    bodyClickCallback = (e) ->
+      element.removeClass 'confirm'
+      angular.element($document[0].body).unbind "click", bodyClickCallback
+      if angular.element(e.target).is(element)
+        element.addClass 'disable'
+        scope.$broadcast element.data('destructive-event'), element
+
+    clickCallback = (e) ->
+      if !element.data('paypal-auth') or element.data('paypal-auth') == "false"
+        element.addClass 'disable'
+        scope.$broadcast element.data('event'), element
+      else if !element.hasClass('confirm')
+        element.addClass 'confirm'
         $timeout ->
           angular.element($document[0].body).bind "click", bodyClickCallback
         , 50

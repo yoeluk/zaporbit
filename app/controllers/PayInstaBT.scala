@@ -17,9 +17,7 @@ object PayInstaBT extends Controller {
 
   def currecyConverter(amount: String, currency: String) = Action.async {
     WS.url(s"https://www.google.com/finance/converter?a=$amount&from=$currency&to=BTC")
-      .withHeaders(
-        "Accept" -> "text/xml"
-      ).get().map { response =>
+      .get().map { response =>
       val startIndex = response.body indexOf "= <span class=bld>"
       val endIndex = response.body indexOf " BTC</span>"
       Ok(response.body.substring(startIndex+18, endIndex+4))
@@ -29,6 +27,8 @@ object PayInstaBT extends Controller {
   def doTestPay = Action.async {
 
     val options = Some(Map(
+      "amount" -> "3.0",
+      "currency" -> "BTC",
       "url_success" -> "https://zaporbit.com/instabt/success",
       "url_failure" -> "https://zaporbit.com/instabt/failure"
     ))
@@ -37,9 +37,9 @@ object PayInstaBT extends Controller {
 
     val secret = current.configuration.getString("instaBT.secret").get
 
-    val config = Configuration(key = key, secret = secret, amount = 3.0, options = options)
+    val config = Configuration(key = key, secret = secret, options = options)
 
-    val instaResponse = InstaBT.payWithConfiguration(config)
+    val instaResponse = InstaBT.instaBTWithConfiguration(config)
 
     val timeoutResponse = timeout("Oops", 15.seconds)
 

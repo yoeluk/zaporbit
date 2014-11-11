@@ -30,6 +30,7 @@ libraryDependencies ++= {
     "com.google.collections" % "google-collections" % "1.0",
     "joda-time" % "joda-time" % "2.1",
     "com.googlecode.json-simple" % "json-simple" % "1.1.1",
+    //"wf.bitcoin" % "JavaBitcoindRpcClient" % "0.9.0",
     "com.paypal.sdk" % "adaptivepaymentssdk" % "2.7.117",
     "org.webjars" %% "webjars-play" % "2.3.0-2",
     "org.webjars" % "jquery" % "2.1.1",

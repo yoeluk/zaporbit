@@ -1663,15 +1663,13 @@ class API(override implicit val env: RuntimeEnvironment[SocialUser]) extends sec
                   Ok(Json.obj(
                     "status" -> "OK",
                     "merchant" -> Json.toJson(merchant),
-                    "existing id" -> JsNumber(existingMerchant.id.get)
-                  ))
+                    "existing id" -> JsNumber(existingMerchant.id.get)))
                 case None =>
                   Merchants.insert(merchant)
                   Users.updateMerchant(isMerchant = true, merchant.userid)
                   Ok(Json.obj(
                     "status" -> "OK",
-                    "merchant" -> Json.toJson(merchant)
-                  ))
+                    "merchant" -> Json.toJson(merchant)))
               }
             case None =>
               BadRequest("invalid data in json")

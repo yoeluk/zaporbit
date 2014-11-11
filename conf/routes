@@ -27,7 +27,11 @@ GET         /followingtemplate                                      @controllers
 GET         /api/unfollowfriend/:userid                             @controllers.API.unfollowFriend(userid: Long)
 GET         /api/merchantinfo                                       @controllers.API.merchantInfo
 
-GET         /paypal/pay                                             controllers.PayPal.paySandbox
+GET         /paypal/pay                                             @controllers.PayPal.paySandbox
+GET         /paypal/permission                                      @controllers.PayPal.paypalPermRequest
+GET         /paypal/permcallback                                    @controllers.PayPal.permCallback
+POST        /paypal/deauthorize                                     @controllers.PayPal.deauthorizePaypal
+
 GET         /instabt/testpay                                        controllers.PayInstaBT.doTestPay
 GET         /instabt/success                                        controllers.PayInstaBT.successfulPayment
 GET         /instabt/failure                                        controllers.PayInstaBT.failedPayment

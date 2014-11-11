@@ -43,7 +43,7 @@ object Merchants extends DAO {
   def insertReturningId(merchant: Merchant)(implicit session: Session): Long =
     merchants returning merchants.map(_.id) insert merchant
 
-  def update(id: Long, merchant: Merchant)(implicit session: Session): Unit = {
+  def update(id: Long, merchant: Merchant)(implicit session: Session) {
     val merchantToUpdate = merchant.copy(Some(id))
     merchants.filter(_.id === id).update(merchantToUpdate)
   }

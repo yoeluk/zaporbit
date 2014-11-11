@@ -19,6 +19,20 @@ trait OfferTrait {
   def created_on: Option[Timestamp]
   def updated_on: Option[Timestamp]
 }
+case class LeanListing(id: Option[Long],
+                       title: String,
+                       price: Double,
+                       locale: String,
+                       currency_code: String,
+                       userid: Long)
+
+case class LeanUser(id: Option[Long],
+                    name: String,
+                    surname: String,
+                    email: String,
+                    fbuserid: String)
+
+case class Goods(listing: LeanListing, provider: LeanUser)
 
 case class Offer(id: Option[Long] = None,
                  title: String,
@@ -80,6 +94,28 @@ object Offers extends DAO {
    */
   def findById(id: Long)(implicit session: Session): Option[Offer] =
     offers.filter(_.id === id).firstOption
+
+  def findWithUserById(id: Long)(implicit session: Session) = {
+    (for {
+      o <- offers.filter(_.id === id)
+      u <- o.user
+    } yield (
+        (o.id.?,
+          o.title,
+          o.price,
+          o.locale,
+          o.currency_code,
+          o.userid),
+        (u.id.?,
+          u.name,
+          u.surname,
+          u.email,
+          u.fbuserid))).list.map { row =>
+        Goods(listing = LeanListing(row._1._1, row._1._2, row._1._3, row._1._4, row._1._5, row._1._6),
+              provider = LeanUser(row._2._1, row._2._2, row._2._3, row._2._4, row._2._5)
+        )
+    }.headOption
+  }
 
   def listingWithOffer(offer: Offer)(implicit session: Session): Listing =
     Listing(

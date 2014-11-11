@@ -56,11 +56,9 @@ object Youtrack extends Controller {
                   .withHeaders("Accept" -> "application/json; charset=utf-8")
                   .withHeaders("Cookie" -> ("JSESSIONID="+x1.value.get+"; jetbrains.charisma.main.security.PRINCIPAL"+x2.value.get))
                   .get().map { resp =>
-                  Ok(
-                    Json.obj(
+                  Ok(Json.obj(
                       "issues" -> resp.json
-                    )
-                  )
+                    ))
                 }
               case None =>
                 Future.successful(InternalServerError("invalid server authentication"))

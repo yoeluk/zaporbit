@@ -38,7 +38,7 @@ class Users(tag: Tag) extends Table[User](tag, "Users") {
   def email = column[String]("email", O.NotNull)
   def isMerchant = column[Boolean]("isMerchant", O.Nullable)
   def created_on =  column[Timestamp]("created_on", O.NotNull)
-  def * = (id.?, name, surname, fbuserid, email, isMerchant.?, created_on.?) <> (User.tupled, User.unapply _)
+  def * = (id.?, name, surname, fbuserid, email, isMerchant.?, created_on.?) <> ((User.apply _).tupled, User.unapply _)
 }
 
 object Users extends DAO {
@@ -46,19 +46,19 @@ object Users extends DAO {
   def findByFbId(fbuserid: String)(implicit session: Session): Option[User] =
     users.filter(_.fbuserid === fbuserid).firstOption
 
-  def findById(id: Long)(implicit session: Session): Option[User] =
+  def findById(id: Long)(implicit session: Session) =
     users.filter(_.id === id).firstOption
 
-  def findByEmail(email: String)(implicit session: Session): Option[User] =
+  def findByEmail(email: String)(implicit session: Session) =
     users.filter(_.email === email).firstOption
 
-  def insert(user: User)(implicit s: Session): Unit =
+  def insert(user: User)(implicit s: Session) =
     users.insert(user)
 
-  def insertReturningId(user: User)(implicit session: Session): Long =
+  def insertReturningId(user: User)(implicit session: Session) =
     users returning users.map(_.id) insert user
 
-  def update(id: Option[Long], isMerchant: Option[Boolean], user: User)(implicit session: Session): User = {
+  def update(id: Option[Long], isMerchant: Option[Boolean], user: User)(implicit session: Session) = {
     val updatedUser = user.copy(id = id, isMerchant = isMerchant)
     users.filter(_.id === id).update(updatedUser)
     updatedUser

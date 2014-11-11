@@ -1003,11 +1003,12 @@ img.resize {
 }
 .nav-pills > li > a {
     border: 1px solid #f5f5f5;
-    border-radius: 3px;
+    border-radius: 2px;
     margin: 0 4px;
-    font-size: 14px !important;
+    font-size: 13px !important;
     padding: 8px 0;
     font-weight: 600;
+    text-transform: uppercase;
 }
 @media (min-width: 768px) {
     .nav-pills > li {
@@ -1043,10 +1044,14 @@ img.resize {
     color: #333333;
     border: 1px solid #f0f0f0;
 }
-.nav-pills > li.active > a > .badge,
-.nav-pills > li.active > a:hover > .badge,
-.nav-pills > li.active > a:focus > .badge {
-    text-shadow: none;
+.nav-pills > li > a.failed-trans {
+    color: #d80000;
+}
+.nav-pills > li.active > a.failed-trans {
+    color: #c80000;
+}
+.nav-pills > li.active .numberCircle {
+    border: 1px solid #555;
 }
 .nav-tabs > li > a > .badge {
     background-color: darkgrey;
@@ -1440,9 +1445,10 @@ select > option {
     display: inline-block;
     color: #548B0C;
 }
-div.panel:hover .btn-custom {
+div.panel:hover .btn-custom,
+.btn-custom.btn-paypal {
     background-color: #ffffff;
-    border-top-color: #f0f0f0;
+    border-top-color: #eeeeee;
     border-bottom-color: #dddddd;
 }
 .btn-custom:active {
@@ -1468,11 +1474,11 @@ div.panel:hover .btn-custom {
     background-color: #f9f9f9!important;
     border-color: #f1f1f1!important;
 }
-.delete-listing.confirm {
+.delete-btn.confirm {
     color: #ffffff!important;
     background: red!important;
 }
-.delete-listing.confirm:active {
+.delete-btn.confirm:active {
     background: #D20000!important;
 }
 img.ta-insert-video {
@@ -1642,7 +1648,7 @@ iframe.ta-insert-video {
     color: red;
 }
 .profile-small > form {
-    margin: 15px 0 0;
+    margin: 5px 0 0;
     padding: 10px;
 }
 .profile-small > p {
@@ -1686,13 +1692,13 @@ div#fbId {
     padding: 0 15px 15px;
 }
 .trans-record > .toolbar > ul {
-    background: #f5f5f5;
+    background: #f8f8f8;
     border-top: 1px solid #ededed;
     border-bottom: 1px solid #d5d5d5;
 }
 .trans-record > .trans-body {
     background: #f5f5f5;
-    border: 1px solid #efefef;
+    border: 1px solid #f3f3f3;
     border-top-width: 0;
     min-height: 618px;
     height: 100%;
@@ -1727,4 +1733,63 @@ div#fbId {
     margin-left: -8px;
     background: url("../images/active-indicator@2x.png") no-repeat 50% 50%;
     background-size: cover;
+}
+.buy-brand {
+    margin-top: 15px;
+}
+.buy-brand + span {
+    margin-left: 5px;
+    color: green;
+    display: inline-block;
+    font-weight: 600;
+}
+.merchant-row {
+    min-height: 90px;
+}
+.merchant-content {
+    padding-left: 15px;
+    height: 100%;
+}
+.merchant-content button {
+    margin: 10px 0;
+}
+.cart-table {
+    margin-bottom: 30px;
+}
+.numberCircle {
+    border-radius: 50%;
+    padding: 0 5px 0 6px;
+    margin: 0 3px;
+    background: #fff;
+    border: 1px solid #548B0C;
+    text-align: center;
+    font-size: 13px;
+}
+.merchant-number > .numberCircle {
+    border: 1px solid #555;
+    color: #555;
+    background: #f8f8f8;
+    font-size: 16px;
+    padding: 9px 15px;
+    display: inline-block;
+    margin-top: 25px;
+}
+.merchant-number {
+    text-align: center;
+    height: 100%;
+}
+.pad-row {
+    padding: 20px 0;
+}
+.green {
+    color: #548B0C;
+}
+.red {
+    color: #d80000;
+}
+form[name='googleWallet'] {
+    margin: 0;
+}
+form[name='googleWallet'] label {
+    font-weight: 400;
 }

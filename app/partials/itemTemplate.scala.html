@@ -1,4 +1,4 @@
-@(listing: Listing, pictures:List[String], user: User, rating: Float, currency: String, token: Option[String], pictureUrl: String)
+@(listing: Listing, pictures:List[String], user: User, rating: Float, currency: String, token: Option[String], pictureUrl: String, paypalMerchant: Boolean)
 <script src="https://wallet.google.com/inapp/lib/buy.js"></script>
 <script type="text/javascript" language="javascript">
     // Success handler
@@ -24,7 +24,7 @@
         }
     }
 </script>
-<div class="container outer-container">
+<div class="container outer-container" data-ng-controller="SellingCtrl">
     <div class="">
         <div class="row template-header">
             <div class="col-xs-12 col-md-8">
@@ -85,35 +85,43 @@
                             <p class="pull-right">@if(user.isMerchant.get){is <i>merchant</i>}else{is <i>not</i> merchant}</p>
                         </div>
                     </div>
-                    @if(user.isMerchant.get) {
-                        <div class="" style="margin-bottom: 10px; padding-top: 10px; border-bottom: 1px solid rgb(229, 229, 229)">
-                            <h5> Cart </h5>
-                        </div>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th style="width: 200px">Item</th>
-                                    <th>Price</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td> 1 </td>
-                                    <td style="width: 200px">@listing.title</td>
-                                    <td>@Wallet.displayCurrency(listing.locale, listing.price)</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <div style="text-align : center">
-                            <button
-                            id="token_button"
-                            style="background: none;border: none;padding: 0;"
-                            data-token=@token onclick="purchase();">
-                                <img class="resize" src="https://developers.google.com/wallet/images/buy-button.png"/>
-                            </button>
-                        </div>
+                @if(user.isMerchant.get) {
+                    <div class="" style="margin-bottom: 10px; padding-top: 10px; border-bottom: 1px solid rgb(229, 229, 229)">
+                        <h5> Cart </h5>
+                    </div>
+                    <table class="table cart-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th style="width: 200px">Item</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td> 1 </td>
+                                <td style="width: 200px">@listing.title</td>
+                                <td>@Wallet.displayCurrency(listing.locale, listing.price)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div style="text-align: center">
+                        <button
+                        id="token_button"
+                        style="background: none;border: none;padding: 0;"
+                        data-token=@token onclick="purchase();">
+                            <img class="resize" src="https://developers.google.com/wallet/images/buy-button.png"/>
+                        </button>
+                    </div>
                     }
+                @if(paypalMerchant) {
+                    <div style="text-align : center ; margin : 20px 0"> Or </div>
+                    <div style="text-align : center ; margin : 20px 0">
+                        <button style="background: none;border: none;padding: 0;" data-ng-click="textPaypal(@listing.id.get)">
+                            <img src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/buy-logo-large.png" alt="Buy now with PayPal" />
+                        </button>
+                    </div>
+                }
                 </div>
             </div>
         </div>

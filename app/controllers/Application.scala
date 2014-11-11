@@ -2,7 +2,6 @@ package controllers
 
 import models._
 import play.api._
-import play.api.libs.ws.WS
 import play.api.mvc._
 import play.api.db.slick._
 import play.api.libs.json._
@@ -42,20 +41,18 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
               Merchants.findByUserId(offer.userid) match {
                 case Some(merchant) =>
                   Some(Wallet.generateToken(offer, merchant.identifier, merchant.secret, offer.userid))
+                case None => None
               }
             } else None
             val rt = Ratings.ratingForUser(user.id.get)
+            val isPayPalMerchant = PaypalMerchants.exist(user.id.get)
             val rating = 100*rt._1.toInt
-            Ok(partials.html.itemTemplate(lst, lst.pictures.get, user, rating, currency = offer.currency_code, token = optToken, pictureUrl(user.id.get, Some(user.fbuserid))))
+            Ok(partials.html.itemTemplate(lst, lst.pictures.get, user, rating, currency = offer.currency_code, token = optToken, pictureUrl(user.id.get, Some(user.fbuserid)), isPayPalMerchant))
           case None =>
-            Ok(Json.obj(
-              "status" -> "KO"
-            ))
+            Ok(Json.obj("status" -> "KO"))
         }
       case None =>
-        Ok(Json.obj(
-          "status" -> "KO"
-        ))
+        Ok(Json.obj("status" -> "KO"))
     }
   }
 
@@ -211,6 +208,7 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
         DB.withSession { implicit s =>
           val rt = Ratings.ratingForUser(user.id.get)
           val rating = 100*rt._1.toInt
+          val isPaypalEnabled = PaypalMerchants.exist(user.id.get)
           val defaultOptions = UserOption(
             userid = user.id.get,
             background = Some("/vassets/images/profile_cover.png"),
@@ -218,7 +216,7 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
             about = Some("Tell others a little bit about you in one sentence. What is worth your while?"))
           UserOptions.findByUserid(user.id.get) match {
             case None =>
-              Ok( partials.html.profileProfile( user, rating, defaultOptions ) )
+              Ok( partials.html.profileProfile( user, rating, defaultOptions, isPaypalEnabled ) )
             case Some(opts) =>
               val currentOptions = UserOption(
                 userid = opts.userid,
@@ -238,7 +236,7 @@ class Application(override implicit val env: RuntimeEnvironment[SocialUser]) ext
                   case x => x
                 }
               )
-              Ok( partials.html.profileProfile( user, rating, currentOptions ) )
+              Ok( partials.html.profileProfile( user, rating, currentOptions, isPaypalEnabled ) )
           }
         }
     }

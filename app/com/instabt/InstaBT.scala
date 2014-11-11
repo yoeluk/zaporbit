@@ -19,14 +19,10 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
  * A configuration case class.
  * @param key Api key.
  * @param secret Api secret.
- * @param amount The amount of this bill.
- * @param currency The currency of the transaction. InstaBT accepts CAD and BTC. It defaults to BTC if the field is not supplied.
  * @param options The options. See the available options in the InstaBT documentation. It defaults to None if the field is not supplied.
  */
 case class Configuration(key: String,
                          secret: String,
-                         amount: Double,
-                         currency: String = "BTC",
                          options: Option[Map[String, String]] = None)
 /**
  * A paydata case class. Its fields match those in the json response of InstaBT
@@ -46,6 +42,7 @@ case class PayData(Id: String,
                    Total: String,
                    Currency: String,
                    BtcRequired: String,
+                   BtcAddress: Option[String],
                    Data: String,
                    CreatedOn: String,
                    ExpiresOn: String,
@@ -71,6 +68,7 @@ object InstaBT {
       "Total" -> text,
       "Currency" -> text,
       "BtcRequired" -> text,
+      "BtcAddress" -> optional(nonEmptyText),
       "Data" -> text,
       "CreatedOn" -> text,
       "ExpiresOn" -> text,
@@ -82,12 +80,12 @@ object InstaBT {
    * Compose the request with the configuration param and make the call. It provides default values for url and end_point
    * @param config A configuration for this transaction.
    * @param end_point The services end point. It defaults to "/create_order" if the parameter is not supplied.
-   * @param url The base url for the request. It default to "https://api.instabt.com" if the parameter is not supplied.
+   * @param baseUrl The base url for the request. It default to "https://api.instabt.com" if the parameter is not supplied.
    * @return
    */
-  def payWithConfiguration(config: Configuration,
+  def instaBTWithConfiguration(config: Configuration,
                            end_point: String = "/create_order",
-                           url: String = "https://api.instabt.com"): Future[PayResponse] = {
+                           baseUrl: String = "https://api.instabt.com"): Future[PayResponse] = {
 
 //    val rnd = new scala.util.Random
 //    def tailWithSize(alphabet: String = "0123456789")(n: Int): String =
@@ -97,8 +95,7 @@ object InstaBT {
     val utcTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
     // Until I know of a reliable way to get the time in microseconds in the jvm this should suffice.
     val nonce = s"${utcTime.getTimeInMillis}000"
-    val payload =
-      s"amount=${config.amount}&currency=${config.currency}&nonce=$nonce" +
+    val payload = s"nonce=$nonce" +
       (config.options match {
         case Some(options) =>
           options.foldLeft("") { case (acc, (key, value)) => s"$acc&$key=$value" }
@@ -107,12 +104,13 @@ object InstaBT {
     val sigData = end_point + '\u0000' + payload
     val mac = Mac.getInstance("HmacSHA512")
     val secretKey = new SecretKeySpec(config.secret.getBytes("UTF-8"), mac.getAlgorithm)
-    val sign = {
+    val signature = {
       mac.init(secretKey)
       val byteString = mac.doFinal(sigData.getBytes).foldLeft("") { case (acc, b) => s"$acc%02x".format(b) }
-      Base64.encodeBase64String(byteString.getBytes)}
-    WS.url(url+end_point)
-      .withHeaders("API-KEY" -> config.key, "API-SIGN" -> sign)
+      Base64.encodeBase64String(byteString.getBytes)
+    }
+    WS.url(baseUrl+end_point)
+      .withHeaders("API-KEY" -> config.key, "API-SIGN" -> signature)
       .post(payload).map { wsResponse =>
       if (wsResponse.status == 200) {
         PayResponse(

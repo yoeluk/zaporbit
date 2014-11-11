@@ -74,9 +74,8 @@ object Friends extends DAO {
     friends.insertAll(nff : _*)
   }
 
-  def deleteFollowing(userid: Long, friendid: Long)(implicit session: Session) = {
-    friends.filter(_.userid === userid).filter(_.friendid === friendid).delete
-  }
+  def deleteFollowing(userid: Long, friendid: Long)(implicit session: Session) =
+    friends.filter(x => x.userid === userid && x.friendid === friendid).delete
 
   /**
    *

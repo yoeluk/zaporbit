@@ -21,7 +21,7 @@ object UserFromIdentity {
       surname = b.lastName.getOrElse("no surname"),
       fbuserid = b.userId,
       email = b.email.getOrElse(""),
-      isMerchant = Option(false)
+      isMerchant = Some(false)
     )
 }
 
