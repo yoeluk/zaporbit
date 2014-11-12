@@ -1747,8 +1747,9 @@ div#fbId {
     min-height: 90px;
 }
 .merchant-content {
-    padding-left: 15px;
+    padding: 0 10px 0 15px;
     height: 100%;
+    text-align: justify;
 }
 .merchant-content button {
     margin: 10px 0;

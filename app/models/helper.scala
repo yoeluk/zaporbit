@@ -33,4 +33,5 @@ private[models] trait DAO {
   val listingStatuses = TableQuery[ListingStatuses]
   val userOptions = TableQuery[UserOptions]
   val paypalMerchants = TableQuery[PaypalMerchants]
+  val paypalContants = TableQuery[PaypalContants]
 }

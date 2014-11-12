@@ -28,6 +28,7 @@ GET         /api/unfollowfriend/:userid                             @controllers
 GET         /api/merchantinfo                                       @controllers.API.merchantInfo
 
 GET         /paypal/pay                                             @controllers.PayPal.paySandbox
+GET         /paypal/paysuccess                                      @controllers.PayPal.paySuccess
 GET         /paypal/permission                                      @controllers.PayPal.paypalPermRequest
 GET         /paypal/permcallback                                    @controllers.PayPal.permCallback
 POST        /paypal/deauthorize                                     @controllers.PayPal.deauthorizePaypal

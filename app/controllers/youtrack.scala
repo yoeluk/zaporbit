@@ -1,6 +1,7 @@
 package controllers
 
 import com.typesafe.plugin._
+import play.api.libs.concurrent.Promise._
 import play.api.mvc._
 import play.api.libs.json._
 
@@ -37,39 +38,48 @@ object Youtrack extends Controller {
     )(Issue.apply)(Issue.unapply)
   )
 
+  def cookieFromResponse(response: WSResponse) = {
+    response.cookie("YTJSESSIONID") match {
+      case Some(x1) =>
+        response.cookie("jetbrains.charisma.main.security.PRINCIPAL") match {
+          case Some(x2) =>
+            val x2 = response.cookie("jetbrains.charisma.main.security.PRINCIPAL").get
+            Cache.set("login.key1", x1.value.get, 1.day)
+            Cache.set("login.key2", x2.value.get, 1.day)
+            s"YTJSESSIONID=${x1.value.get}; jetbrains.charisma.main.security.PRINCIPAL${x2.value.get}"
+        }
+      case None =>
+        println(response.cookies.toString())
+        ""
+    }
+  }
+
   def allIssues = Action.async {
     val urlLogin = "http://youtrack.zaporbit.com/rest/user/login"
-    val url = "http://youtrack.zaporbit.com/rest/issue/byproject/ZO?max=25"
+    val filter = java.net.URLEncoder.encode("visible to: {All Users}", "UTF-8")
+    val url = s"http://youtrack.zaporbit.com/rest/issue/byproject/ZO?filter=$filter&max=25"
     Cache.getAs[String]("login.key1") match {
       case None =>
-        val respond = Await.result(WS.url(urlLogin)
-          .withHeaders("Accept" -> "application/json; charset=utf-8")
-          .post(Map("login" -> Seq("appuser"), "password" -> Seq("qWerty.19"))), 5.seconds)
-        respond.cookie("JSESSIONID") match {
-          case Some(x1) =>
-            respond.cookie("jetbrains.charisma.main.security.PRINCIPAL") match {
-              case Some(x2) =>
-                val x2 = respond.cookie("jetbrains.charisma.main.security.PRINCIPAL").get
-                Cache.set("login.key1", x1.value.get, 1.day)
-                Cache.set("login.key2", x2.value.get, 1.day)
-                WS.url(url)
-                  .withHeaders("Accept" -> "application/json; charset=utf-8")
-                  .withHeaders("Cookie" -> ("JSESSIONID="+x1.value.get+"; jetbrains.charisma.main.security.PRINCIPAL"+x2.value.get))
-                  .get().map { resp =>
-                  Ok(Json.obj(
-                      "issues" -> resp.json
-                    ))
-                }
-              case None =>
-                Future.successful(InternalServerError("invalid server authentication"))
-            }
-          case None =>
-            Future.successful(InternalServerError("invalid server authentication"))
+        val youtrackResponse = for {
+          response <- WS.url(urlLogin).withHeaders("Accept" -> "application/json; charset=utf-8")
+            .post(Map("login" -> Seq("yoeluk"), "password" -> Seq("qWerty.19")))
+          issuesResponse <- WS.url(url).withHeaders(
+            "Accept" -> "application/json; charset=utf-8",
+            "Cookie" -> (cookieFromResponse(response))).get()
+        } yield issuesResponse
+        youtrackResponse.recover {
+          case e: Exception =>
+            InternalServerError(e.getMessage)
+        }
+        val futureTimeout = timeout("Whoops", 15.seconds)
+        Future.firstCompletedOf(Seq(youtrackResponse, futureTimeout)).map {
+          case resp: WSResponse => Ok(Json.obj("issues" -> resp.json))
+          case error: String => ServiceUnavailable(error)
         }
       case Some(x1_value) =>
         WS.url(url)
-          .withHeaders("Accept" -> "application/json; charset=utf-8")
-          .withHeaders("Cookie" -> ("JSESSIONID="+x1_value+"; jetbrains.charisma.main.security.PRINCIPAL"+Cache.get("login.key2")))
+          .withHeaders("Accept" -> "application/json; charset=utf-8",
+            "Cookie" -> ("YTJSESSIONID="+x1_value+"; jetbrains.charisma.main.security.PRINCIPAL"+Cache.get("login.key2")))
           .get().map { resp =>
           (resp.json \ "value").asOpt[String] match {
             case Some(msg) =>
@@ -87,25 +97,24 @@ object Youtrack extends Controller {
 
   def createIssue = Action.async(parse.json) { implicit request =>
     request.body.validate[Issue].map { issue =>
-
       issue.email match {
-
         case None =>
           val urlLogin = "http://youtrack.zaporbit.com/rest/user/login"
           val url = "http://youtrack.zaporbit.com/rest/issue"
           val respond = Await.result(WS.url(urlLogin)
             .withHeaders("Accept" -> "application/json; charset=utf-8")
-            .post(Map("login" -> Seq("web_reporter"), "password" -> Seq("qWerty.19"))), 5.seconds)
-          respond.cookie("JSESSIONID") match {
+            .post(Map("login" -> Seq("yoeluk"), "password" -> Seq("qWerty.19"))), 5.seconds)
+          respond.cookie("YTJSESSIONID") match {
             case Some(x3) =>
               val x4 = respond.cookie("jetbrains.charisma.main.security.PRINCIPAL").get
               WS.url(url)
                 .withHeaders("Accept" -> "application/json; charset=utf-8")
-                .withHeaders("Cookie" -> ("JSESSIONID=" + x3.value.get + "; jetbrains.charisma.main.security.PRINCIPAL" + x4.value.get))
-                .put(
-                  Map("project" -> Seq("ZO"),
-                    "summary" -> Seq(issue.summary),
-                    "description" -> Seq(issue.description))
+                .withHeaders("Cookie" -> ("YTJSESSIONID=" + x3.value.get + "; jetbrains.charisma.main.security.PRINCIPAL" + x4.value.get))
+                .put(Map(
+                  "project" -> Seq("ZO"),
+                  "summary" -> Seq(issue.summary),
+                  "description" -> Seq(issue.description),
+                  "permittedGroup" -> Seq("developers"))
                 ).map { resp =>
                 Ok("new issue created")
               }
@@ -137,14 +146,14 @@ object Youtrack extends Controller {
             "Accept" -> "application/json; charset=utf-8"/*,
             "Content-Type" -> "application/json; charset=utf-8"*/
           ).post(Map("login" -> Seq("yoeluk"), "password" -> Seq("qWerty.19"))), 5.seconds)
-        respond.cookie("JSESSIONID") match {
+        respond.cookie("YTJSESSIONID") match {
           case Some(x5) =>
             val x6 = respond.cookie("jetbrains.charisma.main.security.PRINCIPAL").get
             Cache.set("login.key5", x5.value.get, 1.day)
             Cache.set("login.key6", x6.value.get, 1.day)
             WS.url(url)
               .withHeaders("Accept" -> "application/json; charset=utf-8")
-              .withHeaders("Cookie" -> ("JSESSIONID="+x5.value.get+"; jetbrains.charisma.main.security.PRINCIPAL"+x6.value.get))
+              .withHeaders("Cookie" -> ("YTJSESSIONID="+x5.value.get+"; jetbrains.charisma.main.security.PRINCIPAL"+x6.value.get))
               .post(queryData).map { resp =>
               Ok(resp.json)
             }
@@ -154,7 +163,7 @@ object Youtrack extends Controller {
       case Some(x5_value) =>
         WS.url(url)
           .withHeaders("Accept" -> "application/json; charset=utf-8")
-          .withHeaders("Cookie" -> ("JSESSIONID="+x5_value+"; jetbrains.charisma.main.security.PRINCIPAL"+Cache.get("login.key6")))
+          .withHeaders("Cookie" -> ("YTJSESSIONID="+x5_value+"; jetbrains.charisma.main.security.PRINCIPAL"+Cache.get("login.key6")))
           .post(queryData).map { resp =>
           (resp.json \ "value").asOpt[String] match {
             case Some(msg) =>
