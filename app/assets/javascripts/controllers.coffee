@@ -675,7 +675,7 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     modalInstance = $modal.open(
       templateUrl: "myModalIssueContent.html"
       controller: "IssueModalInstCtrl"
-      size: size
+      size: if size? then size else ""
     )
     modalInstance.result.then ( ->
     ), ->

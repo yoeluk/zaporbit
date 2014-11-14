@@ -7,19 +7,22 @@ package models
 import play.api.db.slick.Config.driver.simple._
 import java.sql.Timestamp
 
+case class BillPayment(amount: Double, currency: String, provider: String, paymentid: String)
+
 case class Billing(id: Option[Long] = None,
-                       status: String,
-                       userid: Long,
-                       offer_title: String,
-                       offer_description: String,
-                       offer_price: Double,
-                       currency_code: String,
-                       locale: String,
-                       transactionid: Long,
-                       paid_amount: Option[Double] = None,
-                       googlewallet_id: Option[String] = None,
-                       created_on: Option[Timestamp] = None,
-                       updated_on: Option[Timestamp] = None)
+                   status: String,
+                   userid: Long,
+                   offer_title: String,
+                   offer_description: String,
+                   offer_price: Double,
+                   currency_code: String,
+                   locale: String,
+                   transactionid: Long,
+                   amount: Double,
+                   payment_provider: Option[String] = None,
+                   pay_id: Option[String] = None,
+                   created_on: Option[Timestamp] = None,
+                   updated_on: Option[Timestamp] = None)
 
 class Billings(tag: Tag) extends Table[Billing](tag, "Billings") {
   def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
@@ -31,11 +34,12 @@ class Billings(tag: Tag) extends Table[Billing](tag, "Billings") {
   def currency_code = column[String]("currency_code", O.NotNull)
   def locale = column[String]("locale", O.NotNull)
   def transactionid = column[Long]("transactionid", O.NotNull)
-  def paid_amount = column[Double]("paid_amount", O.Nullable)
-  def googlewallet_id = column[String]("googlewallet_id", O.Nullable)
+  def amount = column[Double]("amount", O.NotNull)
+  def payment_provider = column[String]("payment_provider", O.Nullable)
+  def pay_id = column[String]("pay_id", O.Nullable)
   def created_on = column[Timestamp]("created_on", O.Nullable)
   def updated_on = column[Timestamp]("updated_on", O.Nullable)
-  def * = (id.?, status, userid, offer_title, offer_description, offer_price, currency_code, locale, transactionid, paid_amount.?, googlewallet_id.?, created_on.?, updated_on.?) <> (Billing.tupled, Billing.unapply _)
+  def * = (id.?, status, userid, offer_title, offer_description, offer_price, currency_code, locale, transactionid, amount, payment_provider.?, pay_id.?, created_on.?, updated_on.?) <> (Billing.tupled, Billing.unapply _)
 }
 
 object Billings extends DAO {
@@ -61,10 +65,21 @@ object Billings extends DAO {
     } yield b).sortBy(_.id.desc).list.groupBy(_.status)
   }
 
-  def insertPaidBillWithOfferid(offerid: Long, price: Double, wallet_id: String)(implicit session: Session): Unit = {
+  def insertPaidBillWithOfferid(offerid: Long, payment: BillPayment)(implicit session: Session): Unit = {
     Offers.findById(offerid) match {
       case Some(offer) =>
-        val bill = Billing(None,"paid",offer.userid,offer.title,offer.description,offer.price,"USD","en_US",0, Some(price), Some(wallet_id))
+        val bill = Billing(
+          status = "paid",
+          userid = offer.userid,
+          offer_title = offer.title,
+          offer_description = offer.description,
+          offer_price = offer.price,
+          currency_code = payment.currency,
+          locale = offer.locale,
+          transactionid = 0,
+          amount = payment.amount,
+          payment_provider = Some(payment.provider),
+          pay_id = Some(payment.paymentid))
         billings.insert(bill)
       case None =>
     }
@@ -74,10 +89,10 @@ object Billings extends DAO {
     billings.filter(_.userid === userid).filter(_.status === "unpaid").list.groupBy(_.currency_code)
   }
 
-  def updatePaidBills(billIds: List[Long], wallet_id: String)(implicit session: Session): Unit = {
+  def updatePaidBills(billIds: List[Long], payment: BillPayment)(implicit session: Session): Unit = {
     billings.filter(_.id inSet billIds).map { row =>
-      (row.status,row.googlewallet_id)
-    }.update("paid",wallet_id)
+      (row.status, row.payment_provider, row.pay_id)
+    }.update("paid", payment.provider, payment.paymentid)
   }
 
 }

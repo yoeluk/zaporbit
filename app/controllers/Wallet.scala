@@ -57,14 +57,24 @@ object Wallet extends Controller {
             val price = (json_response \ "request" \ "price").as[String].toDouble
             val wallet_id = (json_response \ "response" \ "orderId").as[String]
             Offers.upgradeListing(offerid.toLong,waggle,highlight)
-            Billings.insertPaidBillWithOfferid(offerid.toLong, price, wallet_id)
+            Billings.insertPaidBillWithOfferid(offerid.toLong, BillPayment(
+              amount = price,
+              currency = "USD",
+              provider = "GoogleWallet",
+              paymentid = wallet_id))
             Ok(wallet_id)
           case None =>
             myData.get("data") match {
               case Some(data) =>
                 val ids = data.split("~").toList.map(_.toLong)
                 val wallet_id = (json_response \ "response" \ "orderId").as[String]
-                Billings.updatePaidBills(ids,wallet_id)
+                Billings.updatePaidBills(
+                  ids,
+                  BillPayment(
+                    amount = 0,
+                    currency = "USD",
+                    provider = "GoogleWallet",
+                    paymentid = wallet_id))
                 Ok(wallet_id)
               case None =>
                 BadRequest("")
@@ -157,7 +167,7 @@ object Wallet extends Controller {
     }
   }
 
-  def parseMyData(unparsedData:String): Map[String,String] = {
+  def parseMyData(unparsedData: String): Map[String,String] = {
     val keyPairs = unparsedData.split(",")
     (for {
       kp <- keyPairs

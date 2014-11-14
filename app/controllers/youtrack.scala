@@ -68,8 +68,8 @@ object Youtrack extends Controller {
             "Cookie" -> (cookieFromResponse(response))).get()
         } yield issuesResponse
         youtrackResponse.recover {
-          case e: Exception =>
-            InternalServerError(e.getMessage)
+          case e: Exception => InternalServerError(e.getMessage)
+          case _ => InternalServerError("unknow error")
         }
         val futureTimeout = timeout("Whoops", 15.seconds)
         Future.firstCompletedOf(Seq(youtrackResponse, futureTimeout)).map {

@@ -568,7 +568,9 @@ object writers {
         "offer_price" -> bill.offer_price,
         "locale" -> bill.locale,
         "transactionid" -> bill.transactionid,
-        "wallet_order_id" -> bill.googlewallet_id.orNull.toString,
+        "amount" -> bill.amount,
+        "payment_provider" -> bill.payment_provider.orNull.toString,
+        "pay_id" -> bill.pay_id.orNull.toString,
         "created_on" -> bill.updated_on.orNull.toString
       )
     }

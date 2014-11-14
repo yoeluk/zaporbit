@@ -14,17 +14,17 @@ import play.api.data.format.Formats._
 import play.api.libs.functional.syntax._
 
 case class Transaction(id: Option[Long] = None,
-                    status: String,
-                    offer_title: String,
-                    offer_description: String,
-                    offer_price: Double,
-                    currency_code: String,
-                    locale: String,
-                    buyerid: Long,
-                    sellerid: Long,
-                    offerid: Long,
-                    created_on: Option[Timestamp] = None,
-                    updated_on: Option[Timestamp] = None)
+                       status: String,
+                       offer_title: String,
+                       offer_description: String,
+                       offer_price: Double,
+                       currency_code: String,
+                       locale: String,
+                       buyerid: Long,
+                       sellerid: Long,
+                       offerid: Long,
+                       created_on: Option[Timestamp] = None,
+                       updated_on: Option[Timestamp] = None)
 
 class Transactions(tag: Tag) extends Table[Transaction](tag, "Transactions") {
   def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
@@ -65,8 +65,9 @@ object Transactions extends DAO {
       "locale" -> nonEmptyText,
       "currency_code" -> nonEmptyText,
       "transactionid" -> longNumber,
-      "paid_amount" -> optional(of[Double]),
-      "googlewallet_id" -> optional(nonEmptyText),
+      "amount" -> of[Double],
+      "payment_provider" -> optional(nonEmptyText),
+      "pay_id" -> optional(nonEmptyText),
       "created_on" -> optional(of[Timestamp]),
       "updated_on" -> optional(of[Timestamp])
     )(Billing.apply)(Billing.unapply)

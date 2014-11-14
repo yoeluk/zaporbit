@@ -8,14 +8,14 @@ import play.api.db.slick.Config.driver.simple._
 import java.sql.Timestamp
 
 case class SellingTrans(id: Long,
-                       offer_title: String,
-                       offer_description: String,
-                       offer_price: Double,
-                       buyerid: Long,
-                       offerid: Long,
-                       transactionid: Long,
-                       transStatus: String,
-                       updated_on: Option[Timestamp])
+                        offer_title: String,
+                        offer_description: String,
+                        offer_price: Double,
+                        buyerid: Long,
+                        offerid: Long,
+                        transactionid: Long,
+                        transStatus: String,
+                        updated_on: Option[Timestamp])
 
 case class Selling(id: Option[Long] = None,
                         status: String,

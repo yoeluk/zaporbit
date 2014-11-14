@@ -160,8 +160,8 @@ class PayPal(override implicit val env: RuntimeEnvironment[SocialUser]) extends 
                   .post(attrs.foldLeft("") { case (acc, s) => if (acc.isEmpty) s else s"$acc&$s"})
               } yield contactResponse
               paypalResponse.recover {
-                case e: Exception =>
-                  InternalServerError(e.getMessage)
+                case e: Exception => InternalServerError(e.getMessage)
+                case _ => InternalServerError("unknow error")
               }
               val contactTimeout = timeout("Whoops", 15.seconds)
               Future.firstCompletedOf(Seq(paypalResponse, contactTimeout)).map {

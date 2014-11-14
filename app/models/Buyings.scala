@@ -8,21 +8,21 @@ import play.api.db.slick.Config.driver.simple._
 import java.sql.Timestamp
 
 case class BuyingTrans(id: Long,
-                        offer_title: String,
-                        offer_description: String,
-                        offer_price: Double,
-                        sellerid: Long,
-                        offerid: Long,
-                        transactionid: Long,
-                        transStatus: String,
-                        updated_on: Option[Timestamp])
+                       offer_title: String,
+                       offer_description: String,
+                       offer_price: Double,
+                       sellerid: Long,
+                       offerid: Long,
+                       transactionid: Long,
+                       transStatus: String,
+                       updated_on: Option[Timestamp])
 
 case class Buying(id: Option[Long] = None,
-                       status: String,
-                       userid: Long,
-                       transactionid: Long,
-                       created_on: Option[Timestamp] = None,
-                       updated_on: Option[Timestamp] = None)
+                  status: String,
+                  userid: Long,
+                  transactionid: Long,
+                  created_on: Option[Timestamp] = None,
+                  updated_on: Option[Timestamp] = None)
 
 class Buyings(tag: Tag) extends Table[Buying](tag, "Buyings") {
   def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
