@@ -94,8 +94,8 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
   $scope.loginStatus(true)
 
 ]
-.controller "SecuredHomeCtrl", ["$scope", "$http", "FacebookLogin", "$log", "$window", '$routeParams',"$timeout", "$rootScope", "$location",
-  ($scope, $http, FacebookLogin, $log, $window, $routeParams, $timeout, $rootScope, $location) ->
+.controller "SecuredHomeCtrl", ["$scope", "$http", "FacebookLogin", "$log", "$window", '$routeParams',"$timeout", "$rootScope", "$location", "$filter",
+  ($scope, $http, FacebookLogin, $log, $window, $routeParams, $timeout, $rootScope, $location, $filter) ->
 
     $scope.loadingProg = true
 
@@ -198,13 +198,15 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
             alast.date < blast.date
           setReplies()
           $scope.loadingProg = false
-
-          $scope.purchases = $scope.records.buying_recods
+          $scope.purchases = $scope.records.buying_records
           $scope.sales = $scope.records.selling_records
-          $scope.billing = $scope.records.billing_recods
-
+          $scope.billings = $scope.records.billing_records
+          _.each [$scope.purchases, $scope.sales], (tr) ->
+            _.each tr, (rec) ->
+              t = rec.updated_on.split /[- :]/
+              d = new Date t[0], t[1]-1, t[2], t[3], t[4], t[5]
+              rec.date = d
     getRecords()
-
     $scope.sendReply = (index) ->
       message = $scope.replies[$scope.activePill[$scope.activeTab]].trim()
       if message? and message.length > 0
@@ -349,6 +351,8 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
 
     $scope.isFailedTrans = (index) ->
       'failed-trans': index > 2
+
+    $scope.orderBy = $filter('orderBy')
 ]
 .controller "MessagesCtrl", ["$scope", "$http", ($scope, $http) ->
 
@@ -361,13 +365,59 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
     .success (data, status) ->
       $scope.conversations.splice index, 1
 ]
-.controller "PurchaseCtrl", ["$scope", ($scope) ->
+.controller "PurchasesCtrl", ["$scope", ($scope) ->
 
-  $scope.purchases = $scope.$parent.records.buying_records
+  $scope.sortByText = "Title"
 
-  console.log $scope.$parent.records
+  purchases = $scope.$parent.purchases
+  $scope.started = []
+  $scope.committed = []
+  $scope.completed = []
+  $scope.failed = []
+
+  _.each purchases, (purchase, i) ->
+    return $scope.started.push purchase if purchase.status == 'pending'
+    return $scope.committed.push purchase if purchase.status == 'committed'
+    return $scope.completed.push purchase if purchase.status == 'completed'
+    return $scope.failed.push purchase if purchase.status == 'failed'
+
+  $scope.activeTrans = ->
+    return $scope.started if $scope.$parent.activePill[2] == 0
+    return $scope.committed if $scope.$parent.activePill[2] == 1
+    return $scope.completed if $scope.$parent.activePill[2] == 2
+    return $scope.failed if $scope.$parent.activePill[2] == 3
+
+  $scope.sortBy = (predicate, reverse) ->
+    $scope.sortByText = predicate.charAt(0).toUpperCase() + predicate.slice(1)
+    return $scope.orderBy($scope.activeTrans(), predicate, reverse)
 ]
-.controller "SaleCtrl", ["$scope", ($scope) ->
+.controller "SalesCtrl", ["$scope", ($scope) ->
+
+  $scope.sortByText = "Title"
+
+  sales = $scope.$parent.sales
+  $scope.started = []
+  $scope.committed = []
+  $scope.completed = []
+  $scope.failed = []
+
+  _.each sales, (sale, i) ->
+    return $scope.started.push sale if sale.status == 'pending'
+    return $scope.committed.push sale if sale.status == 'committed'
+    return $scope.completed.push sale if sale.status == 'completed'
+    return $scope.failed.push sale if sale.status == 'failed'
+
+  $scope.activeTrans = ->
+    return $scope.started if $scope.$parent.activePill[3] == 0
+    return $scope.committed if $scope.$parent.activePill[3] == 1
+    return $scope.completed if $scope.$parent.activePill[3] == 2
+    return $scope.failed if $scope.$parent.activePill[3] == 3
+
+  $scope.sortBy = (predicate, reverse) ->
+    $scope.sortByText = predicate.charAt(0).toUpperCase() + predicate.slice(1)
+    return $scope.orderBy($scope.activeTrans(), predicate, reverse)
+
+  console.log $scope.sortByText
 
 ]
 .controller "HomeCtr", ["$scope", ($scope) ->
@@ -1387,8 +1437,9 @@ angular.module "ZapOrbit.controllers", ["ngResource"]
         console.log data
         element.removeClass("followed")
     else
+      console.log fbuserid
       data =
-        fbuserid: "" + fbuserid
+        fbuserid: fbuserid
         userid: userid
       $http
         method: "POST"

@@ -209,7 +209,7 @@
             </script>
 
             <script type="text/ng-template" id="purchase-template.html">
-                <div class="row-fluid transaction" data-ng-controller="PurchaseCtrl">
+                <div class="row-fluid transaction" data-ng-controller="PurchasesCtrl">
                     <div class="trans-record">
                         <div class="toolbar">
                             <ul class="nav nav-pills nav-justified trans-pills">
@@ -222,13 +222,39 @@
                             </ul>
                         </div>
                         <div class="trans-body">
-                            <div class="panel panel-default" data-ng-class="{animate:true}" data-ng-repeat="trans in purchases track by trans.id">
-                                <div class="panel-body">
+                            <div class="panel panel-default trans-panel">
+                                <div class="panel-heading">
+                                    <div class="heading-container">
+                                        <a class="pointer active"> Everything </a>
+                                        <a class="pointer"> Flagged </a>
+                                    </div>
+                                    <div class="heading-right-container">
+                                        <div class="sortby-wrapper" data-dropdown>
+                                            <span class="dropdown-toggle" title="Sort by" role="listbox">
+                                                <a class="pointer"> Sort by </a> {{ sortByText }}
+                                            </span>
+                                            <ul class="dropdown-menu sortby-menu" role="menu">
+                                                <li><a class="pointer" data-ng-click="sortBy('title', true)"><b>Title</b></a></li>
+                                                <li><a class="pointer" data-ng-click="sortBy('date', true)"><b>Date</b></a></li>
+                                            </ul>
+                                        </div>
+                                        <div class="">
+                                            <input id="filter_keyword" type="text" placeholder="Filter" role="search">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-body no-results" data-ng-if="!activeTrans() || activeTrans().length == 0">
+                                    <span> No Results </span>
+                                </div>
+                                <div class="panel-body"  data-ng-class="{animate:false}" data-ng-repeat="trans in activeTrans() track by trans.id">
                                     <h4 style="margin: 0">
                                         <a href="/#!/listing_item/{{trans.offerid}}" data-ng-bind="trans.title"></a>
                                     </h4>
                                     <div class="description-wrapper">
                                         <p class="html-description" data-ta-bind data-ng-model="trans.description">  </p>
+                                    </div>
+                                    <div class="trans-separator">
+                                        <div class=""></div>
                                     </div>
                                 </div>
                             </div>
@@ -238,7 +264,7 @@
             </script>
 
             <script type="text/ng-template" id="sale-template.html">
-                <div class="row-fluid transaction" data-nf-controller="SaleCtrl">
+                <div class="row-fluid transaction" data-ng-controller="SalesCtrl">
                     <div class="trans-record">
                         <div class="toolbar">
                             <ul class="nav nav-pills nav-justified trans-pills">
@@ -251,7 +277,42 @@
                             </ul>
                         </div>
                         <div class="trans-body">
-
+                            <div class="panel panel-default trans-panel">
+                                <div class="panel-heading">
+                                    <div class="heading-container">
+                                        <a class="pointer active"> Everything </a>
+                                        <a class="pointer"> Flagged </a>
+                                    </div>
+                                    <div class="heading-right-container">
+                                        <div class="sortby-wrapper" data-dropdown>
+                                            <span class="dropdown-toggle">
+                                                <a class="pointer"> Sort by </a> {{ sortByText }}
+                                            </span>
+                                            <ul class="dropdown-menu sortby-menu" role="menu">
+                                                <li><a class="pointer" data-ng-click="sortBy('title', true)"><b> Title </b></a></li>
+                                                <li><a class="pointer" data-ng-click="sortBy('date', true)"><b> Date </b></a></li>
+                                            </ul>
+                                        </div>
+                                        <div class="">
+                                            <input id="filter_keyword" type="text" placeholder="Filter" role="search">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-body no-results" data-ng-if="!activeTrans() || activeTrans().length == 0">
+                                    <span> No Results </span>
+                                </div>
+                                <div class="panel-body"  data-ng-class="{animate:false}" data-ng-repeat="trans in activeTrans() track by trans.id">
+                                    <h4 style="margin: 0">
+                                        <a href="/#!/listing_item/{{trans.offerid}}" data-ng-bind="trans.title"></a>
+                                    </h4>
+                                    <div class="description-wrapper">
+                                        <p class="html-description" data-ta-bind data-ng-model="trans.description">  </p>
+                                    </div>
+                                    <div class="trans-separator">
+                                        <div class=""></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

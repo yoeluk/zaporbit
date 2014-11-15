@@ -38,7 +38,7 @@
                                         case Some(u) =>
                                             if(user.id.get == u.main.id.get) { "disable" }
                                             else if(Friends.isFollowing(u.main.id.get, user.id.get)) "followed" else ""
-                                        case None => "disable"}}' data-ng-class="{disable:false}" data-ng-click="followMe($event, @user.fbuserid, @user.id.get)">
+                                        case None => "disable"}}' data-ng-class="{disable:false}" data-ng-click="followMe($event, '@user.fbuserid', @user.id.get)">
                                         <i class="fa fa-magnet"></i>
                                     </a>
                                 </div>

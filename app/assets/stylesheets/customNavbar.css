@@ -7,8 +7,7 @@
     margin: 5px 0;
 }
 .theme-navbar-header {
-    background-image: linear-gradient(to bottom, #92D13D 0px, #92d13d 100%);
-    background-repeat: repeat-x;
+    background: linear-gradient(to bottom, rgba(154, 215, 25, 1) 0px, rgba(147, 206, 37, 1) 100%) repeat-x;
     min-height: 40px!important;
 }
 .theme-navbar-header {
@@ -39,10 +38,10 @@
     height: 20px;
 }
 .theme-navbar-header .navbar-collapse, .theme-navbar-header .navbar-form {
-    border-color: #63b932;
+    border-color: #77b932;
 }
 .theme-navbar-header .navbar-nav > .active > a {
-    background-image: linear-gradient(to bottom, #77af36 0px, #7fbe3d 100%);
+    background-image: linear-gradient(to bottom, #7CB823 0px, #85c224 100%);
     background-repeat: repeat-x;
     box-shadow: 0 3px 18px rgba(0, 0, 0, 0.15) inset;
 }
@@ -75,10 +74,10 @@
     background-color: #fff;
 }
 .theme-navbar-header .navbar-toggle:hover, .theme-navbar-header .navbar-toggle:focus {
-    background-color: #92cd36;
+    background-color: #9fd330;
 }
 .nav > li > a:hover, .nav > li > a:focus {
-    background-image: linear-gradient(to bottom, #a0ea1c 0px, #a0ea1c 100%);
+    background-image: linear-gradient(to bottom, #a4e219, #a4e219 100%);
     background-repeat: repeat-x;
 }
 ul > li.user-home-btn > a {

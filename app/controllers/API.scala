@@ -1596,32 +1596,20 @@ class API(override implicit val env: RuntimeEnvironment[SocialUser]) extends sec
                     (ub, (resp.json \ "query" \ "results" \ "rate" \ "Rate").as[String])
                   }
                 }).toSeq
-                Future.sequence(respSeq).map { case listValue =>
+                Future.sequence(respSeq).map { listValue =>
                   Ok(Json.obj(
                     "status" -> "OK",
                     "billing" -> Json.obj(
                       "unpaid" -> JsArray(
-                        for {
-                          v <- listValue
-                        } yield {
-                          Json.obj(
-                            "bill" -> Json.toJson(v._1),
-                            "USD_Exchange" -> JsString(v._2)
-                          )
+                        listValue.map { case (v1, v2) => Json.obj(
+                          "bill" -> Json.toJson(v1),
+                          "USD_Exchange" -> JsString(v2))
                         }
                       ),
                       "paid" -> JsArray(
                         billing.get("paid") match {
-                          case Some(paidBills) =>
-                            for {
-                              b <- paidBills
-                            } yield {
-                              Json.obj(
-                                "bill" -> Json.toJson(b)
-                              )
-                            }
-                          case None =>
-                            Nil
+                          case Some(paidBills) => paidBills.map { b => Json.obj("bill" -> Json.toJson(b)) }
+                          case None => Nil
                         }
                       )
                     )
@@ -1726,6 +1714,7 @@ class API(override implicit val env: RuntimeEnvironment[SocialUser]) extends sec
                   "rating" -> Ratings.ratingsForUserId(f.userid)
                 )
               case None =>
+                println(f)
                 Json.obj()
             }
           }
