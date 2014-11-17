@@ -35,7 +35,9 @@ libraryDependencies ++= {
     "org.webjars" % "jquery" % "2.1.1",
     "org.webjars" % "jquery-ui" % "1.11.1",
     "org.webjars" % "bootstrap" % "3.3.1",
-    "org.webjars" % "angularjs" % "1.3.2",
+    // Upgrade to angularjs 1.3.x needs upgrade to angular-google-maps 2.x.x
+    // which contains several breaking chances so that's delayed for a later time
+    "org.webjars" % "angularjs" % "1.2.26",
     "org.webjars" % "angular-ui-bootstrap" % "0.11.2" exclude("org.webjars", "angularjs"),
     "org.webjars" % "angular-moment" % "0.8.2" exclude("org.webjars", "angularjs"),
     "org.webjars" % "angular-google-maps" % "1.2.2" exclude("org.webjars", "angularjs"),
@@ -83,6 +85,8 @@ pipelineStages := Seq(closure, digest, gzip)
 includeFilter in (Assets, LessKeys.less) := "star-rating.less"
 
 LessKeys.compress in Assets := true
+
+JsEngineKeys.engineType := JsEngineKeys.EngineType.Node
 
 doc in Compile <<= target.map(_ / "none")
 
