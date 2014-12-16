@@ -8,7 +8,6 @@ import play.api.libs.json._
 import play.api.db.slick._
 import play.api.Play.current
 import play.api.cache.Cache
-
 import securesocial.core._
 import service.SocialUser
 

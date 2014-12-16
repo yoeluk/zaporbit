@@ -50,5 +50,4 @@ object PaypalContants extends DAO {
       case None => this.insert(contact)
       case Some(c) => this.update(contact.copy(id = c.id))
     }
-
 }

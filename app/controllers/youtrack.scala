@@ -34,7 +34,7 @@ object Youtrack extends Controller {
     mapping(
       "summary" -> nonEmptyText,
       "description" -> nonEmptyText,
-      "email" -> optional(of[String])
+      "email" -> optional(nonEmptyText)
     )(Issue.apply)(Issue.unapply)
   )
 
@@ -65,7 +65,7 @@ object Youtrack extends Controller {
             .post(Map("login" -> Seq("yoeluk"), "password" -> Seq("qWerty.19")))
           issuesResponse <- WS.url(url).withHeaders(
             "Accept" -> "application/json; charset=utf-8",
-            "Cookie" -> (cookieFromResponse(response))).get()
+            "Cookie" -> cookieFromResponse(response)).get()
         } yield issuesResponse
         youtrackResponse.recover {
           case e: Exception => InternalServerError(e.getMessage)
@@ -101,25 +101,44 @@ object Youtrack extends Controller {
         case None =>
           val urlLogin = "http://youtrack.zaporbit.com/rest/user/login"
           val url = "http://youtrack.zaporbit.com/rest/issue"
-          val respond = Await.result(WS.url(urlLogin)
-            .withHeaders("Accept" -> "application/json; charset=utf-8")
-            .post(Map("login" -> Seq("yoeluk"), "password" -> Seq("qWerty.19"))), 5.seconds)
-          respond.cookie("YTJSESSIONID") match {
-            case Some(x3) =>
-              val x4 = respond.cookie("jetbrains.charisma.main.security.PRINCIPAL").get
+          Cache.getAs[String]("login.key1") match {
+            case None =>
+              val respond = Await.result(WS.url(urlLogin)
+                .withHeaders("Accept" -> "application/json; charset=utf-8")
+                .post(Map("login" -> Seq("yoeluk"), "password" -> Seq("qWerty.19"))), 5.seconds)
+              respond.cookie("YTJSESSIONID") match {
+                case Some(x3) =>
+                  val x4 = respond.cookie("jetbrains.charisma.main.security.PRINCIPAL").get
+                  WS.url(url)
+                    .withHeaders("Accept" -> "application/json; charset=utf-8")
+                    .withHeaders("Cookie" -> ("YTJSESSIONID=" + x3.value.get + "; jetbrains.charisma.main.security.PRINCIPAL" + x4.value.get))
+                    .put(
+                      Map(
+                        "project" -> Seq("ZO"),
+                        "summary" -> Seq(issue.summary),
+                        "description" -> Seq(issue.description),
+                        "permittedGroup" -> Seq("developers")
+                      )
+                    ).map { resp =>
+                    Ok("new issue created")
+                  }
+                case None =>
+                  Future.successful(InternalServerError("there was an error authenticating with youtrack@zaporbit"))
+              }
+            case Some(x1_value) =>
               WS.url(url)
                 .withHeaders("Accept" -> "application/json; charset=utf-8")
-                .withHeaders("Cookie" -> ("YTJSESSIONID=" + x3.value.get + "; jetbrains.charisma.main.security.PRINCIPAL" + x4.value.get))
-                .put(Map(
-                  "project" -> Seq("ZO"),
-                  "summary" -> Seq(issue.summary),
-                  "description" -> Seq(issue.description),
-                  "permittedGroup" -> Seq("developers"))
+                .withHeaders("Cookie" -> ("YTJSESSIONID="+x1_value+"; jetbrains.charisma.main.security.PRINCIPAL"+Cache.get("login.key2")))
+                .put(
+                  Map(
+                    "project" -> Seq("ZO"),
+                    "summary" -> Seq(issue.summary),
+                    "description" -> Seq(issue.description),
+                    "permittedGroup" -> Seq("developers")
+                  )
                 ).map { resp =>
                 Ok("new issue created")
               }
-            case None =>
-              Future.successful(InternalServerError("there was an error authenticating with youtrack@zaporbit"))
           }
         case _ =>
           val mail = use[MailerPlugin].email
@@ -127,7 +146,7 @@ object Youtrack extends Controller {
           mail.setFrom(issue.email.get)
           mail.setRecipient("support@zaporbit.com")
           mail.send(issue.description)
-          Future.successful(Ok("there was an error authenticating with youtrack@zaporbit"))
+          Future.successful(Ok("the issue was sent via email"))
       }
 
     }.getOrElse {

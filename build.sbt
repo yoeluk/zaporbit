@@ -90,14 +90,6 @@ JsEngineKeys.engineType := JsEngineKeys.EngineType.Node
 
 doc in Compile <<= target.map(_ / "none")
 
-//compile in Compile <<= compile in Compile map {
-//  comp =>
-//    import scala.sys.process._
-//    val exitCode = Seq("ssh", "-fNg", "-L", "3307:127.0.0.1:3306", "yoeluk@zaporbit.com")
-//    println("exit code: " + exitCode)
-//    comp
-//}
-
 scalacOptions in ThisBuild ++= Seq(
   "-target:jvm-1.7",
   "-encoding", "UTF-8",
